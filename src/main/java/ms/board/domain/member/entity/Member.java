@@ -26,7 +26,7 @@ public class Member extends BaseEntity {
 
     private String memberPwd;
 
-    private int memberAge;
+    private Integer memberAge;
 
     @Email
     private String memberEmail;
