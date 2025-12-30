@@ -1,4 +1,4 @@
-package ms.board.domain.board.entity;
+package com.project.board.domain.board.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,8 +7,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ms.board.domain.BaseEntity;
-import ms.board.domain.member.entity.Member;
+import com.project.board.domain.BaseEntity;
+import com.project.board.domain.member.entity.Member;
 
 @Entity
 @NoArgsConstructor
