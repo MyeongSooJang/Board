@@ -12,8 +12,13 @@ import org.springframework.stereotype.Service;
 public class BoardService {
     private final BoardRepository boardRepository;
 
+    public List<BoardResponseDTO> searchAll() {
+        List<Board> boards = boardRepository.findAllByOrderByUpdateTimeDesc();
+        return boards.stream().map(BoardResponseDTO::from).toList();
+    }
+
     public List<BoardResponseDTO> searchBoardsByBoardTitle(String title) {
-        List<Board> boards = boardRepository.findByBoardTitle(title);
+        List<Board> boards = boardRepository.findByBoardTitleContaining(title);
         return boards.stream().map(BoardResponseDTO::from).toList();
     }
 

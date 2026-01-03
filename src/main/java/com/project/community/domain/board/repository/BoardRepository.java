@@ -7,9 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    List<Board> findByBoardTitle(String title);
+    List<Board> findAllByOrderByUpdateTimeDesc();
+    List<Board> findByBoardTitleContaining(String boardTitle);
     List<Board> findByMemberNoMemberName(String memberName);
-
-
 
 }

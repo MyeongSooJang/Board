@@ -17,6 +17,11 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping
+    public ResponseEntity<List<BoardResponseDTO>> findAll() {
+        return ResponseEntity.ok(boardService.searchAll());
+    }
+
+    @GetMapping
     public ResponseEntity<List<BoardResponseDTO>> searchBoardsByBoardTitle(String boardTitle) {
         return ResponseEntity.ok(boardService.searchBoardsByBoardTitle(boardTitle));
     }
@@ -25,4 +30,7 @@ public class BoardController {
     public ResponseEntity<List<BoardResponseDTO>> searchBoardsByMemberName(String memberName) {
         return ResponseEntity.ok(boardService.searchBoardsByMemberName(memberName));
     }
+
+
+
 }
