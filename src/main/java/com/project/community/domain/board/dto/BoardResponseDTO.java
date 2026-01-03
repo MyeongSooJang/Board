@@ -1,0 +1,24 @@
+package com.project.community.domain.board.dto;
+
+import com.project.community.domain.board.entity.Board;
+import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public class BoardResponseDTO {
+    private Long boardNo;
+    private String boardTitle;
+    private String boardContent;
+    private String memberName;
+    private LocalDateTime updateTime;
+
+    public static BoardResponseDTO from(Board board) {
+        return new BoardResponseDTO(
+                board.getBoardNo(),
+                board.getBoardTitle(),
+                board.getBoardContent(),
+                board.getMemberNo().getMemberName(),
+                board.getUpdateTime()
+        );
+    }
+}

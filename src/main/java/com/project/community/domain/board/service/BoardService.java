@@ -1,5 +1,6 @@
 package com.project.community.domain.board.service;
 
+import com.project.community.domain.board.dto.BoardResponseDTO;
 import com.project.community.domain.board.entity.Board;
 import com.project.community.domain.board.repository.BoardRepository;
 import java.util.List;
@@ -11,11 +12,13 @@ import org.springframework.stereotype.Service;
 public class BoardService {
     private final BoardRepository boardRepository;
 
-    public List<Board> searchBoardsByBoardTitle(String title) {
-        return boardRepository.findByBoardTitle(title);
+    public List<BoardResponseDTO> searchBoardsByBoardTitle(String title) {
+        List<Board> boards = boardRepository.findByBoardTitle(title);
+        return boards.stream().map(BoardResponseDTO::from).toList();
     }
 
-    public List<Board> searchBoardsByMemberName(String memberName) {
-        return boardRepository.findByMemberNoMemberName(memberName);
+    public List<BoardResponseDTO> searchBoardsByMemberName(String memberName) {
+        List<Board> boards = boardRepository.findByMemberNoMemberName(memberName);
+        return boards.stream().map(BoardResponseDTO::from).toList();
     }
 }

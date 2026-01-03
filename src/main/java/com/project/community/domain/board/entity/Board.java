@@ -1,5 +1,7 @@
 package com.project.community.domain.board.entity;
 
+import com.project.community.domain.BaseEntity;
+import com.project.community.domain.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,8 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import com.project.community.domain.BaseEntity;
-import com.project.community.domain.member.entity.Member;
 
 @Entity
 @NoArgsConstructor
@@ -17,11 +17,8 @@ public class Board extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardNo;
-
     private String boardTitle;
-
     private String boardContent;
-
     @ManyToOne
     private Member memberNo;
 }
