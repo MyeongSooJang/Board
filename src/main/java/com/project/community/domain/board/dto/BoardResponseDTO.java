@@ -17,7 +17,7 @@ public class BoardResponseDTO {
                 board.getBoardNo(),
                 board.getBoardTitle(),
                 board.getBoardContent(),
-                board.getMemberNo().getMemberName(),
+                board.getMember().getMemberName(),
                 board.getUpdateTime()
         );
     }

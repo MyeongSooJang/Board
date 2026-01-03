@@ -1,11 +1,15 @@
 package com.project.community.domain.board.controller;
 
+import com.project.community.domain.board.dto.BoardCreateRequestDTO;
 import com.project.community.domain.board.dto.BoardResponseDTO;
 import com.project.community.domain.board.service.BoardService;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +35,16 @@ public class BoardController {
         return ResponseEntity.ok(boardService.searchBoardsByMemberName(memberName));
     }
 
+    @GetMapping
+    public ResponseEntity<List<BoardResponseDTO>> searchBoardsByKeyWord(String boardContent) {
+        return ResponseEntity.ok(boardService.searchBoardsByKeyWord(boardContent));
+    }
 
+    @PostMapping
+    public ResponseEntity<URI> createBoard(@RequestBody BoardCreateRequestDTO board) {
+        Long boardNo = boardService.createBoard(board);
+        URI location = URI.create("/boards/" + boardNo);
+        return ResponseEntity.created(location).body(location);
+    }
 
 }

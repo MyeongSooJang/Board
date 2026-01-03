@@ -1,8 +1,10 @@
 package com.project.community.domain.board.entity;
 
 import com.project.community.domain.BaseEntity;
+import com.project.community.domain.board.dto.BoardCreateRequestDTO;
 import com.project.community.domain.member.entity.Member;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,6 +21,17 @@ public class Board extends BaseEntity {
     private Long boardNo;
     private String boardTitle;
     private String boardContent;
-    @ManyToOne
-    private Member memberNo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
+
+    public Board(String boardTitle, String boardContent, Member member) {
+        this.boardTitle = boardTitle;
+        this.boardContent = boardContent;
+        this.member = member;
+    }
+
+    public static Board createNewBoard(BoardCreateRequestDTO board, Member member) {
+        return new Board(board.getBoardTitle(), board.getBoardContent(), member);
+    }
+
 }
