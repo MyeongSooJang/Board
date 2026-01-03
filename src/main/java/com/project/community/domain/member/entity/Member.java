@@ -1,4 +1,4 @@
-package com.project.board.domain.member.entity;
+package com.project.community.domain.member.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import com.project.board.domain.BaseEntity;
+import com.project.community.domain.BaseEntity;
 
 @Entity
 @Getter
