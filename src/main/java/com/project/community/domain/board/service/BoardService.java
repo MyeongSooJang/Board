@@ -26,4 +26,9 @@ public class BoardService {
         List<Board> boards = boardRepository.findByMemberNoMemberName(memberName);
         return boards.stream().map(BoardResponseDTO::from).toList();
     }
+
+    public List<BoardResponseDTO> searchBoardsByKeyWord(String keyWord) {
+        List<Board> boards = boardRepository.searchBoardsByKeyWord(keyWord);
+        return  boards.stream().map(BoardResponseDTO::from).toList();
+    }
 }
