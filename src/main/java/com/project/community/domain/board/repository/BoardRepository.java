@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByOrderByUpdateTimeDesc();
     List<Board> findByBoardTitleContaining(String boardTitle);
-    List<Board> findByMemberNoMemberName(String memberName);
+    List<Board> findByMemberMemberName(String memberName);
 
     @Query("""
               SELECT b

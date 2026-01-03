@@ -10,9 +10,7 @@ import com.project.community.domain.member.entity.Member;
 import com.project.community.domain.member.repository.MemberRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,7 +30,7 @@ public class BoardService {
     }
 
     public List<BoardResponseDTO> searchBoardsByMemberName(String memberName) {
-        List<Board> boards = boardRepository.findByMemberNoMemberName(memberName);
+        List<Board> boards = boardRepository.findByMemberMemberName(memberName);
         return boards.stream().map(BoardResponseDTO::from).toList();
     }
 
