@@ -21,21 +21,25 @@ public class BoardService {
 
     public List<BoardResponseDTO> searchAll() {
         List<Board> boards = boardRepository.findAllByOrderByUpdateTimeDesc();
-        return boards.stream().map(BoardResponseDTO::from).toList();
+        return converToDTOList(boards);
     }
 
     public List<BoardResponseDTO> searchBoardsByBoardTitle(String title) {
-        List<Board> boards = boardRepository.findByBoardTitleContaining(title);
-        return boards.stream().map(BoardResponseDTO::from).toList();
+        List<Board> boards = boardRepository.findByBoardTitleContainingOrderByUpdateTimeDesc(title);
+        return converToDTOList(boards);
     }
 
     public List<BoardResponseDTO> searchBoardsByMemberName(String memberName) {
-        List<Board> boards = boardRepository.findByMemberMemberName(memberName);
-        return boards.stream().map(BoardResponseDTO::from).toList();
+        List<Board> boards = boardRepository.findByMemberMemberNameOrderByUpdateTimeDesc(memberName);
+        return converToDTOList(boards);
     }
 
-    public List<BoardResponseDTO> searchBoardsByKeyWord(String keyWord) {
-        List<Board> boards = boardRepository.searchBoardsByKeyWord(keyWord);
+    public List<BoardResponseDTO> searchBoardsByKeyWord(String keyword) {
+        List<Board> boards = boardRepository.findByKeywordInTitleOrContent(keyword);
+        return converToDTOList(boards);
+    }
+
+    private static List<BoardResponseDTO> converToDTOList(List<Board> boards) {
         return boards.stream().map(BoardResponseDTO::from).toList();
     }
 
@@ -44,4 +48,5 @@ public class BoardService {
                 .orElseThrow(() -> new NoSuchElementException("회원번호에 해당하는 회원이 존재하지 않습니다"));
         return boardRepository.save(createNewBoard(board, member)).getBoardNo();
     }
+
 }

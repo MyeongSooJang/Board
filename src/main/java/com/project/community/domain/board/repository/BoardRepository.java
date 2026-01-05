@@ -10,14 +10,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByOrderByUpdateTimeDesc();
-    List<Board> findByBoardTitleContaining(String boardTitle);
-    List<Board> findByMemberMemberName(String memberName);
+    List<Board> findByBoardTitleContainingOrderByUpdateTimeDesc(String boardTitle);
+    List<Board> findByMemberMemberNameOrderByUpdateTimeDesc(String memberName);
 
     @Query("""
               SELECT b
               FROM Board AS b
-              WHERE b.boardContent LIKE CONCAT ('%',:keyWord, '%') OR
-                    b.boardTitle LIKE CONCAT ('%', :keyWord, '%')
+              WHERE b.boardContent LIKE CONCAT ('%',:keyword, '%') OR
+                    b.boardTitle LIKE CONCAT ('%', :keyword, '%')
+              ORDER BY b.updateTime DESC
             """)
-    List<Board> searchBoardsByKeyWord(@Param("keyWord") String keyWord);
+    List<Board> findByKeywordInTitleOrContent(@Param("keyword") String keyword);
 }

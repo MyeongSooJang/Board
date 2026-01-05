@@ -3,8 +3,10 @@ package com.project.community.domain.board.dto;
 import com.project.community.domain.board.entity.Board;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class BoardResponseDTO {
     private Long boardNo;
     private String boardTitle;
