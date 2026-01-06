@@ -10,6 +10,8 @@ import com.project.community.domain.member.repository.MemberRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +21,9 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public List<BoardResponseDTO> searchAll() {
-        List<Board> boards = boardRepository.findAllByOrderByUpdateTimeDesc();
-        return converToDTOList(boards);
+    public Page<BoardResponseDTO> searchAll(Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByOrderByUpdateTimeDesc(pageable);
+        return boards.map(BoardResponseDTO::from);
     }
 
     public List<BoardResponseDTO> searchBoardsByBoardTitle(String title) {
