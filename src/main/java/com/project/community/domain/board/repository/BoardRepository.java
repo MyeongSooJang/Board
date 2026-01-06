@@ -21,4 +21,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             """)
     List<Board> findByKeywordInTitleOrContent(@Param("keyword") String keyword);
     Board findByBoardNo(Long boardNo);
+    Board updateBoard(Board board);
 }

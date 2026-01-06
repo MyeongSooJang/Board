@@ -2,6 +2,7 @@ package com.project.community.domain.board.controller;
 
 import com.project.community.domain.board.dto.BoardCreateRequestDTO;
 import com.project.community.domain.board.dto.BoardResponseDTO;
+import com.project.community.domain.board.dto.BoardUpdateRequestDTO;
 import com.project.community.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,5 +74,11 @@ public class BoardController {
         Long boardNo = boardService.createBoard(board);
         URI location = URI.create("/boards/" + boardNo);
         return ResponseEntity.created(location).body(location);
+    }
+
+    @PutMapping("/{boardNo}")
+    public ResponseEntity<Void> updateBoard(@PathVariable Long boardNo,
+                                            @RequestBody BoardUpdateRequestDTO requestDTO ) {
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,9 +1,8 @@
 package com.project.community.domain.board.service;
 
-import static com.project.community.domain.board.entity.Board.createNewBoard;
-
 import com.project.community.domain.board.dto.BoardCreateRequestDTO;
 import com.project.community.domain.board.dto.BoardResponseDTO;
+import com.project.community.domain.board.dto.BoardUpdateRequestDTO;
 import com.project.community.domain.board.entity.Board;
 import com.project.community.domain.board.repository.BoardRepository;
 import com.project.community.domain.member.entity.Member;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,16 +45,28 @@ public class BoardService {
 
     public BoardResponseDTO searchByBoardNo(Long boardNo) {
         Board board = boardRepository.findByBoardNo(boardNo);
+        validBoard(board);
+        return BoardResponseDTO.from(board);
+    }
+
+    private static void validBoard(Board board) {
         if (board == null) {
             throw new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다");
         }
-        return BoardResponseDTO.from(board);
     }
 
     public Long createBoard(BoardCreateRequestDTO board) {
         Member member = memberRepository.findByMemberNo(board.getMemberNo())
                 .orElseThrow(() -> new NoSuchElementException("회원번호에 해당하는 회원이 존재하지 않습니다"));
-        return boardRepository.save(createNewBoard(board, member)).getBoardNo();
+        return boardRepository.save(Board.createBoard(board, member)).getBoardNo();
+    }
+
+    @Transactional
+    public BoardResponseDTO updateBoard(Long boardNo, BoardUpdateRequestDTO boardUpdateRequestDTO) {
+        Board board = boardRepository.findByBoardNo(boardNo);
+        validBoard(board);
+        board.updateBoard(boardUpdateRequestDTO);
+        return BoardResponseDTO.from(board);
     }
 
 }
