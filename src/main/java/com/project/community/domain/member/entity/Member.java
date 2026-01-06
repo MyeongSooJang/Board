@@ -20,7 +20,7 @@ public class Member extends BaseEntity {
     private Long memberNo;
 
     @Column(unique = true)
-    private Long memberId;
+    private String memberId;
 
     private String memberName;
 

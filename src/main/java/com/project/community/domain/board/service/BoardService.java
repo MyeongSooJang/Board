@@ -31,6 +31,7 @@ public class BoardService {
 
     public List<BoardResponseDTO> searchBoardsByMemberName(String memberName) {
         List<Board> boards = boardRepository.findByMemberMemberNameOrderByUpdateTimeDesc(memberName);
+
         return converToDTOList(boards);
     }
 
@@ -55,6 +56,7 @@ public class BoardService {
         }
     }
 
+    @Transactional
     public Long createBoard(BoardCreateRequestDTO board) {
         Member member = memberRepository.findByMemberNo(board.getMemberNo())
                 .orElseThrow(() -> new NoSuchElementException("회원번호에 해당하는 회원이 존재하지 않습니다"));
@@ -67,6 +69,13 @@ public class BoardService {
         validBoard(board);
         board.updateBoard(boardUpdateRequestDTO);
         return BoardResponseDTO.from(board);
+    }
+
+    @Transactional
+    public void deleteBoard(Long boardNo) {
+        Board board = boardRepository.findByBoardNo(boardNo);
+        validBoard(board);
+        boardRepository.delete(board);
     }
 
 }
