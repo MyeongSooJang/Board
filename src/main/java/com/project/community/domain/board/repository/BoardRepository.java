@@ -12,7 +12,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByOrderByUpdateTimeDesc();
     List<Board> findByBoardTitleContainingOrderByUpdateTimeDesc(String boardTitle);
     List<Board> findByMemberMemberNameOrderByUpdateTimeDesc(String memberName);
-
     @Query("""
               SELECT b
               FROM Board AS b
@@ -21,4 +20,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
               ORDER BY b.updateTime DESC
             """)
     List<Board> findByKeywordInTitleOrContent(@Param("keyword") String keyword);
+    Board findByBoardNo(Long boardNo);
 }

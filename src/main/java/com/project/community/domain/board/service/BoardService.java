@@ -43,6 +43,14 @@ public class BoardService {
         return boards.stream().map(BoardResponseDTO::from).toList();
     }
 
+    public BoardResponseDTO searchByBoardNo(Long boardNo) {
+        Board board = boardRepository.findByBoardNo(boardNo);
+        if (board == null) {
+            throw new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다");
+        }
+        return BoardResponseDTO.from(board);
+    }
+
     public Long createBoard(BoardCreateRequestDTO board) {
         Member member = memberRepository.findByMemberNo(board.getMemberNo())
                 .orElseThrow(() -> new NoSuchElementException("회원번호에 해당하는 회원이 존재하지 않습니다"));
