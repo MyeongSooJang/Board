@@ -47,15 +47,9 @@ public class BoardService {
     }
 
     public BoardResponseDTO searchByBoardNo(Long boardNo) {
-        Board board = boardRepository.findByBoardNo(boardNo);
-        validBoard(board);
+        Board board = boardRepository.findByBoardNo(boardNo)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
         return BoardResponseDTO.from(board);
-    }
-
-    private static void validBoard(Board board) {
-        if (board == null) {
-            throw new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다");
-        }
     }
 
     @Transactional
@@ -67,16 +61,16 @@ public class BoardService {
 
     @Transactional
     public BoardResponseDTO updateBoard(Long boardNo, BoardUpdateRequestDTO boardUpdateRequestDTO) {
-        Board board = boardRepository.findByBoardNo(boardNo);
-        validBoard(board);
+        Board board = boardRepository.findByBoardNo(boardNo)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
         board.updateBoard(boardUpdateRequestDTO);
         return BoardResponseDTO.from(board);
     }
 
     @Transactional
     public void deleteBoard(Long boardNo) {
-        Board board = boardRepository.findByBoardNo(boardNo);
-        validBoard(board);
+        Board board = boardRepository.findByBoardNo(boardNo)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
         boardRepository.delete(board);
     }
 
