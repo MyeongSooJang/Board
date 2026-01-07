@@ -30,7 +30,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<CommentResponseDTO> createComment(@PathVariable("boardNo") String boardNo,
+    public ResponseEntity<CommentResponseDTO> createComment(@PathVariable("boardNo") Long boardNo,
                                                             @RequestBody CommentCreateRequestDTO comment) {
         CommentResponseDTO response = commentService.createComment(comment);
         return ResponseEntity.created(
@@ -45,9 +45,9 @@ public class CommentController {
         return  ResponseEntity.ok(commentService.updateComment(commentNo, comment));
     }
 
-//    @DeleteMapping("/{commentNo}")
-//    public ResponseEntity<CommentResponseDTO> deleteComment(@PathVariable("boardNo") Long boardNo,
-//                                                            @PathVariable("commentNo") Long commentNo) {
-//
-//    }
+    @DeleteMapping("/{commentNo}")
+    public ResponseEntity<Void> deleteComment(@PathVariable("commentNo") Long commentNo) {
+        commentService.deleteComment(commentNo);
+        return ResponseEntity.ok().build();
+    }
 }

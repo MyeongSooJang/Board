@@ -58,4 +58,8 @@ public class CommentService {
         return commentRepository.findByCommentNo(commentNo)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 대슥ㄹ 번호의 댓글이 존재하지 않습니다"));
     }
+
+    public void deleteComment(Long commentNo) {
+        commentRepository.delete(searchComment(commentNo));
+    }
 }
