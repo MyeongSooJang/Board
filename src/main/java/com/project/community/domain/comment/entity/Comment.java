@@ -3,6 +3,7 @@ package com.project.community.domain.comment.entity;
 import com.project.community.domain.BaseEntity;
 import com.project.community.domain.board.entity.Board;
 import com.project.community.domain.comment.dto.CommentCreateRequestDTO;
+import com.project.community.domain.comment.dto.CommentUpdateRequestDTO;
 import com.project.community.domain.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,5 +41,10 @@ public class Comment extends BaseEntity {
 
     public static Comment createComment(CommentCreateRequestDTO dto, Board board, Member member) {
         return new Comment(dto.getCommentParentNo(), dto.getCommentContent(), board, member);
+    }
+
+    public Comment updateComment(CommentUpdateRequestDTO dto) {
+        this.commentContent = dto.getCommentContent();
+        return this;
     }
 }
