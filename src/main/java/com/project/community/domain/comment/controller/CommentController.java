@@ -32,7 +32,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<CommentResponseDTO> createComment(@PathVariable("boardNo") Long boardNo,
                                                             @RequestBody CommentCreateRequestDTO comment) {
-        CommentResponseDTO response = commentService.createComment(comment);
+        CommentResponseDTO response = commentService.createComment(boardNo, comment);
         return ResponseEntity.created(
                 URI.create("/comments/" + response.getCommentNo())
         ).body(response);
@@ -42,7 +42,7 @@ public class CommentController {
     public ResponseEntity<CommentResponseDTO> updateComment(
             @PathVariable("commentNo") Long commentNo,
             @RequestBody CommentUpdateRequestDTO comment) {
-        return  ResponseEntity.ok(commentService.updateComment(commentNo, comment));
+        return ResponseEntity.ok(commentService.updateComment(commentNo, comment));
     }
 
     @DeleteMapping("/{commentNo}")

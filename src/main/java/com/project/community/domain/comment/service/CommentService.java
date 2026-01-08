@@ -28,20 +28,15 @@ public class CommentService {
         return comments.stream().map(CommentResponseDTO::from).toList();
     }
 
-    public CommentResponseDTO createComment(CommentCreateRequestDTO comment) {
+    public CommentResponseDTO createComment(Long boardNo, CommentCreateRequestDTO comment) {
         Comment saved = commentRepository.save(
-                Comment.createComment(comment, searchBoard(comment), searchMember(comment)));
+                Comment.createComment(comment, searchBoard(boardNo), searchMember(comment)));
         return CommentResponseDTO.from(saved);
     }
 
     private Member searchMember(CommentCreateRequestDTO comment) {
         return memberRepository.findByMemberNo(comment.getMemberNo())
                 .orElseThrow(() -> new NoSuchElementException("해당하는 회원 번호의 회원이 존재하지 않습니다"));
-    }
-
-    private Board searchBoard(CommentCreateRequestDTO comment) {
-        return boardRepository.findByBoardNo(comment.getBoardNo())
-                .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
     }
 
     private Board searchBoard(Long boardNo) {
