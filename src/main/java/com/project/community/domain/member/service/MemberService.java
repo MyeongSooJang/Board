@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public MemberResponseDTO enrollMember(MemberCreateRequestDTO request) {
-        return MemberResponseDTO.from(memberRepository.save(createMember(request)));
+        String pwd = encodePassword(request.getMemberPwd());
+        return MemberResponseDTO.from(memberRepository.save(createMember(pwd,request)));
     }
 
     public MemberResponseDTO findByMemberNo(Long memberNo) {
@@ -40,18 +43,22 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO updateMember (Long memberNo, MemberUpdateRequestDTO request) {
-        Member updated = searchByMemberNo(memberNo).updateMember(request);
+        String encodingPassword = encodePassword(request.getMemberPwd());
+        Member updated = searchByMemberNo(memberNo).updateMember(encodingPassword, request);
         return MemberResponseDTO.from(updated);
     }
 
     @Transactional
     public void deleteMember (Long memberNo) {
-        Member member = searchByMemberNo(memberNo);
-        memberRepository.delete(member);
+        memberRepository.delete(searchByMemberNo(memberNo));
     }
 
     private Member searchByMemberNo(Long memberNo) {
         return memberRepository.findByMemberNo(memberNo)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 번호의 회원이 존재하지 않습니다"));
+    }
+
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
     }
 }

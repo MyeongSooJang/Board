@@ -35,7 +35,7 @@ public class Member extends BaseEntity {
 
     private String memberPhone;
 
-    private String memberRole;
+    private String memberRole = "GUEST";
 
     public Member(String memberId,
                   String memberName,
@@ -53,19 +53,19 @@ public class Member extends BaseEntity {
         this.memberRole = memberRole;
     }
 
-    public static Member createMember(MemberCreateRequestDTO request) {
+    public static Member createMember(String encodingPassword, MemberCreateRequestDTO request) {
         return new Member(request.getMemberId(),
-                          request.getMemberName(),
-                          request.getMemberPwd(),
-                          request.getMemberAge(),
-                          request.getMemberEmail(),
-                          request.getMemberPhone(),
-                          request.getMemberRole());
+                request.getMemberName(),
+                encodingPassword,
+                request.getMemberAge(),
+                request.getMemberEmail(),
+                request.getMemberPhone(),
+                request.getMemberRole());
     }
 
-    public Member updateMember(MemberUpdateRequestDTO request) {
+    public Member updateMember(String encodingPassword, MemberUpdateRequestDTO request) {
         this.memberName = request.getMemberName();
-        this.memberPwd = request.getMemberPwd();
+        this.memberPwd = encodingPassword;
         this.memberAge = request.getMemberAge();
         this.memberPhone = request.getMemberPhone();
         return this;

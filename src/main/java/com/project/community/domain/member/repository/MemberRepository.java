@@ -12,4 +12,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMemberNo(Long memberNo);
     Optional<Member> findByMemberId(String memberId);
     Page<Member> findAllOrderByCreateTime(Pageable pageable);
+    Optional<Member> findByMemberEmail(String memberEmail);
 }
