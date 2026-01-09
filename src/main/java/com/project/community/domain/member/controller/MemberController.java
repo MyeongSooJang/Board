@@ -4,7 +4,6 @@ import com.project.community.domain.member.dto.MemberCreateRequestDTO;
 import com.project.community.domain.member.dto.MemberResponseDTO;
 import com.project.community.domain.member.dto.MemberUpdateRequestDTO;
 import com.project.community.domain.member.service.MemberService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
