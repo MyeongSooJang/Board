@@ -12,12 +12,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
 
+    @Transactional
     public MemberResponseDTO enrollMember(MemberCreateRequestDTO request) {
         return MemberResponseDTO.from(memberRepository.save(createMember(request)));
     }
@@ -33,14 +35,16 @@ public class MemberService {
     }
 
     public Page<MemberResponseDTO> findAll(Pageable pageable){
-        return memberRepository.findAll(pageable).map(MemberResponseDTO::from);
+        return memberRepository.findAllOrderByCreateTime(pageable).map(MemberResponseDTO::from);
     }
 
+    @Transactional
     public MemberResponseDTO updateMember (Long memberNo, MemberUpdateRequestDTO request) {
         Member updated = searchByMemberNo(memberNo).updateMember(request);
         return MemberResponseDTO.from(updated);
     }
 
+    @Transactional
     public void deleteMember (Long memberNo) {
         Member member = searchByMemberNo(memberNo);
         memberRepository.delete(member);

@@ -68,5 +68,6 @@ public class Member extends BaseEntity {
         this.memberPwd = request.getMemberPwd();
         this.memberAge = request.getMemberAge();
         this.memberPhone = request.getMemberPhone();
+        return this;
     }
 }
