@@ -56,6 +56,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public Long getAccessTokenExpiration() {
+        return accessTokenExpiration / 1000;
+    }
+
     public Date refreshTokenExpiration() {
         return new Date(System.currentTimeMillis() + refreshTokenExpiration);
     }

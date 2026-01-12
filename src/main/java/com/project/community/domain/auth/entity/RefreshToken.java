@@ -24,9 +24,13 @@ public class RefreshToken {
     private String refreshToken;
     private Date expireDate;
 
-    public RefreshToken(LoginRequestDTO request, String refreshToken, Date expireTime) {
-        this.memberId = request.getMemberId();
+    public RefreshToken(String memberId, String refreshToken, Date expireDate) {
+        this.memberId = memberId;
         this.refreshToken = refreshToken;
-        this.expireDate =  expireTime);
+        this.expireDate =  expireDate;
+    }
+
+    public static RefreshToken createRefreshToken(String memberId, String refreshToken, Date expireDate) {
+        return new RefreshToken(memberId, refreshToken, expireDate);
     }
 }
