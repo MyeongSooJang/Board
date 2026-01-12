@@ -1,6 +1,6 @@
-package com.project.community.domain.member.repository;
+package com.project.community.domain.auth.repository;
 
-import com.project.community.domain.member.entity.RefreshToken;
+import com.project.community.domain.auth.entity.RefreshToken;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

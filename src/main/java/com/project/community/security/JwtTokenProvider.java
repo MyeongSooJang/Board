@@ -56,7 +56,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    private Date refreshTokenExpiration() {
+    public Date refreshTokenExpiration() {
         return new Date(System.currentTimeMillis() + refreshTokenExpiration);
     }
 

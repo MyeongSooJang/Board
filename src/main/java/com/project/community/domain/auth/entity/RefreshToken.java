@@ -1,13 +1,16 @@
-package com.project.community.domain.member.entity;
+package com.project.community.domain.auth.entity;
 
+import com.project.community.domain.auth.dto.LoginRequestDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @NoArgsConstructor
@@ -19,5 +22,11 @@ public class RefreshToken {
     private Long tokenNo;
     private String memberId;
     private String refreshToken;
-    private LocalDateTime expireTime;
+    private Date expireDate;
+
+    public RefreshToken(LoginRequestDTO request, String refreshToken, Date expireTime) {
+        this.memberId = request.getMemberId();
+        this.refreshToken = refreshToken;
+        this.expireDate =  expireTime);
+    }
 }

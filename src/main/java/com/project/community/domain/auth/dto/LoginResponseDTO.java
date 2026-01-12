@@ -1,9 +1,9 @@
-package com.project.community.domain.member.dto;
+package com.project.community.domain.auth.dto;
 
 import lombok.Getter;
 
 @Getter
-public class RefreshTokenResponseDTO {
+public class LoginResponseDTO {
     private String accessToken;
     private String refreshToken;
     private String tokenType;

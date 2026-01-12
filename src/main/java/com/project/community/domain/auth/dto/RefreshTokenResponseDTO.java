@@ -1,10 +1,9 @@
-package com.project.community.domain.member.dto;
+package com.project.community.domain.auth.dto;
 
-import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
-public class LoginResponseDTO {
+public class RefreshTokenResponseDTO {
     private String accessToken;
     private String refreshToken;
     private String tokenType;
