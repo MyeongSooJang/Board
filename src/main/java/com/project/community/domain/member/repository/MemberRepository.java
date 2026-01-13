@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMemberNo(Long memberNo);
     Optional<Member> findByMemberId(String memberId);
-    Page<Member> findAllOrderByCreateTime(Pageable pageable);
+    Page<Member> findAllByOrderByCreateTimeDesc(Pageable pageable);
     Optional<Member> findByMemberEmail(String memberEmail);
 }

@@ -38,7 +38,7 @@ public class MemberService {
     }
 
     public Page<MemberResponseDTO> findAll(Pageable pageable){
-        return memberRepository.findAllOrderByCreateTime(pageable).map(MemberResponseDTO::from);
+        return memberRepository.findAllByOrderByCreateTimeDesc(pageable).map(MemberResponseDTO::from);
     }
 
     @Transactional
