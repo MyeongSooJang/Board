@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/member").permitAll()
                         .requestMatchers(HttpMethod.GET, "/boards", "/boards/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/**/**/comment").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/*/comment").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -37,7 +37,7 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
-    @PostMapping
+    @PostMapping()
     @Operation(summary = "댓글 작성",
             description = "게시글에 대한 댓글 작성")
     public ResponseEntity<CommentResponseDTO> createComment(
@@ -55,6 +55,8 @@ public class CommentController {
     @Operation(summary = "댓글 수정",
             description = "해당하는 댓글번호 댓글 수정")
     public ResponseEntity<CommentResponseDTO> updateComment(
+            @Parameter(description = "게시글 번호")
+            @PathVariable("boardNo") Long boardNo,
             @Parameter(description = "댓글 번호")
             @PathVariable("commentNo") Long commentNo,
             @Parameter(description = "수정할 댓글 내용")
@@ -66,6 +68,8 @@ public class CommentController {
     @Operation(summary = "댓글 삭제",
             description = "해당하는 댓글번호 댓글 삭제")
     public ResponseEntity<Void> deleteComment(
+            @Parameter(description = "게시글 번호")
+            @PathVariable("boardNo") Long boardNo,
             @Parameter(description = "댓글 번호")
             @PathVariable("commentNo") Long commentNo) {
         commentService.deleteComment(commentNo);

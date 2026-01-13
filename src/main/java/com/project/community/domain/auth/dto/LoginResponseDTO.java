@@ -8,11 +8,13 @@ public class LoginResponseDTO {
     private String refreshToken;
     private String tokenType =  "Bearer";
     private Long expiresIn;
+    private String memberId;
 
-    public LoginResponseDTO(String accessToken, String refreshToken,  Long expiresIn) {
+    public LoginResponseDTO(String accessToken, String refreshToken, Long expiresIn, String memberId) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiresIn = expiresIn;
+        this.memberId = memberId;
     }
 
 }

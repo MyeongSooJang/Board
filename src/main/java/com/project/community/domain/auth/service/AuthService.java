@@ -41,7 +41,8 @@ public class AuthService {
         return new LoginResponseDTO(
                 accessToken,
                 refreshToken,
-                jwtTokenProvider.getAccessTokenExpiration());
+                jwtTokenProvider.getAccessTokenExpiration(),
+                member.getMemberId());
     }
 
     private void checkPassword(LoginRequestDTO request, Member member) {
