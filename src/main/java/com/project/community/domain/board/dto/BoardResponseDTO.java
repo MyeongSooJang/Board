@@ -12,6 +12,7 @@ public class BoardResponseDTO {
     private String boardTitle;
     private String boardContent;
     private String memberName;
+    private String memberId;
     private LocalDateTime updateTime;
 
     public static BoardResponseDTO from(Board board) {
@@ -20,6 +21,7 @@ public class BoardResponseDTO {
                 board.getBoardTitle(),
                 board.getBoardContent(),
                 board.getMember().getMemberName(),
+                board.getMember().getMemberId(),
                 board.getUpdateTime()
         );
     }

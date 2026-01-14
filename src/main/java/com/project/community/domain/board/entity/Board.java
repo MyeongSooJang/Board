@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class Board extends BaseEntity {
     private String boardTitle;
     private String boardContent;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_no")
     private Member member;
 
     public Board(String boardTitle, String boardContent, Member member) {

@@ -11,12 +11,16 @@ public class CommentResponseDTO {
     private Long commentNo;
     private String commentContent;
     private Long commentParentNo;
+    private String memberName;
+    private String memberId;
     private LocalDateTime createdTime;
 
     public static CommentResponseDTO from(Comment comment) {
         return new CommentResponseDTO(comment.getCommentNo(),
                 comment.getCommentContent(),
                 comment.getCommentParentNo(),
+                comment.getMember().getMemberName(),
+                comment.getMember().getMemberId(),
                 comment.getCreateTime());
     }
 }
