@@ -39,7 +39,7 @@ public class BoardController {
             description = "최신순으로 모든 게시물을 조회합니다")
     public ResponseEntity<Page<BoardResponseDTO>> findAll(
             @ParameterObject
-            @PageableDefault(size = 2, sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 10, sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(boardService.searchAll(pageable));
     }
 

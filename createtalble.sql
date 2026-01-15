@@ -57,5 +57,6 @@ CREATE TABLE refresh_token
     token_no      BIGINT       NOT NULL AUTO_INCREMENT,
     member_id     VARCHAR(255) NOT NULL,
     refresh_token VARCHAR(255) NOT NULL,
-    expire_date   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+    expire_date   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (token_no)
 );

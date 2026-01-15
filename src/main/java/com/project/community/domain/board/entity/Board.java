@@ -23,6 +23,7 @@ public class Board extends BaseEntity {
     private Long boardNo;
     private String boardTitle;
     private String boardContent;
+    private Integer boardViewCount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_no")
     private Member member;
