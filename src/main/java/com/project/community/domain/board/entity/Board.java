@@ -23,7 +23,7 @@ public class Board extends BaseEntity {
     private Long boardNo;
     private String boardTitle;
     private String boardContent;
-    private Integer boardViewCount;
+    private Integer boardViewCount = 0;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_no")
     private Member member;
@@ -41,6 +41,10 @@ public class Board extends BaseEntity {
     public void updateBoard(BoardUpdateRequestDTO updateBoard) {
         boardTitle = updateBoard.getBoardTitle();
         boardContent = updateBoard.getBoardContent();
+    }
+
+    public void increaseBoardViewCount() {
+        boardViewCount++;
     }
 
 }

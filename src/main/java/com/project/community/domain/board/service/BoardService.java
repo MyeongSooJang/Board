@@ -49,6 +49,7 @@ public class BoardService {
     public BoardResponseDTO searchByBoardNo(Long boardNo) {
         Board board = boardRepository.findByBoardNo(boardNo)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
+        board.increaseBoardViewCount();
         return BoardResponseDTO.from(board);
     }
 

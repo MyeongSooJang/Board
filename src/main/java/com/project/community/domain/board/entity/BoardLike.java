@@ -23,5 +23,4 @@ public class BoardLike {
     private Long likeNo;
     private Long memberNo;
     private Long boardNo;
-
 }
