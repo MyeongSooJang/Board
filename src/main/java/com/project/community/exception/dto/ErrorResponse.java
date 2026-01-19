@@ -12,5 +12,5 @@ public class ErrorResponse {
     private String message;
     private int httpStatus;
     private LocalDateTime timestamp;
-    private Map<String, Object> errors;
+    private Map<String, String> errors;
 }

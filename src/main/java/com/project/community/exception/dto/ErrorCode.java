@@ -16,6 +16,20 @@ public enum ErrorCode {
     INVALID_PHONE(400, "휴대폰 형식: 010-1234-5678"),
     MISSING_REQUIRED_FIELDS(400, "필수 필드가 누락되었습니다"),
 
+    // Unauthorized 401
+    UNAUTHORIZED(401, "인증이 필요합니다"),
+    INVALID_CREDENTIALS(401, "아이디 또는 비밀번호가 일치하지 않습니다"),
+    TOKEN_EXPIRED(401, "토큰이 만료되었습니다"),
+    INVALID_TOKEN(401, "유효하지 않은 토큰입니다"),
+    MALFORMED_TOKEN(401, "잘못된 형식의 토큰입니다"),
+    EMPTY_TOKEN(401, "토큰이 없습니다"),
+
+
+    // 403 Forbidden
+    FORBIDDEN(403, "권한이 없습니다"),
+
+
+
     // 비지니스 로직 오류 409
     DUPLICATE_MEMBER_ID(409, "이미 존재하는 아이디입니다"),
     DUPLICATE_EMAIL(409, "이미 존재하는 이메일입니다"),
