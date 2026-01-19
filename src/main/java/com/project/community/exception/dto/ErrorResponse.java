@@ -13,4 +13,14 @@ public class ErrorResponse {
     private int httpStatus;
     private LocalDateTime timestamp;
     private Map<String, String> errors;
+
+    public ErrorResponse(ErrorCode errorCode) {
+        this(
+                errorCode.name(),
+                errorCode.getMessage(),
+                errorCode.getHttpStatus(),
+                LocalDateTime.now(),
+                null
+        );
+    }
 }
