@@ -13,4 +13,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMemberId(String memberId);
     Page<Member> findAllByOrderByCreateTimeDesc(Pageable pageable);
     Optional<Member> findByMemberEmail(String memberEmail);
+    boolean existsByMemberId(String memberId);
+    boolean existsByMemberEmail(String memberEmail);
+    boolean existsByMemberPhone(String memberPhone);
 }

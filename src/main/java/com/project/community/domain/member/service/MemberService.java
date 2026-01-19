@@ -7,6 +7,8 @@ import com.project.community.domain.member.dto.MemberResponseDTO;
 import com.project.community.domain.member.dto.MemberUpdateRequestDTO;
 import com.project.community.domain.member.entity.Member;
 import com.project.community.domain.member.repository.MemberRepository;
+import com.project.community.exception.DuplicateException;
+import com.project.community.exception.dto.ErrorCode;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,8 +25,29 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO enrollMember(MemberCreateRequestDTO request) {
+        validateDuplicateId(request);
+        validateDuplicatePhone(request);
+        validateDuplicateEmail(request);
         String pwd = encodePassword(request.getMemberPwd());
-        return MemberResponseDTO.from(memberRepository.save(createMember(pwd,request)));
+        return MemberResponseDTO.from(memberRepository.save(createMember(pwd, request)));
+    }
+
+    private void validateDuplicateEmail(MemberCreateRequestDTO request) {
+        if (memberRepository.existsByMemberEmail(request.getMemberEmail())) {
+            throw new DuplicateException(ErrorCode.DUPLICATE_EMAIL);
+        }
+    }
+
+    private void validateDuplicatePhone(MemberCreateRequestDTO request) {
+        if (memberRepository.existsByMemberPhone(request.getMemberPhone())) {
+            throw new DuplicateException(ErrorCode.DUPLICATE_PHONE);
+        }
+    }
+
+    private void validateDuplicateId(MemberCreateRequestDTO request) {
+        if (memberRepository.existsByMemberId(request.getMemberId())) {
+            throw new DuplicateException(ErrorCode.DUPLICATE_MEMBER_ID);
+        }
     }
 
     public MemberResponseDTO findByMemberNo(Long memberNo) {
@@ -37,19 +60,19 @@ public class MemberService {
         return MemberResponseDTO.from(member);
     }
 
-    public Page<MemberResponseDTO> findAll(Pageable pageable){
+    public Page<MemberResponseDTO> findAll(Pageable pageable) {
         return memberRepository.findAllByOrderByCreateTimeDesc(pageable).map(MemberResponseDTO::from);
     }
 
     @Transactional
-    public MemberResponseDTO updateMember (Long memberNo, MemberUpdateRequestDTO request) {
+    public MemberResponseDTO updateMember(Long memberNo, MemberUpdateRequestDTO request) {
         String encodingPassword = encodePassword(request.getMemberPwd());
         Member updated = searchByMemberNo(memberNo).updateMember(encodingPassword, request);
         return MemberResponseDTO.from(updated);
     }
 
     @Transactional
-    public void deleteMember (Long memberNo) {
+    public void deleteMember(Long memberNo) {
         memberRepository.delete(searchByMemberNo(memberNo));
     }
 
