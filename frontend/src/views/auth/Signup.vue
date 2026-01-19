@@ -17,6 +17,7 @@ const formData = ref({
 })
 
 const error = ref('')
+const fieldErrors = ref({})
 const isLoading = ref(false)
 
 const validateForm = () => {
@@ -34,15 +35,21 @@ const validateForm = () => {
   return ''
 }
 
+const clearFieldError = (fieldName) => {
+  delete fieldErrors.value[fieldName]
+}
+
 const handleSignup = async () => {
   const validationError = validateForm()
   if (validationError) {
     error.value = validationError
+    fieldErrors.value = {}
     return
   }
 
   isLoading.value = true
   error.value = ''
+  fieldErrors.value = {}
 
   try {
     await memberApi.signup(
@@ -58,7 +65,16 @@ const handleSignup = async () => {
     alert('회원가입이 완료되었습니다. 로그인해주세요.')
     router.push('/login')
   } catch (err) {
-    error.value = err.response?.data?.message || '회원가입에 실패했습니다'
+    // 백엔드에서 받은 에러 응답 처리
+    if (err.response?.data?.errors) {
+      // 검증 실패 (필드별 에러) - 필드별 에러만 표시
+      fieldErrors.value = err.response.data.errors
+      error.value = ''
+    } else {
+      // 다른 에러 (중복, 기타) - 상단 메시지만 표시
+      fieldErrors.value = {}
+      error.value = err.response?.data?.message || '회원가입에 실패했습니다'
+    }
   } finally {
     isLoading.value = false
   }
@@ -78,8 +94,12 @@ const handleSignup = async () => {
             v-model="formData.memberId"
             type="text"
             placeholder="아이디를 입력하세요"
-            class="input-field"
+            :class="['input-field', { error: fieldErrors.memberId }]"
+            @input="clearFieldError('memberId')"
           />
+          <span v-if="fieldErrors.memberId" class="field-error">
+            {{ fieldErrors.memberId }}
+          </span>
         </div>
 
         <div class="form-group">
@@ -89,8 +109,12 @@ const handleSignup = async () => {
             v-model="formData.memberName"
             type="text"
             placeholder="이름을 입력하세요"
-            class="input-field"
+            :class="['input-field', { error: fieldErrors.memberName }]"
+            @input="clearFieldError('memberName')"
           />
+          <span v-if="fieldErrors.memberName" class="field-error">
+            {{ fieldErrors.memberName }}
+          </span>
         </div>
 
         <div class="form-group">
@@ -100,8 +124,12 @@ const handleSignup = async () => {
             v-model="formData.memberPwd"
             type="password"
             placeholder="비밀번호를 입력하세요"
-            class="input-field"
+            :class="['input-field', { error: fieldErrors.memberPwd }]"
+            @input="clearFieldError('memberPwd')"
           />
+          <span v-if="fieldErrors.memberPwd" class="field-error">
+            {{ fieldErrors.memberPwd }}
+          </span>
         </div>
 
         <div class="form-group">
@@ -122,8 +150,12 @@ const handleSignup = async () => {
             v-model="formData.memberAge"
             type="number"
             placeholder="나이를 입력하세요"
-            class="input-field"
+            :class="['input-field', { error: fieldErrors.memberAge }]"
+            @input="clearFieldError('memberAge')"
           />
+          <span v-if="fieldErrors.memberAge" class="field-error">
+            {{ fieldErrors.memberAge }}
+          </span>
         </div>
 
         <div class="form-group">
@@ -133,8 +165,12 @@ const handleSignup = async () => {
             v-model="formData.memberEmail"
             type="email"
             placeholder="이메일을 입력하세요"
-            class="input-field"
+            :class="['input-field', { error: fieldErrors.memberEmail }]"
+            @input="clearFieldError('memberEmail')"
           />
+          <span v-if="fieldErrors.memberEmail" class="field-error">
+            {{ fieldErrors.memberEmail }}
+          </span>
         </div>
 
         <div class="form-group">
@@ -144,8 +180,12 @@ const handleSignup = async () => {
             v-model="formData.memberPhone"
             type="tel"
             placeholder="010-xxxx-xxxx"
-            class="input-field"
+            :class="['input-field', { error: fieldErrors.memberPhone }]"
+            @input="clearFieldError('memberPhone')"
           />
+          <span v-if="fieldErrors.memberPhone" class="field-error">
+            {{ fieldErrors.memberPhone }}
+          </span>
         </div>
 
         <div class="form-group">
@@ -204,7 +244,7 @@ const handleSignup = async () => {
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .form-group label {
@@ -227,6 +267,25 @@ const handleSignup = async () => {
   outline: none;
   border-color: #42b883;
   box-shadow: 0 0 0 3px rgba(66, 184, 131, 0.1);
+}
+
+.input-field.error {
+  border-color: #dc3545;
+  border-width: 2px;
+  background-color: #fff;
+}
+
+.input-field.error:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.field-error {
+  display: block;
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .error-message {
