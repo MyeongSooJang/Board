@@ -1,0 +1,27 @@
+package com.project.community.exception.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
+public enum ErrorCode {
+    // 입력 값 검증 오류 400
+    VALIDATION_ERROR(400, "입력값 검증에 실패하였습니다"),
+    INVALID_MEMBER_ID(400, "아이디는 4~20자여야 합니다"),
+    INVALID_MEMBER_NAME(400, "이름은 2~20자여야 합니다"),
+    INVALID_PASSWORD(400, "비밀번호는 최소 8자 이상이어야 합니다"),
+    INVALID_AGE(400, "나이는 10~150세여야 합니다"),
+    INVALID_EMAIL(400, "유효한 이메일 형식이어야 합니다"),
+    INVALID_PHONE(400, "휴대폰 형식: 010-1234-5678"),
+    MISSING_REQUIRED_FIELDS(400, "필수 필드가 누락되었습니다"),
+
+    // 비지니스 로직 오류 409
+    DUPLICATE_MEMBER_ID(409, "이미 존재하는 아이디입니다"),
+    DUPLICATE_EMAIL(409, "이미 존재하는 이메일입니다"),
+    DUPLICATE_PHONE(409, "이미 존재하는 전화번호입니다");
+
+    private final int httpStatus;
+    private final String message;
+
+}
