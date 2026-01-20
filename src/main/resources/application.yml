@@ -4,6 +4,11 @@ jwt:
   refresh-expiration: 604800000 #Refresh Token 7일
 
 spring:
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:db/member_test_data.sql
+      encoding: UTF-8
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/board?allowPublicKeyRetrieval=true&useSSL=false
