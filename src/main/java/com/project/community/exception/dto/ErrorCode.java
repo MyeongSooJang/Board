@@ -11,6 +11,7 @@ public enum ErrorCode {
     INVALID_MEMBER_ID(400, "아이디는 4~20자여야 합니다"),
     INVALID_MEMBER_NAME(400, "이름은 2~20자여야 합니다"),
     INVALID_PASSWORD(400, "비밀번호는 최소 8자 이상이어야 합니다"),
+    INVALID_PASSWORD_PATTERN(400, "비밀번호는 8~20자이며, 대문자, 소문자, 숫자, 특수문자(@$!%*?&)를 각각 1개 이상 포함해야 합니다"),
     INVALID_AGE(400, "나이는 10~150세여야 합니다"),
     INVALID_EMAIL(400, "유효한 이메일 형식이어야 합니다"),
     INVALID_PHONE(400, "휴대폰 형식: 010-1234-5678"),

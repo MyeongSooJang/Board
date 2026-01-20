@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(dir \"C:\\\\Users\\\\mmsgo\\\\IdeaProjects\\\\Board\" /s /b)",
-      "Bash(tree:*)",
-      "Bash(npm install:*)"
-    ]
-  }
-}

@@ -20,6 +20,10 @@ public class MemberCreateRequestDTO {
     private String memberName;
 
     @NotBlank(message = "비밀번호는 필수입니다")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$",
+            message = "비밀번호는 8~20자이며, 대문자, 소문자, 숫자, 특수문자(@$!%*?&)를 각각 1개 이상 포함해야 합니다"
+    )
     @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다")
     private String memberPwd;
 
