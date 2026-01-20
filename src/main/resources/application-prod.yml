@@ -15,5 +15,9 @@ spring:
       mode: never
 
 springdoc:
+  swagger-ui:
+    enabled: false
+   ##역할: 사람이 보기 쉬운 웹 페이지 제공
   api-docs:
     enabled: false
+    ##역할: API 구조를 JSON 형식으로 제공

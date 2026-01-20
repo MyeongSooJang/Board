@@ -1,7 +1,6 @@
 -- 1. 회원(MEMBER) 데이터 INSERT 더미 데이터
 -- 비밀번호: !Pass123
 -- test/resources/db/fixtures/member-test-data.sql
-DELETE FROM member WHERE member_id LIKE 'user%';
 INSERT INTO member (member_id, member_pwd, member_name, member_age, member_email, member_phone, member_role) VALUES
 ('user0001', '$2a$10$w5a/llvZ7UW9v0lLODBYbe1w2mCLaR9mz3KyjxGaR6dC.EOVrmEy2', '김민수', 25, 'minsu.kim@example.com', '010-1234-5678', 'GUEST'),
 ('user0002', '$2a$10$w5a/llvZ7UW9v0lLODBYbe1w2mCLaR9mz3KyjxGaR6dC.EOVrmEy2', '이영희', 30, 'younghee.lee@example.com', '010-2345-6789', 'GUEST'),
