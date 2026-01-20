@@ -78,3 +78,28 @@ enrollMember() 메서드에서 3가지 중복 체크:
 
 ## 1월 20일
 ### Swagger 사이트에 들어갈때 NoSuchMethodError
+~~~
+implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+~~~
+- java.lang.NoSuchMethodError: 'void org.springframework.web.method.ControllerAdviceBean.<init>(java.lang.Object)'
+발생 -
+### 발생하는 주요 원인
+- 의존성 버전이 맞지 않음
+- 클래스로더 문제 
+  - 라이브러리 최신버전 메소드를 사용 -> 옛날버전로드
+- 재배포 불일치 
+~~~
+   public interface OrderService{
+      void createOrder(Long userId);
+   }
+  public class OrderImpl implements OrderService{
+      void createOrder { ... }
+   }
+  
+   // 수정 
+   public interface OrderService{
+      void createOrder(Long userId, Integer count);
+   }
+~~~
+구현체만 올리게 되고, 수정된 interface는 올리지 않은 체로, createOrder(Long userId, Integer count)
+-> NoSuchMethodError
