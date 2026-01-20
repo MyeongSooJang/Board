@@ -110,13 +110,17 @@ window.addEventListener('storage', () => {
 </template>
 
 <style scoped>
+body {  background-color: #f5f5f5;  color: #000;  -webkit-color-scheme: light;  color-scheme: light;}html {  background-color: #f5f5f5;  color: #000;}
 * {
+  color: #000;
+  background-color: transparent;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 #app {
+  background-color: #f5f5f5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -324,6 +328,7 @@ window.addEventListener('storage', () => {
 }
 
 .main-content {
+  background-color: #f5f5f5;
   flex: 1;
   max-width: 1400px;
   width: 100%;
@@ -400,6 +405,7 @@ window.addEventListener('storage', () => {
   }
 
   .main-content {
+  background-color: #f5f5f5;
     padding: 1rem;
   }
 }

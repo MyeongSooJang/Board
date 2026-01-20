@@ -149,6 +149,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
+body { color: #000; background: #f5f5f5; }
+
 .board-list-container {
   background: white;
   padding: 2rem;

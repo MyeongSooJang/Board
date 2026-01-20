@@ -92,6 +92,8 @@ const handleLogin = async () => {
 </template>
 
 <style scoped>
+body { color: #000; background-color: #f5f5f5; }
+
 .login-container {
   display: flex;
   justify-content: center;

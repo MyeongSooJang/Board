@@ -220,6 +220,8 @@ const handleSignup = async () => {
 </template>
 
 <style scoped>
+body { color: #000; background-color: #f5f5f5; }
+
 .signup-container {
   display: flex;
   justify-content: center;
