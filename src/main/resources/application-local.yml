@@ -15,7 +15,11 @@ spring:
     init:
       mode: always
       schema-locations: classpath:db/init_schema.sql
-      data-locations: classpath:db/member_test_data.sql
+      data-locations:
+        - classpath:db/member_test_data.sql
+        - classpath:db/board_test_data.sql
+        - classpath:db/board_like_test_data.sql
+        - classpath:db/comment_test_data.sql
       encoding: UTF-8
 springdoc:
   swagger-ui:
