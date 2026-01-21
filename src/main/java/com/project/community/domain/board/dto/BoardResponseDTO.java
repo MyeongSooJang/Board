@@ -13,7 +13,10 @@ public class BoardResponseDTO {
     private String boardContent;
     private String memberName;
     private String memberId;
+    private Long memberNo;
     private LocalDateTime updateTime;
+    private LocalDateTime createTime;
+    private Integer boardViewCount;
 
     public static BoardResponseDTO from(Board board) {
         return new BoardResponseDTO(
@@ -22,7 +25,10 @@ public class BoardResponseDTO {
                 board.getBoardContent(),
                 board.getMember().getMemberName(),
                 board.getMember().getMemberId(),
-                board.getUpdateTime()
+                board.getMember().getMemberNo(),
+                board.getUpdateTime(),
+                board.getCreateTime(),
+                board.getBoardViewCount()
         );
     }
 }

@@ -6,9 +6,10 @@ export const commentApi = {
     client.get(`/${boardNo}/comment`),
 
   // 댓글 작성
-  create: (boardNo, commentContent, commentParentNo = null) =>
+  create: (boardNo, commentContent, memberNo, commentParentNo = null) =>
     client.post(`/${boardNo}/comment`, {
       commentContent,
+      memberNo,
       ...(commentParentNo && { commentParentNo })
     }),
 

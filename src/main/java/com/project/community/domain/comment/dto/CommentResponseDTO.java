@@ -13,6 +13,7 @@ public class CommentResponseDTO {
     private Long commentParentNo;
     private String memberName;
     private String memberId;
+    private Long memberNo;
     private LocalDateTime createdTime;
 
     public static CommentResponseDTO from(Comment comment) {
@@ -21,6 +22,7 @@ public class CommentResponseDTO {
                 comment.getCommentParentNo(),
                 comment.getMember().getMemberName(),
                 comment.getMember().getMemberId(),
+                comment.getMember().getMemberNo(),
                 comment.getCreateTime());
     }
 }

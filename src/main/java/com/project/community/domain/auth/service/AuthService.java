@@ -42,7 +42,10 @@ public class AuthService {
                 accessToken,
                 refreshToken,
                 jwtTokenProvider.getAccessTokenExpiration(),
-                member.getMemberId());
+                member.getMemberId(),
+                member.getMemberNo()
+
+        );
     }
 
     private void checkPassword(LoginRequestDTO request, Member member) {

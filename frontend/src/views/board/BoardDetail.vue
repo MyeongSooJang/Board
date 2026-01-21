@@ -15,8 +15,12 @@ const error = ref('')
 const commentContent = ref('')
 const isSubmittingComment = ref(false)
 
+const replyingToCommentNo = ref(null)
+const replyContent = ref('')
+const isSubmittingReply = ref(false)
+
 const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
-const currentMemberId = ref(localStorage.getItem('memberId') || '')
+const currentMemberNo = ref(localStorage.getItem('memberNo') || '')
 
 const boardNo = ref(route.params.boardNo)
 
@@ -37,7 +41,21 @@ const loadBoard = async () => {
 const loadComments = async () => {
   try {
     const response = await commentApi.getList(boardNo.value)
-    comments.value = response.data || []
+    const allComments = response.data || []
+
+    console.log('📌 전체 댓글 데이터:', allComments)
+
+    // 댓글을 parent 댓글과 child 댓글로 정렬
+    comments.value = allComments.map(comment => {
+      const children = allComments.filter(c => c.commentParentNo === comment.commentNo)
+      return {
+        ...comment,
+        children: children
+      }
+    }).filter(comment => !comment.commentParentNo)
+
+    console.log('📌 정렬된 댓글:', comments.value)
+    console.log('📌 총 원댓글 수:', comments.value.length)
   } catch (err) {
     console.error('댓글 로드 실패:', err)
   }
@@ -58,13 +76,47 @@ const handleAddComment = async () => {
   isSubmittingComment.value = true
 
   try {
-    await commentApi.create(boardNo.value, commentContent.value)
+    await commentApi.create(boardNo.value, commentContent.value, currentMemberNo.value)
     commentContent.value = ''
     loadComments()
   } catch (err) {
     alert(err.response?.data?.message || '댓글 작성에 실패했습니다')
   } finally {
     isSubmittingComment.value = false
+  }
+}
+
+const handleReplyClick = (commentNo) => {
+  if (!isLoggedIn.value) {
+    alert('답글을 작성하려면 로그인해야 합니다')
+    router.push('/login')
+    return
+  }
+  replyingToCommentNo.value = commentNo
+}
+
+const handleCancelReply = () => {
+  replyingToCommentNo.value = null
+  replyContent.value = ''
+}
+
+const handleAddReply = async (parentCommentNo) => {
+  if (!replyContent.value.trim()) {
+    alert('답글을 입력해주세요')
+    return
+  }
+
+  isSubmittingReply.value = true
+
+  try {
+    await commentApi.create(boardNo.value, replyContent.value, currentMemberNo.value, parentCommentNo)
+    replyContent.value = ''
+    replyingToCommentNo.value = null
+    loadComments()
+  } catch (err) {
+    alert(err.response?.data?.message || '답글 작성에 실패했습니다')
+  } finally {
+    isSubmittingReply.value = false
   }
 }
 
@@ -96,7 +148,14 @@ const handleEditBoard = () => {
 }
 
 const formatDate = (date) => {
-  return new Date(date).toLocaleString('ko-KR')
+  if (!date) return ''
+  const d = new Date(date)
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  const seconds = String(d.getSeconds()).padStart(2, '0')
+  return `${month}.${day} ${hours}:${minutes}:${seconds}`
 }
 
 onMounted(() => {
@@ -114,14 +173,22 @@ onMounted(() => {
     <div v-else-if="board" class="board-detail">
       <!-- 게시물 헤더 -->
       <div class="board-header">
-        <h2>{{ board.boardTitle }}</h2>
-        <div class="board-meta">
-          <span>작성자: {{ board.memberName }}</span>
-          <span>{{ formatDate(board.updateTime) }}</span>
+        <div class="header-top">
+          <h2>{{ board.boardTitle }}</h2>
         </div>
-        <div v-if="currentMemberId === board.memberId" class="board-actions">
-          <button @click="handleEditBoard" class="btn btn-primary">수정</button>
-          <button @click="handleDeleteBoard" class="btn btn-danger">삭제</button>
+        <div class="header-bottom">
+          <div class="board-meta">
+            <span>작성자: {{ board.memberName }}</span>
+            <span>조회: {{ board.boardViewCount || 0 }}</span>
+            <span>{{ formatDate(board.updateTime) }}</span>
+          </div>
+          <div class="board-actions">
+            <button @click="router.push('/boards')" class="btn btn-secondary">목록</button>
+            <div v-if="currentMemberNo && currentMemberNo == board.memberNo" class="action-group">
+              <button @click="handleEditBoard" class="btn btn-primary">수정</button>
+              <button @click="handleDeleteBoard" class="btn btn-danger">삭제</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -129,9 +196,6 @@ onMounted(() => {
       <div class="board-content">
         {{ board.boardContent }}
       </div>
-
-      <!-- 뒤로가기 버튼 -->
-      <button @click="router.push('/boards')" class="btn btn-secondary">목록</button>
 
       <!-- 댓글 섹션 -->
       <div class="comments-section">
@@ -147,10 +211,10 @@ onMounted(() => {
           ></textarea>
           <button
             @click="handleAddComment"
-            class="btn btn-primary"
+            class="btn btn-comment-submit"
             :disabled="isSubmittingComment"
           >
-            {{ isSubmittingComment ? '작성 중...' : '댓글 작성' }}
+            {{ isSubmittingComment ? '작성 중' : '작성' }}
           </button>
         </div>
 
@@ -164,24 +228,77 @@ onMounted(() => {
         </div>
 
         <div v-else class="comments-list">
-          <div v-for="comment in comments" :key="comment.commentNo" class="comment-item">
-            <div class="comment-header">
-              <span class="comment-author">{{ comment.memberName }}</span>
-              <span class="comment-date">{{ formatDate(comment.createdTime) }}</span>
+          <!-- 원댓글 -->
+          <template v-for="comment in comments" :key="comment.commentNo">
+            <div class="comment-item">
+              <div class="comment-header">
+                <span class="comment-author">{{ comment.memberName }}</span>
+                <span class="comment-date">{{ formatDate(comment.createdTime) }}</span>
+              </div>
+              <div class="comment-content">{{ comment.commentContent }}</div>
+              <div class="comment-actions">
+                <button
+                  @click="handleReplyClick(comment.commentNo)"
+                  class="btn-small btn-reply"
+                >
+                  답글
+                </button>
+                <button
+                  v-if="currentMemberNo && currentMemberNo == comment.memberNo"
+                  @click="handleDeleteComment(comment.commentNo)"
+                  class="btn-small btn-danger"
+                >
+                  삭제
+                </button>
+              </div>
             </div>
-            <div class="comment-content">{{ comment.commentContent }}</div>
-            <div
-              v-if="currentMemberId === comment.memberId"
-              class="comment-actions"
-            >
+
+            <!-- 대댓글 입력 폼 -->
+            <div v-if="replyingToCommentNo === comment.commentNo" class="reply-form">
+              <div class="reply-form-header">
+                <span class="reply-form-title">답글 작성</span>
+                <button @click="handleCancelReply" class="btn-close">✕</button>
+              </div>
+              <textarea
+                v-model="replyContent"
+                placeholder="답글을 입력하세요"
+                class="reply-input"
+                rows="2"
+              ></textarea>
               <button
-                @click="handleDeleteComment(comment.commentNo)"
-                class="btn-small btn-danger"
+                @click="handleAddReply(comment.commentNo)"
+                class="btn btn-comment-submit"
+                :disabled="isSubmittingReply"
               >
-                삭제
+                {{ isSubmittingReply ? '작성 중' : '작성' }}
               </button>
             </div>
-          </div>
+
+            <!-- 대댓글 -->
+            <div v-if="comment.children && comment.children.length > 0" class="replies-container">
+              <div v-for="reply in comment.children" :key="reply.commentNo" class="reply-item">
+                <div class="reply-indicator">↳</div>
+                <div class="reply-content">
+                  <div class="comment-header">
+                    <span class="comment-author">{{ reply.memberName }}</span>
+                    <span class="comment-date">{{ formatDate(reply.createdTime) }}</span>
+                  </div>
+                  <div class="comment-content">{{ reply.commentContent }}</div>
+                  <div
+                    v-if="currentMemberNo && currentMemberNo == reply.memberNo"
+                    class="comment-actions"
+                  >
+                    <button
+                      @click="handleDeleteComment(reply.commentNo)"
+                      class="btn-small btn-danger"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -192,196 +309,498 @@ onMounted(() => {
 body { color: #000; background-color: #f5f5f5; }
 
 .board-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
   background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d5d5d5;
 }
 
 .loading,
 .error-message {
   text-align: center;
-  padding: 2rem;
+  padding: 30px 20px;
+  font-size: 14px;
 }
 
 .error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  border-radius: 4px;
+  background-color: #fff3cd;
+  color: #856404;
+  border-bottom: 1px solid #d5d5d5;
+  margin-bottom: 0;
 }
 
 .board-detail {
   display: flex;
   flex-direction: column;
+  text-align: left;
 }
 
 .board-header {
-  border-bottom: 2px solid #ecf0f1;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
+  padding: 20px;
+  border-bottom: 2px solid #3d414d;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
 }
 
 .board-header h2 {
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
+  color: #000;
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.header-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
 .board-meta {
   display: flex;
-  gap: 1rem;
-  color: #7f8c8d;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  gap: 16px;
+  color: #777;
+  font-size: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #e9ecef;
+  flex: 1;
+  text-align: left;
+}
+
+.board-meta span {
+  display: flex;
+  align-items: center;
 }
 
 .board-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.action-group {
+  display: flex;
+  gap: 8px;
 }
 
 .board-content {
-  padding: 2rem 0;
-  line-height: 1.6;
+  padding: 20px;
+  line-height: 1.8;
   white-space: pre-wrap;
-  margin-bottom: 2rem;
+  color: #333;
+  font-size: 14px;
+  border-bottom: 1px solid #d5d5d5;
+  min-height: 200px;
+  text-align: left;
 }
 
 .btn {
-  padding: 0.5rem 1rem;
+  padding: 6px 14px;
   border: none;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
+  font-weight: 500;
+  font-size: 13px;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
 }
 
 .btn-primary {
-  background-color: #42b883;
+  background: #3d414d;
   color: white;
 }
 
-.btn-primary:hover {
-  background-color: #36a372;
+.btn-primary:hover:not(:disabled) {
+  background: #2c2f38;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
-  background-color: #95a5a6;
+  background: #95a5a6;
   color: white;
-  margin-bottom: 2rem;
 }
 
 .btn-secondary:hover {
-  background-color: #7f8c8d;
+  background: #7f8c8d;
 }
 
 .btn-danger {
-  background-color: #e74c3c;
+  background: #e74c3c;
   color: white;
 }
 
 .btn-danger:hover {
-  background-color: #c0392b;
+  background: #c0392b;
 }
 
 .comments-section {
-  margin-top: 2rem;
-  border-top: 2px solid #ecf0f1;
-  padding-top: 2rem;
+  background: #f7f9fa;
+  padding: 16px 20px;
+  text-align: left;
 }
 
 .comments-section h3 {
-  color: #2c3e50;
-  margin-bottom: 1rem;
+  color: #000;
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
 }
 
 .comment-form {
-  margin-bottom: 2rem;
+  margin-bottom: 14px;
+  background: white;
+  padding: 10px 12px;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-end;
 }
 
 .comment-input {
-  width: 100%;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
   font-family: inherit;
-  font-size: 1rem;
-  resize: vertical;
+  font-size: 13px;
+  resize: none;
+  line-height: 1.4;
+  box-sizing: border-box;
+  min-height: 60px;
+}
+
+.comment-input:focus {
+  outline: none;
+  border-color: #3d414d;
 }
 
 .login-prompt {
-  background-color: #ecf0f1;
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  background: #f7f9fa;
+  padding: 12px 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
+  margin-bottom: 16px;
   text-align: center;
+  font-size: 13px;
+  color: #666;
+  word-wrap: break-word;
 }
 
 .login-prompt a {
-  color: #42b883;
+  color: #3498db;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+}
+
+.login-prompt a:hover {
+  text-decoration: underline;
 }
 
 .no-comments {
   text-align: center;
-  padding: 1rem;
-  color: #7f8c8d;
+  padding: 20px;
+  color: #999;
+  font-size: 13px;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
 }
 
 .comments-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 8px;
+}
+
+.replies-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: 24px;
+  margin-top: -2px;
+  margin-bottom: 6px;
+  padding-left: 0;
+}
+
+.reply-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
 }
 
 .comment-item {
-  border: 1px solid #ecf0f1;
-  padding: 1rem;
-  border-radius: 4px;
-  background-color: #f8f9fa;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
+  padding: 10px 12px;
+  font-size: 13px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.reply-indicator {
+  color: #999;
+  font-size: 12px;
+  flex-shrink: 0;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+.reply-content {
+  flex: 1;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
+  padding: 10px 12px;
+  font-size: 13px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .comment-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 8px;
 }
 
 .comment-author {
-  color: #42b883;
-  font-weight: bold;
+  color: #3d414d;
+  font-weight: 600;
+  font-size: 12px;
+  min-width: 0;
+  word-break: break-all;
 }
 
 .comment-date {
-  color: #7f8c8d;
+  color: #999;
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .comment-content {
-  padding: 0.5rem 0;
-  line-height: 1.5;
+  padding: 4px 0;
+  line-height: 1.6;
   white-space: pre-wrap;
+  color: #333;
+  font-size: 13px;
+  word-break: break-word;
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .comment-actions {
-  margin-top: 0.5rem;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #e9ecef;
+  text-align: left;
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
 .btn-small {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.85rem;
+  padding: 3px 8px;
+  font-size: 11px;
   border: none;
-  border-radius: 4px;
+  border-radius: 2px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background 0.2s;
+  background: #e9ecef;
+  color: #666;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.btn-small:hover {
+  background: #ddd;
 }
 
 .btn-small.btn-danger {
-  background-color: #e74c3c;
+  background: #e74c3c;
   color: white;
 }
 
 .btn-small.btn-danger:hover {
-  background-color: #c0392b;
+  background: #c0392b;
+}
+
+.btn-small.btn-reply {
+  background: #3498db;
+  color: white;
+}
+
+.btn-small.btn-reply:hover {
+  background: #2980b9;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn-close:hover {
+  color: #333;
+}
+
+.reply-form {
+  margin-left: 24px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background: #f9f9f9;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reply-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.reply-form-title {
+  color: #3d414d;
+}
+
+.reply-input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: none;
+  line-height: 1.4;
+  box-sizing: border-box;
+  min-height: 45px;
+}
+
+.reply-input:focus {
+  outline: none;
+  border-color: #3d414d;
+}
+
+.btn-comment-submit {
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  font-weight: 500;
+  background: #3d414d;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-comment-submit:hover:not(:disabled) {
+  background: #2c2f38;
+}
+
+.btn-comment-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .board-header {
+    padding: 16px;
+  }
+
+  .header-bottom {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .board-meta {
+    gap: 8px;
+    width: 100%;
+  }
+
+  .board-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .board-content {
+    padding: 16px;
+  }
+
+  .comments-section {
+    padding: 16px;
+  }
+
+  .btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .comment-form {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .btn-comment-submit {
+    align-self: flex-start;
+  }
+
+  .replies-container {
+    margin-left: 16px;
+  }
+
+  .reply-item {
+    flex-direction: column;
+  }
+
+  .reply-indicator {
+    margin-top: 0;
+    margin-bottom: 4px;
+  }
+
+  .reply-form {
+    margin-left: 16px;
+  }
+
+  .comment-actions {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 4px;
+  }
 }
 </style>
