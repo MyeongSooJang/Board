@@ -29,43 +29,41 @@ public class AuthService {
 
 
     public LoginResponseDTO login(LoginRequestDTO request) {
-        Member member = searchByIdAndEmail(request.getMemberId());
+        Member member = searchByIdAndEmail(request.getUsername());
         checkPassword(request, member);
 
-        String accessToken = jwtTokenProvider.generateAccessToken(member.getMemberId(), member.getMemberRole());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(member.getMemberId());
+        String accessToken = jwtTokenProvider.generateAccessToken(member.getUsername(), member.getRole());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(member.getUsername());
         Date refreshTokenExpireDate = jwtTokenProvider.refreshTokenExpiration();
 
-        refreshTokenRepository.save(createRefreshToken(request.getMemberId(), refreshToken, refreshTokenExpireDate));
+        refreshTokenRepository.save(createRefreshToken(request.getUsername(), refreshToken, refreshTokenExpireDate));
 
         return new LoginResponseDTO(
                 accessToken,
                 refreshToken,
                 jwtTokenProvider.getAccessTokenExpiration(),
-                member.getMemberId(),
-                member.getMemberNo()
-
+                member.getMemberId()
         );
     }
 
     private void checkPassword(LoginRequestDTO request, Member member) {
-        if (!passwordEncoder.matches(request.getPassword(), member.getMemberPwd())) {
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new BadCredentialsException("비밀번호가 맞지 않습니다.");
         }
     }
 
-    private Member searchByIdAndEmail(String memberId) {
-        return memberRepository.findByMemberId(memberId)
-                .or(() -> memberRepository.findByMemberEmail(memberId))
+    private Member searchByIdAndEmail(String usernameOrEmail) {
+        return memberRepository.findByUsername(usernameOrEmail)
+                .or(() -> memberRepository.findByEmail(usernameOrEmail))
                 .orElseThrow(() -> new UsernameNotFoundException("아이디 또는 이메일이 없습니다."));
     }
 
-    public void logout(String memberId) {
-        deleteTokenByMemberId(memberId);
+    public void logout(String username) {
+        deleteTokenByUsername(username);
     }
 
-    private void deleteTokenByMemberId(String memberId) {
-        refreshTokenRepository.deleteByMemberId(memberId);
+    private void deleteTokenByUsername(String username) {
+        refreshTokenRepository.deleteByUsername(username);
     }
 
     public RefreshTokenResponseDTO createNewTokens(RefreshTokenRequestDTO request) {
@@ -73,17 +71,17 @@ public class AuthService {
 
         jwtTokenProvider.validateToken(searchToken.getRefreshToken());
 
-        deleteTokenByMemberId(searchToken.getMemberId());
+        deleteTokenByUsername(searchToken.getUsername());
 
-        Member member = searchByIdAndEmail(searchToken.getMemberId());
+        Member member = searchByIdAndEmail(searchToken.getUsername());
 
-        String accessToken = jwtTokenProvider.generateAccessToken(member.getMemberId(), member.getMemberRole());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(member.getMemberId());
+        String accessToken = jwtTokenProvider.generateAccessToken(member.getUsername(), member.getRole());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(member.getUsername());
         Date refreshTokenExpireDate = jwtTokenProvider.refreshTokenExpiration();
 
-        refreshTokenRepository.save(createRefreshToken(member.getMemberId(), refreshToken, refreshTokenExpireDate));
+        refreshTokenRepository.save(createRefreshToken(member.getUsername(), refreshToken, refreshTokenExpireDate));
 
-        return new RefreshTokenResponseDTO(accessToken, refreshToken,jwtTokenProvider.getAccessTokenExpiration() );
+        return new RefreshTokenResponseDTO(accessToken, refreshToken, jwtTokenProvider.getAccessTokenExpiration());
 
     }
 

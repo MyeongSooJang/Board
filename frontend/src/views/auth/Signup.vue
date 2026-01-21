@@ -6,14 +6,14 @@ import { memberApi } from '../../api/member'
 const router = useRouter()
 
 const formData = ref({
-  memberId: '',
-  memberName: '',
-  memberPwd: '',
-  memberPwdConfirm: '',
-  memberAge: '',
-  memberEmail: '',
-  memberPhone: '',
-  memberRole: 'GUEST'
+  username: '',
+  name: '',
+  password: '',
+  passwordConfirm: '',
+  age: '',
+  email: '',
+  phone: '',
+  role: 'GUEST'
 })
 
 const error = ref('')
@@ -21,17 +21,17 @@ const fieldErrors = ref({})
 const isLoading = ref(false)
 
 const validateForm = () => {
-  if (!formData.value.memberId) return '아이디를 입력해주세요'
-  if (!formData.value.memberName) return '이름을 입력해주세요'
-  if (!formData.value.memberPwd) return '비밀번호를 입력해주세요'
-  if (formData.value.memberPwd !== formData.value.memberPwdConfirm) {
+  if (!formData.value.username) return '아이디를 입력해주세요'
+  if (!formData.value.name) return '이름을 입력해주세요'
+  if (!formData.value.password) return '비밀번호를 입력해주세요'
+  if (formData.value.password !== formData.value.passwordConfirm) {
     return '비밀번호가 일치하지 않습니다'
   }
-  if (!formData.value.memberAge) return '나이를 입력해주세요'
-  if (isNaN(formData.value.memberAge)) return '나이는 숫자여야 합니다'
-  if (!formData.value.memberEmail) return '이메일을 입력해주세요'
-  if (!formData.value.memberEmail.includes('@')) return '올바른 이메일 형식이 아닙니다'
-  if (!formData.value.memberPhone) return '전화번호를 입력해주세요'
+  if (!formData.value.age) return '나이를 입력해주세요'
+  if (isNaN(formData.value.age)) return '나이는 숫자여야 합니다'
+  if (!formData.value.email) return '이메일을 입력해주세요'
+  if (!formData.value.email.includes('@')) return '올바른 이메일 형식이 아닙니다'
+  if (!formData.value.phone) return '전화번호를 입력해주세요'
   return ''
 }
 
@@ -53,13 +53,13 @@ const handleSignup = async () => {
 
   try {
     await memberApi.signup(
-      formData.value.memberId,
-      formData.value.memberName,
-      formData.value.memberPwd,
-      parseInt(formData.value.memberAge),
-      formData.value.memberEmail,
-      formData.value.memberPhone,
-      formData.value.memberRole
+      formData.value.username,
+      formData.value.name,
+      formData.value.password,
+      parseInt(formData.value.age),
+      formData.value.email,
+      formData.value.phone,
+      formData.value.role
     )
 
     alert('회원가입이 완료되었습니다. 로그인해주세요.')
@@ -91,14 +91,14 @@ const handleSignup = async () => {
           <label for="memberId">아이디</label>
           <input
             id="memberId"
-            v-model="formData.memberId"
+            v-model="formData.username"
             type="text"
             placeholder="아이디를 입력하세요"
-            :class="['input-field', { error: fieldErrors.memberId }]"
-            @input="clearFieldError('memberId')"
+            :class="['input-field', { error: fieldErrors.username }]"
+            @input="clearFieldError('username')"
           />
-          <span v-if="fieldErrors.memberId" class="field-error">
-            {{ fieldErrors.memberId }}
+          <span v-if="fieldErrors.username" class="field-error">
+            {{ fieldErrors.username }}
           </span>
         </div>
 
@@ -106,14 +106,14 @@ const handleSignup = async () => {
           <label for="memberName">이름</label>
           <input
             id="memberName"
-            v-model="formData.memberName"
+            v-model="formData.name"
             type="text"
             placeholder="이름을 입력하세요"
-            :class="['input-field', { error: fieldErrors.memberName }]"
-            @input="clearFieldError('memberName')"
+            :class="['input-field', { error: fieldErrors.name }]"
+            @input="clearFieldError('name')"
           />
-          <span v-if="fieldErrors.memberName" class="field-error">
-            {{ fieldErrors.memberName }}
+          <span v-if="fieldErrors.name" class="field-error">
+            {{ fieldErrors.name }}
           </span>
         </div>
 
@@ -121,14 +121,14 @@ const handleSignup = async () => {
           <label for="memberPwd">비밀번호</label>
           <input
             id="memberPwd"
-            v-model="formData.memberPwd"
+            v-model="formData.password"
             type="password"
             placeholder="비밀번호를 입력하세요"
-            :class="['input-field', { error: fieldErrors.memberPwd }]"
-            @input="clearFieldError('memberPwd')"
+            :class="['input-field', { error: fieldErrors.password }]"
+            @input="clearFieldError('password')"
           />
-          <span v-if="fieldErrors.memberPwd" class="field-error">
-            {{ fieldErrors.memberPwd }}
+          <span v-if="fieldErrors.password" class="field-error">
+            {{ fieldErrors.password }}
           </span>
         </div>
 
@@ -136,7 +136,7 @@ const handleSignup = async () => {
           <label for="memberPwdConfirm">비밀번호 확인</label>
           <input
             id="memberPwdConfirm"
-            v-model="formData.memberPwdConfirm"
+            v-model="formData.passwordConfirm"
             type="password"
             placeholder="비밀번호를 다시 입력하세요"
             class="input-field"
@@ -147,14 +147,14 @@ const handleSignup = async () => {
           <label for="memberAge">나이</label>
           <input
             id="memberAge"
-            v-model="formData.memberAge"
+            v-model="formData.age"
             type="number"
             placeholder="나이를 입력하세요"
-            :class="['input-field', { error: fieldErrors.memberAge }]"
-            @input="clearFieldError('memberAge')"
+            :class="['input-field', { error: fieldErrors.age }]"
+            @input="clearFieldError('age')"
           />
-          <span v-if="fieldErrors.memberAge" class="field-error">
-            {{ fieldErrors.memberAge }}
+          <span v-if="fieldErrors.age" class="field-error">
+            {{ fieldErrors.age }}
           </span>
         </div>
 
@@ -162,14 +162,14 @@ const handleSignup = async () => {
           <label for="memberEmail">이메일</label>
           <input
             id="memberEmail"
-            v-model="formData.memberEmail"
+            v-model="formData.email"
             type="email"
             placeholder="이메일을 입력하세요"
-            :class="['input-field', { error: fieldErrors.memberEmail }]"
-            @input="clearFieldError('memberEmail')"
+            :class="['input-field', { error: fieldErrors.email }]"
+            @input="clearFieldError('email')"
           />
-          <span v-if="fieldErrors.memberEmail" class="field-error">
-            {{ fieldErrors.memberEmail }}
+          <span v-if="fieldErrors.email" class="field-error">
+            {{ fieldErrors.email }}
           </span>
         </div>
 
@@ -177,14 +177,14 @@ const handleSignup = async () => {
           <label for="memberPhone">전화번호</label>
           <input
             id="memberPhone"
-            v-model="formData.memberPhone"
+            v-model="formData.phone"
             type="tel"
             placeholder="010-xxxx-xxxx"
-            :class="['input-field', { error: fieldErrors.memberPhone }]"
-            @input="clearFieldError('memberPhone')"
+            :class="['input-field', { error: fieldErrors.phone }]"
+            @input="clearFieldError('phone')"
           />
-          <span v-if="fieldErrors.memberPhone" class="field-error">
-            {{ fieldErrors.memberPhone }}
+          <span v-if="fieldErrors.phone" class="field-error">
+            {{ fieldErrors.phone }}
           </span>
         </div>
 
@@ -192,7 +192,7 @@ const handleSignup = async () => {
           <label for="memberRole">회원 역할</label>
           <select
             id="memberRole"
-            v-model="formData.memberRole"
+            v-model="formData.role"
             class="input-field"
           >
             <option value="GUEST">일반 사용자</option>

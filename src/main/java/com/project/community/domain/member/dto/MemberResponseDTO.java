@@ -2,24 +2,26 @@ package com.project.community.domain.member.dto;
 
 import com.project.community.domain.member.entity.Member;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class MemberResponseDTO {
-    private Long memberNo;
-    private String memberId;
-    private String memberName;
-    private Integer memberAge;
-    private String memberEmail;
-    private String memberPhone;
-    private String memberRole;
+    private Long memberId;
+    private String username;
+    private String name;
+    private Integer age;
+    private String email;
+    private String phone;
+    private String role;
 
     public static MemberResponseDTO from(Member member) {
-        return new MemberResponseDTO(member.getMemberNo(),
-                member.getMemberId(),
-                member.getMemberName(),
-                member.getMemberAge(),
-                member.getMemberEmail(),
-                member.getMemberPhone(),
-                member.getMemberRole());
+        return new MemberResponseDTO(member.getMemberId(),
+                member.getUsername(),
+                member.getName(),
+                member.getAge(),
+                member.getEmail(),
+                member.getPhone(),
+                member.getRole());
     }
 }

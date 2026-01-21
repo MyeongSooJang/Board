@@ -15,21 +15,21 @@ const error = ref('')
 const commentContent = ref('')
 const isSubmittingComment = ref(false)
 
-const replyingToCommentNo = ref(null)
+const replyingToCommentId = ref(null)
 const replyContent = ref('')
 const isSubmittingReply = ref(false)
 
 const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
-const currentMemberNo = ref(localStorage.getItem('memberNo') || '')
+const currentMemberId = ref(localStorage.getItem('memberId') || '')
 
-const boardNo = ref(route.params.boardNo)
+const boardId = ref(route.params.boardId)
 
 const loadBoard = async () => {
   isLoading.value = true
   error.value = ''
 
   try {
-    const response = await boardApi.getDetail(boardNo.value)
+    const response = await boardApi.getDetail(boardId.value)
     board.value = response.data
   } catch (err) {
     error.value = err.response?.data?.message || '게시물을 불러오지 못했습니다'
@@ -40,19 +40,19 @@ const loadBoard = async () => {
 
 const loadComments = async () => {
   try {
-    const response = await commentApi.getList(boardNo.value)
+    const response = await commentApi.getList(boardId.value)
     const allComments = response.data || []
 
     console.log('📌 전체 댓글 데이터:', allComments)
 
     // 댓글을 parent 댓글과 child 댓글로 정렬
     comments.value = allComments.map(comment => {
-      const children = allComments.filter(c => c.commentParentNo === comment.commentNo)
+      const children = allComments.filter(c => c.commentParentId === comment.commentId)
       return {
         ...comment,
         children: children
       }
-    }).filter(comment => !comment.commentParentNo)
+    }).filter(comment => !comment.commentParentId)
 
     console.log('📌 정렬된 댓글:', comments.value)
     console.log('📌 총 원댓글 수:', comments.value.length)
@@ -76,7 +76,7 @@ const handleAddComment = async () => {
   isSubmittingComment.value = true
 
   try {
-    await commentApi.create(boardNo.value, commentContent.value, currentMemberNo.value)
+    await commentApi.create(boardId.value, commentContent.value, currentMemberId.value)
     commentContent.value = ''
     loadComments()
   } catch (err) {
@@ -86,21 +86,21 @@ const handleAddComment = async () => {
   }
 }
 
-const handleReplyClick = (commentNo) => {
+const handleReplyClick = (commentId) => {
   if (!isLoggedIn.value) {
     alert('답글을 작성하려면 로그인해야 합니다')
     router.push('/login')
     return
   }
-  replyingToCommentNo.value = commentNo
+  replyingToCommentId.value = commentId
 }
 
 const handleCancelReply = () => {
-  replyingToCommentNo.value = null
+  replyingToCommentId.value = null
   replyContent.value = ''
 }
 
-const handleAddReply = async (parentCommentNo) => {
+const handleAddReply = async (parentCommentId) => {
   if (!replyContent.value.trim()) {
     alert('답글을 입력해주세요')
     return
@@ -109,9 +109,9 @@ const handleAddReply = async (parentCommentNo) => {
   isSubmittingReply.value = true
 
   try {
-    await commentApi.create(boardNo.value, replyContent.value, currentMemberNo.value, parentCommentNo)
+    await commentApi.create(boardId.value, replyContent.value, currentMemberId.value, parentCommentId)
     replyContent.value = ''
-    replyingToCommentNo.value = null
+    replyingToCommentId.value = null
     loadComments()
   } catch (err) {
     alert(err.response?.data?.message || '답글 작성에 실패했습니다')
@@ -120,11 +120,11 @@ const handleAddReply = async (parentCommentNo) => {
   }
 }
 
-const handleDeleteComment = async (commentNo) => {
+const handleDeleteComment = async (commentId) => {
   if (!confirm('댓글을 삭제하시겠습니까?')) return
 
   try {
-    await commentApi.delete(boardNo.value, commentNo)
+    await commentApi.delete(boardId.value, commentId)
     loadComments()
   } catch (err) {
     alert(err.response?.data?.message || '댓글 삭제에 실패했습니다')
@@ -135,7 +135,7 @@ const handleDeleteBoard = async () => {
   if (!confirm('게시물을 삭제하시겠습니까?')) return
 
   try {
-    await boardApi.delete(boardNo.value)
+    await boardApi.delete(boardId.value)
     alert('게시물이 삭제되었습니다')
     router.push('/boards')
   } catch (err) {
@@ -144,7 +144,7 @@ const handleDeleteBoard = async () => {
 }
 
 const handleEditBoard = () => {
-  router.push(`/boards/${boardNo.value}/edit`)
+  router.push(`/boards/${boardId.value}/edit`)
 }
 
 const formatDate = (date) => {
@@ -184,7 +184,7 @@ onMounted(() => {
           </div>
           <div class="board-actions">
             <button @click="router.push('/boards')" class="btn btn-secondary">목록</button>
-            <div v-if="currentMemberNo && currentMemberNo == board.memberNo" class="action-group">
+            <div v-if="currentMemberId && currentMemberId == board.memberId" class="action-group">
               <button @click="handleEditBoard" class="btn btn-primary">수정</button>
               <button @click="handleDeleteBoard" class="btn btn-danger">삭제</button>
             </div>
@@ -229,23 +229,23 @@ onMounted(() => {
 
         <div v-else class="comments-list">
           <!-- 원댓글 -->
-          <template v-for="comment in comments" :key="comment.commentNo">
+          <template v-for="comment in comments" :key="comment.commentId">
             <div class="comment-item">
               <div class="comment-header">
                 <span class="comment-author">{{ comment.memberName }}</span>
-                <span class="comment-date">{{ formatDate(comment.createdTime) }}</span>
+                <span class="comment-date">{{ formatDate(comment.createTime) }}</span>
               </div>
               <div class="comment-content">{{ comment.commentContent }}</div>
               <div class="comment-actions">
                 <button
-                  @click="handleReplyClick(comment.commentNo)"
+                  @click="handleReplyClick(comment.commentId)"
                   class="btn-small btn-reply"
                 >
                   답글
                 </button>
                 <button
-                  v-if="currentMemberNo && currentMemberNo == comment.memberNo"
-                  @click="handleDeleteComment(comment.commentNo)"
+                  v-if="currentMemberId && currentMemberId == comment.memberId"
+                  @click="handleDeleteComment(comment.commentId)"
                   class="btn-small btn-danger"
                 >
                   삭제
@@ -254,7 +254,7 @@ onMounted(() => {
             </div>
 
             <!-- 대댓글 입력 폼 -->
-            <div v-if="replyingToCommentNo === comment.commentNo" class="reply-form">
+            <div v-if="replyingToCommentId === comment.commentId" class="reply-form">
               <div class="reply-form-header">
                 <span class="reply-form-title">답글 작성</span>
                 <button @click="handleCancelReply" class="btn-close">✕</button>
@@ -266,7 +266,7 @@ onMounted(() => {
                 rows="2"
               ></textarea>
               <button
-                @click="handleAddReply(comment.commentNo)"
+                @click="handleAddReply(comment.commentId)"
                 class="btn btn-comment-submit"
                 :disabled="isSubmittingReply"
               >
@@ -276,20 +276,20 @@ onMounted(() => {
 
             <!-- 대댓글 -->
             <div v-if="comment.children && comment.children.length > 0" class="replies-container">
-              <div v-for="reply in comment.children" :key="reply.commentNo" class="reply-item">
+              <div v-for="reply in comment.children" :key="reply.commentId" class="reply-item">
                 <div class="reply-indicator">↳</div>
                 <div class="reply-content">
                   <div class="comment-header">
                     <span class="comment-author">{{ reply.memberName }}</span>
-                    <span class="comment-date">{{ formatDate(reply.createdTime) }}</span>
+                    <span class="comment-date">{{ formatDate(reply.createTime) }}</span>
                   </div>
                   <div class="comment-content">{{ reply.commentContent }}</div>
                   <div
-                    v-if="currentMemberNo && currentMemberNo == reply.memberNo"
+                    v-if="currentMemberId && currentMemberId == reply.memberId"
                     class="comment-actions"
                   >
                     <button
-                      @click="handleDeleteComment(reply.commentNo)"
+                      @click="handleDeleteComment(reply.commentId)"
                       class="btn-small btn-danger"
                     >
                       삭제

@@ -29,22 +29,22 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/boards/:boardNo',
-    name: 'BoardDetail',
-    component: BoardDetail,
-    meta: { requiresAuth: false }
-  },
-  {
     path: '/boards/create',
     name: 'BoardCreate',
     component: BoardForm,
     meta: { requiresAuth: true }
   },
   {
-    path: '/boards/:boardNo/edit',
+    path: '/boards/:boardId/edit',
     name: 'BoardEdit',
     component: BoardForm,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/boards/:boardId',
+    name: 'BoardDetail',
+    component: BoardDetail,
+    meta: { requiresAuth: false }
   }
 ]
 

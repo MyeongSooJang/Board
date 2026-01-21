@@ -32,7 +32,7 @@ public class BoardService {
     }
 
     public List<BoardResponseDTO> searchBoardsByMemberName(String memberName) {
-        List<Board> boards = boardRepository.findByMemberMemberNameOrderByUpdateTimeDesc(memberName);
+        List<Board> boards = boardRepository.findByMemberNameOrderByUpdateTimeDesc(memberName);
 
         return converToDTOList(boards);
     }
@@ -46,8 +46,9 @@ public class BoardService {
         return boards.stream().map(BoardResponseDTO::from).toList();
     }
 
-    public BoardResponseDTO searchByBoardNo(Long boardNo) {
-        Board board = boardRepository.findByBoardNo(boardNo)
+    @Transactional
+    public BoardResponseDTO searchByBoardId(Long boardId) {
+        Board board = boardRepository.findByBoardId(boardId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
         board.increaseBoardViewCount();
         return BoardResponseDTO.from(board);
@@ -55,22 +56,22 @@ public class BoardService {
 
     @Transactional
     public Long createBoard(BoardCreateRequestDTO board) {
-        Member member = memberRepository.findByMemberNo(board.getMemberNo())
-                .orElseThrow(() -> new NoSuchElementException("회원번호에 해당하는 회원이 존재하지 않습니다"));
-        return boardRepository.save(Board.createBoard(board, member)).getBoardNo();
+        Member member = memberRepository.findById(board.getMemberId())
+                .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다"));
+        return boardRepository.save(Board.createBoard(board, member)).getBoardId();
     }
 
     @Transactional
-    public BoardResponseDTO updateBoard(Long boardNo, BoardUpdateRequestDTO boardUpdateRequestDTO) {
-        Board board = boardRepository.findByBoardNo(boardNo)
+    public BoardResponseDTO updateBoard(Long boardId, BoardUpdateRequestDTO boardUpdateRequestDTO) {
+        Board board = boardRepository.findByBoardId(boardId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
         board.updateBoard(boardUpdateRequestDTO);
         return BoardResponseDTO.from(board);
     }
 
     @Transactional
-    public void deleteBoard(Long boardNo) {
-        Board board = boardRepository.findByBoardNo(boardNo)
+    public void deleteBoard(Long boardId) {
+        Board board = boardRepository.findByBoardId(boardId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
         boardRepository.delete(board);
     }

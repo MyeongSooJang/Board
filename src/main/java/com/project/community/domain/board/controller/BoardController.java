@@ -70,42 +70,42 @@ public class BoardController {
         return ResponseEntity.ok(boardService.searchBoardsByKeyWord(keyword));
     }
 
-    @GetMapping("/{boardNo}")
+    @GetMapping("/{boardId}")
     @Operation(summary = "게시글 클릭시 게시물 내용 출력",
             description = "해당하는 번호의 게시글 내용 출력")
-    public ResponseEntity<BoardResponseDTO> findByBoardNo(
+    public ResponseEntity<BoardResponseDTO> findByBoardId(
             @Parameter(description = "보여줄 게시글 번호")
-            @PathVariable Long boardNo) {
-        return ResponseEntity.ok(boardService.searchByBoardNo(boardNo));
+            @PathVariable Long boardId) {
+        return ResponseEntity.ok(boardService.searchByBoardId(boardId));
     }
 
     @PostMapping
     @Operation(summary = "게시글 작성",
             description = "새로운 게시글 작성")
     public ResponseEntity<URI> createBoard(@RequestBody BoardCreateRequestDTO board) {
-        Long boardNo = boardService.createBoard(board);
-        URI location = URI.create("/boards/" + boardNo);
+        Long boardId = boardService.createBoard(board);
+        URI location = URI.create("/boards/" + boardId);
         return ResponseEntity.created(location).body(location);
     }
 
-    @PutMapping("/{boardNo}")
+    @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정",
             description = "게시물 번호에 해당하는 상세 내용 수정")
     public ResponseEntity<BoardResponseDTO> updateBoard(
             @Parameter(description = "수정할 게시글 번호")
-            @PathVariable Long boardNo,
+            @PathVariable Long boardId,
             @Parameter(description = "수정할 상세 내용")
             @RequestBody BoardUpdateRequestDTO requestDTO) {
-        return ResponseEntity.ok(boardService.updateBoard(boardNo, requestDTO));
+        return ResponseEntity.ok(boardService.updateBoard(boardId, requestDTO));
     }
 
-    @DeleteMapping("/{boardNo}")
+    @DeleteMapping("/{boardId}")
     @Operation(summary = "게시글 삭제",
             description = "게시글 번호에 해당하는 게시글 삭제")
     public ResponseEntity<Void> deleteBoard(
             @Parameter(description = "삭제할 게시글 번호")
-            @PathVariable Long boardNo) {
-        boardService.deleteBoard(boardNo);
+            @PathVariable Long boardId) {
+        boardService.deleteBoard(boardId);
         return ResponseEntity.ok().build();
     }
 }

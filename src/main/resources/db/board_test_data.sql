@@ -1,5 +1,5 @@
 -- Board 더미 데이터 (회원 1~50번이 각 2개씩 작성)
-INSERT INTO board (board_title, board_content, member_no, board_view_count) VALUES
+INSERT INTO board (board_title, board_content, member_id, board_view_count) VALUES
 -- 1번 회원 게시글
 ('Spring Boot 시작하기', 'Spring Boot 기본 설정과 프로젝트 구조를 소개합니다.', 1, 145),
 ('JPA 기본 개념', 'JPA의 영속성 컨텍스트와 엔티티 생명주기에 대해 알아봅시다.', 1, 203),

@@ -29,14 +29,14 @@ public class MemberController {
         return ResponseEntity.ok(memberService.enrollMember(request));
     }
 
-    @GetMapping("/{memberNo}")
-    public ResponseEntity<MemberResponseDTO> findByMemberNo(@PathVariable Long memberNo) {
-        return ResponseEntity.ok(memberService.findByMemberNo(memberNo));
+    @GetMapping("/{memberId}")
+    public ResponseEntity<MemberResponseDTO> findByMemberId(@PathVariable Long memberId) {
+        return ResponseEntity.ok(memberService.findByMemberId(memberId));
     }
 
-    @GetMapping("/id/{memberId}")
-    public ResponseEntity<MemberResponseDTO> findByMemberId(@PathVariable String memberId) {
-        return ResponseEntity.ok(memberService.findByMemberId(memberId));
+    @GetMapping("/by-username/{username}")
+    public ResponseEntity<MemberResponseDTO> findByUsername(@PathVariable String username) {
+        return ResponseEntity.ok(memberService.findByUsername(username));
     }
 
     @GetMapping
@@ -44,15 +44,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.findAll(pageable));
     }
 
-    @PutMapping("/{memberNo}")
-    public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long memberNo,
+    @PutMapping("/{memberId}")
+    public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long memberId,
                                                           @Valid @RequestBody MemberUpdateRequestDTO request) {
-        return ResponseEntity.ok(memberService.updateMember(memberNo, request));
+        return ResponseEntity.ok(memberService.updateMember(memberId, request));
     }
 
-    @DeleteMapping("/{memberNo}")
-    public ResponseEntity<Void> deleteMember(@PathVariable Long memberNo) {
-        memberService.deleteMember(memberNo);
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
+        memberService.deleteMember(memberId);
         return ResponseEntity.noContent().build();
     }
 }

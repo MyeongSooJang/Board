@@ -7,19 +7,19 @@ DROP TABLE IF EXISTS member;
 -- Member 테이블
 CREATE TABLE member
 (
-    member_no    BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_id    VARCHAR(255) UNIQUE,
-    member_pwd   VARCHAR(255) NOT NULL,
-    member_name  VARCHAR(255) NOT NULL,
-    member_age   INT          NOT NULL,
-    member_email VARCHAR(255) NOT NULL,
-    member_phone VARCHAR(255) NOT NULL,
-    member_role  VARCHAR(255) NOT NULL DEFAULT 'GUEST'
-        CHECK (member_role IN ('GUEST', 'ADMIN')),
-    create_time  TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    update_time  TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    delete_time  TIMESTAMP    NULL,
-    INDEX idx_member_name (member_name),
+    member_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username    VARCHAR(255) NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    name        VARCHAR(255) NOT NULL,
+    age         INT          NOT NULL,
+    email       VARCHAR(255) NOT NULL UNIQUE,
+    phone       VARCHAR(255) NOT NULL,
+    role        VARCHAR(255) NOT NULL DEFAULT 'GUEST'
+        CHECK (role IN ('GUEST', 'ADMIN')),
+    create_time TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    delete_time TIMESTAMP    NULL,
+    INDEX idx_member_name (name),
     INDEX idx_member_delete (delete_time)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
@@ -27,16 +27,16 @@ CREATE TABLE member
 -- Board 테이블
 CREATE TABLE board
 (
-    board_no         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     board_title      VARCHAR(255) NOT NULL,
     board_content    TEXT,
-    member_no        BIGINT       NOT NULL,
+    member_id        BIGINT       NOT NULL,
     board_view_count INT          NOT NULL DEFAULT 0,
     create_time      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
     update_time      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     delete_time      TIMESTAMP    NULL,
-    FOREIGN KEY (member_no) REFERENCES member (member_no),
-    INDEX idx_board_member (member_no),
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    INDEX idx_board_member (member_id),
     INDEX idx_board_delete_update (delete_time, update_time)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
@@ -44,33 +44,33 @@ CREATE TABLE board
 -- Board Like 테이블
 CREATE TABLE board_like
 (
-    like_no   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_no BIGINT NOT NULL,
-    board_no  BIGINT NOT NULL,
-    UNIQUE KEY uk_member_board (member_no, board_no),
-    FOREIGN KEY (member_no) REFERENCES member (member_no),
-    FOREIGN KEY (board_no) REFERENCES board (board_no),
-    INDEX idx_like_board (board_no)
+    like_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id BIGINT NOT NULL,
+    board_id  BIGINT NOT NULL,
+    UNIQUE KEY uk_member_board (member_id, board_id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    FOREIGN KEY (board_id) REFERENCES board (board_id),
+    INDEX idx_like_board (board_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Comment 테이블
 CREATE TABLE comment
 (
-    comment_no        BIGINT AUTO_INCREMENT PRIMARY KEY,
-    comment_parent_no BIGINT,
+    comment_id        BIGINT AUTO_INCREMENT PRIMARY KEY,
+    comment_parent_id BIGINT,
     comment_content   TEXT      NOT NULL,
-    board_no          BIGINT    NOT NULL,
-    member_no         BIGINT    NOT NULL,
+    board_id          BIGINT    NOT NULL,
+    member_id         BIGINT    NOT NULL,
     create_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     delete_time       TIMESTAMP NULL,
-    FOREIGN KEY (board_no) REFERENCES board (board_no),
-    FOREIGN KEY (member_no) REFERENCES member (member_no),
-    FOREIGN KEY (comment_parent_no) REFERENCES comment (comment_no),
-    INDEX idx_comment_board (board_no),
-    INDEX idx_comment_member (member_no),
-    INDEX idx_comment_parent (comment_parent_no),
+    FOREIGN KEY (board_id) REFERENCES board (board_id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    FOREIGN KEY (comment_parent_id) REFERENCES comment (comment_id),
+    INDEX idx_comment_board (board_id),
+    INDEX idx_comment_member (member_id),
+    INDEX idx_comment_parent (comment_parent_id),
     INDEX idx_comment_delete (delete_time)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
@@ -78,11 +78,12 @@ CREATE TABLE comment
 -- Refresh Token 테이블
 CREATE TABLE refresh_token
 (
-    token_no      BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_id     VARCHAR(255) NOT NULL,
+    token_id      BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username     VARCHAR(255) NOT NULL,
     refresh_token VARCHAR(512) NOT NULL,
     expire_date   TIMESTAMP    NOT NULL,
-    INDEX idx_token_member_id (member_id),
+    INDEX idx_token_username (username
+                             ),
     INDEX idx_token_expire (expire_date)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;

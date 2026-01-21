@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class LogoutRequestDTO {
-    private String memberId;
+    private String username;
 }

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/{boardNo}/comment")
+@RequestMapping("/boards/{boardId}/comment")
 @Tag(name = "댓글", description = "댓글 관련 API")
 public class CommentController {
     private final CommentService commentService;
@@ -30,10 +30,10 @@ public class CommentController {
     @GetMapping
     @Operation(summary = "모든 댓글 조회",
             description = "게시글 번호에 대한 전체 댓글을 조회")
-    public ResponseEntity<List<CommentResponseDTO>> findAllByBoardNo(
+    public ResponseEntity<List<CommentResponseDTO>> findAllByBoardId(
             @Parameter(description = "게시글 번호")
-            @PathVariable Long boardNo) {
-        List<CommentResponseDTO> comments = commentService.findAllCommentsByBoardNo(boardNo);
+            @PathVariable Long boardId) {
+        List<CommentResponseDTO> comments = commentService.findAllCommentsByBoardId(boardId);
         return ResponseEntity.ok(comments);
     }
 
@@ -42,37 +42,37 @@ public class CommentController {
             description = "게시글에 대한 댓글 작성")
     public ResponseEntity<CommentResponseDTO> createComment(
             @Parameter(description = "게시글 번호")
-            @PathVariable("boardNo") Long boardNo,
+            @PathVariable("boardId") Long boardId,
             @Parameter(description = "생성할 댓글 내용")
             @RequestBody CommentCreateRequestDTO comment) {
-        CommentResponseDTO response = commentService.createComment(boardNo, comment);
+        CommentResponseDTO response = commentService.createComment(boardId, comment);
         return ResponseEntity.created(
-                URI.create("/comments/" + response.getCommentNo())
+                URI.create("/comments/" + response.getCommentId())
         ).body(response);
     }
 
-    @PutMapping("/{commentNo}")
+    @PutMapping("/{commentId}")
     @Operation(summary = "댓글 수정",
             description = "해당하는 댓글번호 댓글 수정")
     public ResponseEntity<CommentResponseDTO> updateComment(
             @Parameter(description = "게시글 번호")
-            @PathVariable("boardNo") Long boardNo,
+            @PathVariable("boardId") Long boardId,
             @Parameter(description = "댓글 번호")
-            @PathVariable("commentNo") Long commentNo,
+            @PathVariable("commentId") Long commentId,
             @Parameter(description = "수정할 댓글 내용")
             @RequestBody CommentUpdateRequestDTO comment) {
-        return ResponseEntity.ok(commentService.updateComment(commentNo, comment));
+        return ResponseEntity.ok(commentService.updateComment(commentId, comment));
     }
 
-    @DeleteMapping("/{commentNo}")
+    @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제",
             description = "해당하는 댓글번호 댓글 삭제")
     public ResponseEntity<Void> deleteComment(
             @Parameter(description = "게시글 번호")
-            @PathVariable("boardNo") Long boardNo,
+            @PathVariable("boardId") Long boardId,
             @Parameter(description = "댓글 번호")
-            @PathVariable("commentNo") Long commentNo) {
-        commentService.deleteComment(commentNo);
+            @PathVariable("commentId") Long commentId) {
+        commentService.deleteComment(commentId);
         return ResponseEntity.ok().build();
     }
 }

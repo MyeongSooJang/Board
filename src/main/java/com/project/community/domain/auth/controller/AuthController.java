@@ -27,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody LogoutRequestDTO request) {
-        authService.logout(request.getMemberId());
+        authService.logout(request.getUsername());
         return ResponseEntity.ok().build();
     }
 

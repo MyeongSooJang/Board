@@ -21,29 +21,29 @@ import lombok.NoArgsConstructor;
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentNo;
+    private Long commentId;
 
-    private Long commentParentNo;
+    private Long commentParentId;
 
     private String commentContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_no")
+    @JoinColumn(name = "board_id")
     private Board board;
 
     @ManyToOne
-    @JoinColumn(name = "member_no")
+    @JoinColumn(name = "member_id")
     private Member member;
 
-    public Comment(Long commentParentNo, String commentContent, Board board, Member member) {
-        this.commentParentNo = commentParentNo;
+    public Comment(Long commentParentId, String commentContent, Board board, Member member) {
+        this.commentParentId = commentParentId;
         this.commentContent = commentContent;
         this.board = board;
         this.member = member;
     }
 
     public static Comment createComment(CommentCreateRequestDTO dto, Board board, Member member) {
-        return new Comment(dto.getCommentParentNo(), dto.getCommentContent(), board, member);
+        return new Comment(dto.getCommentParentId(), dto.getCommentContent(), board, member);
     }
 
     public Comment updateComment(CommentUpdateRequestDTO dto) {

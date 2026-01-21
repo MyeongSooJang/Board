@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findAllByOrderByUpdateTimeDesc(Pageable pageable);
     List<Board> findByBoardTitleContainingOrderByUpdateTimeDesc(String boardTitle);
-    List<Board> findByMemberMemberNameOrderByUpdateTimeDesc(String memberName);
+    List<Board> findByMemberNameOrderByUpdateTimeDesc(String memberName);
     @Query("""
               SELECT b
               FROM Board AS b
@@ -25,6 +25,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
               ORDER BY b.updateTime DESC
             """)
     List<Board> findByKeywordInTitleOrContent(@Param("keyword") String keyword);
-    Optional<Board> findByBoardNo(Long boardNo);
+    Optional<Board> findByBoardId(Long boardId);
 
 }

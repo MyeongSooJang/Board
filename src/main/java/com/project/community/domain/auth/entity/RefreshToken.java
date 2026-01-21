@@ -16,18 +16,18 @@ import lombok.NoArgsConstructor;
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long tokenNo;
-    private String memberId;
+    private Long tokenId;
+    private String username;
     private String refreshToken;
     private Date expireDate;
 
-    public RefreshToken(String memberId, String refreshToken, Date expireDate) {
-        this.memberId = memberId;
+    public RefreshToken(String username, String refreshToken, Date expireDate) {
+        this.username = username;
         this.refreshToken = refreshToken;
         this.expireDate = expireDate;
     }
 
-    public static RefreshToken createRefreshToken(String memberId, String refreshToken, Date expireDate) {
-        return new RefreshToken(memberId, refreshToken, expireDate);
+    public static RefreshToken createRefreshToken(String username, String refreshToken, Date expireDate) {
+        return new RefreshToken(username, refreshToken, expireDate);
     }
 }

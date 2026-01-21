@@ -6,8 +6,8 @@ import { boardApi } from '../../api/board'
 const router = useRouter()
 const route = useRoute()
 
-const isEdit = ref(!!route.params.boardNo)
-const boardNo = ref(route.params.boardNo || null)
+const isEdit = ref(!!route.params.boardId)
+const boardId = ref(route.params.boardId || null)
 
 const formData = ref({
   boardTitle: '',
@@ -24,7 +24,7 @@ const loadBoard = async () => {
   error.value = ''
 
   try {
-    const response = await boardApi.getDetail(boardNo.value)
+    const response = await boardApi.getDetail(boardId.value)
     formData.value.boardTitle = response.data.boardTitle
     formData.value.boardContent = response.data.boardContent
   } catch (err) {
@@ -51,21 +51,23 @@ const handleSubmit = async () => {
   try {
     if (isEdit.value) {
       await boardApi.update(
-        boardNo.value,
+        boardId.value,
         formData.value.boardTitle,
         formData.value.boardContent
       )
       alert('게시물이 수정되었습니다')
     } else {
+      const memberId = localStorage.getItem('memberId')
       const response = await boardApi.create(
         formData.value.boardTitle,
-        formData.value.boardContent
+        formData.value.boardContent,
+        memberId
       )
       alert('게시물이 작성되었습니다')
-      boardNo.value = response.data.boardNo
+      boardId.value = response.data.boardId
     }
 
-    router.push(`/boards/${boardNo.value}`)
+    router.push(`/boards/${boardId.value}`)
   } catch (err) {
     error.value = err.response?.data?.message || `게시물 ${isEdit.value ? '수정' : '작성'}에 실패했습니다`
   } finally {
@@ -75,7 +77,7 @@ const handleSubmit = async () => {
 
 const handleCancel = () => {
   if (isEdit.value) {
-    router.push(`/boards/${boardNo.value}`)
+    router.push(`/boards/${boardId.value}`)
   } else {
     router.push('/boards')
   }

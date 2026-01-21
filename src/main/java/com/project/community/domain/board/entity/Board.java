@@ -20,12 +20,12 @@ import lombok.NoArgsConstructor;
 public class Board extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardNo;
+    private Long boardId;
     private String boardTitle;
     private String boardContent;
     private Integer boardViewCount = 0;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_no")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     public Board(String boardTitle, String boardContent, Member member) {

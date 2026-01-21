@@ -21,16 +21,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         Member foundMember = member.orElseThrow(() ->
                 new UsernameNotFoundException("사용자를 찾을수가 없습니다" + username));
         return User.builder()
-                .username(foundMember.getMemberId())
-                .password(foundMember.getMemberPwd())
-                .roles(foundMember.getMemberRole())
+                .username(foundMember.getUsername())
+                .password(foundMember.getPassword())
+                .roles(foundMember.getRole())
                 .build();
     }
 
     private Optional<Member> checkIdAndEmail(String username) {
-        Optional<Member> member = memberRepository.findByMemberId(username);
+        Optional<Member> member = memberRepository.findByUsername(username);
         if (member.isEmpty()) {
-            member = memberRepository.findByMemberEmail(username);
+            member = memberRepository.findByEmail(username);
         }
         return member;
     }

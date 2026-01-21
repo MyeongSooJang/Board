@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"member_no", "board_no"})
+        @UniqueConstraint(columnNames = {"member_id", "board_id"})
 })
 public class BoardLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeNo;
-    private Long memberNo;
-    private Long boardNo;
+    private Long likeId;
+    private Long memberId;
+    private Long boardId;
 }

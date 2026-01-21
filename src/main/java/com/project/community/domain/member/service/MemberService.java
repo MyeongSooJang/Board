@@ -25,37 +25,37 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO enrollMember(MemberCreateRequestDTO request) {
-        validateDuplicateId(request);
+        validateDuplicateUsername(request);
         validateDuplicatePhone(request);
         validateDuplicateEmail(request);
-        String pwd = encodePassword(request.getMemberPwd());
+        String pwd = encodePassword(request.getPassword());
         return MemberResponseDTO.from(memberRepository.save(createMember(pwd, request)));
     }
 
     private void validateDuplicateEmail(MemberCreateRequestDTO request) {
-        if (memberRepository.existsByMemberEmail(request.getMemberEmail())) {
+        if (memberRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateException(ErrorCode.DUPLICATE_EMAIL);
         }
     }
 
     private void validateDuplicatePhone(MemberCreateRequestDTO request) {
-        if (memberRepository.existsByMemberPhone(request.getMemberPhone())) {
+        if (memberRepository.existsByPhone(request.getPhone())) {
             throw new DuplicateException(ErrorCode.DUPLICATE_PHONE);
         }
     }
 
-    private void validateDuplicateId(MemberCreateRequestDTO request) {
-        if (memberRepository.existsByMemberId(request.getMemberId())) {
+    private void validateDuplicateUsername(MemberCreateRequestDTO request) {
+        if (memberRepository.existsByUsername(request.getUsername())) {
             throw new DuplicateException(ErrorCode.DUPLICATE_MEMBER_ID);
         }
     }
 
-    public MemberResponseDTO findByMemberNo(Long memberNo) {
-        return MemberResponseDTO.from(searchByMemberNo(memberNo));
+    public MemberResponseDTO findByMemberId(Long memberId) {
+        return MemberResponseDTO.from(searchByMemberId(memberId));
     }
 
-    public MemberResponseDTO findByMemberId(String memberId) {
-        Member member = memberRepository.findByMemberId(memberId)
+    public MemberResponseDTO findByUsername(String username) {
+        Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 아이디의 회원이 존재하지 않습니다"));
         return MemberResponseDTO.from(member);
     }
@@ -65,20 +65,20 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponseDTO updateMember(Long memberNo, MemberUpdateRequestDTO request) {
-        String encodingPassword = encodePassword(request.getMemberPwd());
-        Member updated = searchByMemberNo(memberNo).updateMember(encodingPassword, request);
+    public MemberResponseDTO updateMember(Long memberId, MemberUpdateRequestDTO request) {
+        String encodingPassword = encodePassword(request.getPassword());
+        Member updated = searchByMemberId(memberId).updateMember(encodingPassword, request);
         return MemberResponseDTO.from(updated);
     }
 
     @Transactional
-    public void deleteMember(Long memberNo) {
-        memberRepository.delete(searchByMemberNo(memberNo));
+    public void deleteMember(Long memberId) {
+        memberRepository.delete(searchByMemberId(memberId));
     }
 
-    private Member searchByMemberNo(Long memberNo) {
-        return memberRepository.findByMemberNo(memberNo)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 번호의 회원이 존재하지 않습니다"));
+    private Member searchByMemberId(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다"));
     }
 
     private String encodePassword(String password) {

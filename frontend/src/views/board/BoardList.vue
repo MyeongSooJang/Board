@@ -55,13 +55,13 @@ const loadCommentCounts = async () => {
 
   try {
     const promises = boards.value.map(board =>
-      commentApi.getList(board.boardNo)
+      commentApi.getList(board.boardId)
         .then(res => ({
-          boardNo: board.boardNo,
+          boardId: board.boardId,
           count: res.data.length
         }))
         .catch(() => ({
-          boardNo: board.boardNo,
+          boardId: board.boardId,
           count: 0
         }))
     )
@@ -70,7 +70,7 @@ const loadCommentCounts = async () => {
 
     boardsWithComments.value = boards.value.map(board => ({
       ...board,
-      commentCount: commentCounts.find(c => c.boardNo === board.boardNo)?.count || 0
+      commentCount: commentCounts.find(c => c.boardId === board.boardId)?.count || 0
     }))
   } catch (err) {
     console.error('댓글 수 로딩 실패:', err)
@@ -136,8 +136,8 @@ const handleSearch = () => {
   loadBoards()
 }
 
-const goToDetail = (boardNo) => {
-  router.push(`/boards/${boardNo}`)
+const goToDetail = (boardId) => {
+  router.push(`/boards/${boardId}`)
 }
 
 const goToWrite = () => {
@@ -221,8 +221,8 @@ onMounted(() => {
       <tbody>
         <tr
           v-for="(board, index) in boardsWithComments"
-          :key="board.boardNo"
-          @click="goToDetail(board.boardNo)"
+          :key="board.boardId"
+          @click="goToDetail(board.boardId)"
           class="board-row"
         >
           <td class="col-number">{{ getDisplayNumber(index) }}</td>

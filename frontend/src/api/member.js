@@ -2,30 +2,30 @@ import client from './client'
 
 export const memberApi = {
   // 회원 가입
-  signup: (memberId, memberName, memberPwd, memberAge, memberEmail, memberPhone, memberRole = 'GUEST') =>
+  signup: (username, name, password, age, email, phone, role = 'GUEST') =>
     client.post('/member', {
-      memberId,
-      memberName,
-      memberPwd,
-      memberAge,
-      memberEmail,
-      memberPhone,
-      memberRole
+      username,
+      name,
+      password,
+      age,
+      email,
+      phone,
+      role
     }),
 
   // 회원 정보 조회 (ID로)
-  getById: (memberId) =>
-    client.get(`/member/id/${memberId}`),
+  getByUsername: (username) =>
+    client.get(`/member/by-username/${username}`),
 
-  // 회원 정보 조회 (번호로)
-  getByNo: (memberNo) =>
-    client.get(`/member/${memberNo}`),
+  // 회원 정보 조회 (PK로)
+  getById: (memberId) =>
+    client.get(`/member/${memberId}`),
 
   // 회원 정보 수정
-  update: (memberNo, data) =>
-    client.put(`/member/${memberNo}`, data),
+  update: (memberId, data) =>
+    client.put(`/member/${memberId}`, data),
 
   // 회원 삭제
-  delete: (memberNo) =>
-    client.delete(`/member/${memberNo}`)
+  delete: (memberId) =>
+    client.delete(`/member/${memberId}`)
 }

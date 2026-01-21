@@ -6,15 +6,15 @@ import { authApi } from '../../api/auth'
 const router = useRouter()
 
 const formData = ref({
-  memberId: '',
-  memberPwd: ''
+  username: '',
+  password: ''
 })
 
 const error = ref('')
 const isLoading = ref(false)
 
 const handleLogin = async () => {
-  if (!formData.value.memberId || !formData.value.memberPwd) {
+  if (!formData.value.username || !formData.value.password) {
     error.value = '아이디와 비밀번호를 입력해주세요'
     return
   }
@@ -24,17 +24,16 @@ const handleLogin = async () => {
 
   try {
     const response = await authApi.login(
-      formData.value.memberId,
-      formData.value.memberPwd
+      formData.value.username,
+      formData.value.password
     )
 
-    const { accessToken, refreshToken, memberId, memberNo } = response.data
+    const { accessToken, refreshToken, memberId } = response.data
 
     // 토큰 저장
     localStorage.setItem('accessToken', accessToken)
     localStorage.setItem('refreshToken', refreshToken)
     localStorage.setItem('memberId', memberId)
-    localStorage.setItem('memberNo', memberNo)
 
     router.push('/boards')
   } catch (err) {
@@ -52,10 +51,10 @@ const handleLogin = async () => {
 
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label for="memberId">아이디</label>
+          <label for="username">아이디</label>
           <input
-            id="memberId"
-            v-model="formData.memberId"
+            id="username"
+            v-model="formData.username"
             type="text"
             placeholder="아이디를 입력하세요"
             class="input-field"
@@ -63,10 +62,10 @@ const handleLogin = async () => {
         </div>
 
         <div class="form-group">
-          <label for="memberPwd">비밀번호</label>
+          <label for="password">비밀번호</label>
           <input
-            id="memberPwd"
-            v-model="formData.memberPwd"
+            id="password"
+            v-model="formData.password"
             type="password"
             placeholder="비밀번호를 입력하세요"
             class="input-field"

@@ -8,24 +8,22 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class BoardResponseDTO {
-    private Long boardNo;
+    private Long boardId;
     private String boardTitle;
     private String boardContent;
     private String memberName;
-    private String memberId;
-    private Long memberNo;
+    private Long memberId;
     private LocalDateTime updateTime;
     private LocalDateTime createTime;
     private Integer boardViewCount;
 
     public static BoardResponseDTO from(Board board) {
         return new BoardResponseDTO(
-                board.getBoardNo(),
+                board.getBoardId(),
                 board.getBoardTitle(),
                 board.getBoardContent(),
-                board.getMember().getMemberName(),
+                board.getMember().getName(),
                 board.getMember().getMemberId(),
-                board.getMember().getMemberNo(),
                 board.getUpdateTime(),
                 board.getCreateTime(),
                 board.getBoardViewCount()

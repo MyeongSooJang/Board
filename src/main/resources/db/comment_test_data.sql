@@ -1,5 +1,5 @@
--- Comment 더미 데이터 (모든 100개 게시글 1:1 매핑, commentNo: 1-455)
-INSERT INTO comment (comment_content, board_no, member_no, comment_parent_no) VALUES
+-- Comment 더미 데이터 (모든 100개 게시글 1:1 매핑, commentId: 1-455)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 -- 1번 게시글 (Spring Boot 시작하기, 4개, commentNo: 1-4, 대댓글 1개)
 ('Spring Boot 정말 편하네요.', 1, 5, NULL),
 ('기본 설정이 명확합니다.', 1, 12, NULL),

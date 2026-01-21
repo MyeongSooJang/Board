@@ -19,55 +19,51 @@ import com.project.community.domain.BaseEntity;
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberNo;
+    private Long memberId;
 
     @Column(unique = true)
-    private String memberId;
+    private String username;
 
-    private String memberName;
+    private String password;
 
-    private String memberPwd;
+    private String name;
 
-    private Integer memberAge;
+    private Integer age;
+
+    private String email;
 
     @Email
-    private String memberEmail;
+    private String phone;
 
-    private String memberPhone;
+    private String role = "GUEST";
 
-    private String memberRole = "GUEST";
 
-    public Member(String memberId,
-                  String memberName,
-                  String memberPwd,
-                  Integer memberAge,
-                  String memberEmail,
-                  String memberPhone,
-                  String memberRole) {
-        this.memberId = memberId;
-        this.memberName = memberName;
-        this.memberPwd = memberPwd;
-        this.memberAge = memberAge;
-        this.memberEmail = memberEmail;
-        this.memberPhone = memberPhone;
-        this.memberRole = memberRole;
+    public Member(String username, String password, String name, Integer age, String email, String phone, String role) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.age = age;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
     }
 
     public static Member createMember(String encodingPassword, MemberCreateRequestDTO request) {
-        return new Member(request.getMemberId(),
-                request.getMemberName(),
+        return new Member(
+                request.getUsername(),
                 encodingPassword,
-                request.getMemberAge(),
-                request.getMemberEmail(),
-                request.getMemberPhone(),
-                request.getMemberRole());
+                request.getName(),
+                request.getAge(),
+                request.getEmail(),
+                request.getPhone(),
+                request.getRole());
     }
 
     public Member updateMember(String encodingPassword, MemberUpdateRequestDTO request) {
-        this.memberName = request.getMemberName();
-        this.memberPwd = encodingPassword;
-        this.memberAge = request.getMemberAge();
-        this.memberPhone = request.getMemberPhone();
+        this.name = request.getName();
+        this.password = encodingPassword;
+        this.age = request.getAge();
+        this.phone = request.getPhone();
         return this;
     }
 }

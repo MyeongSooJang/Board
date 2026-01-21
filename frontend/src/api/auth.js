@@ -2,8 +2,8 @@ import client from './client'
 
 export const authApi = {
   // 로그인
-  login: (memberId, memberPwd) =>
-    client.post('/auth/login', { memberId, password: memberPwd }),
+  login: (username, password) =>
+    client.post('/auth/login', { username, password }),
 
   // 로그아웃
   logout: () =>

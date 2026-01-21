@@ -23,38 +23,38 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public List<CommentResponseDTO> findAllCommentsByBoardNo(Long boardNo) {
-        List<Comment> comments = commentRepository.findAllByBoardOrderByCreateTimeDesc(searchBoard(boardNo));
+    public List<CommentResponseDTO> findAllCommentsByBoardId(Long boardId) {
+        List<Comment> comments = commentRepository.findAllByBoardOrderByCreateTimeDesc(searchBoard(boardId));
         return comments.stream().map(CommentResponseDTO::from).toList();
     }
 
-    public CommentResponseDTO createComment(Long boardNo, CommentCreateRequestDTO comment) {
+    public CommentResponseDTO createComment(Long boardId, CommentCreateRequestDTO comment) {
         Comment saved = commentRepository.save(
-                Comment.createComment(comment, searchBoard(boardNo), searchMember(comment)));
+                Comment.createComment(comment, searchBoard(boardId), searchMember(comment)));
         return CommentResponseDTO.from(saved);
     }
 
     private Member searchMember(CommentCreateRequestDTO comment) {
-        return memberRepository.findByMemberNo(comment.getMemberNo())
-                .orElseThrow(() -> new NoSuchElementException("해당하는 회원 번호의 회원이 존재하지 않습니다"));
+        return memberRepository.findById(comment.getMemberId())
+                .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다"));
     }
 
-    private Board searchBoard(Long boardNo) {
-        return boardRepository.findByBoardNo(boardNo)
+    private Board searchBoard(Long boardId) {
+        return boardRepository.findByBoardId(boardId)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
     }
 
-    public CommentResponseDTO updateComment(Long commentNo, CommentUpdateRequestDTO comment) {
-        Comment updated = searchComment(commentNo).updateComment(comment);
+    public CommentResponseDTO updateComment(Long commentId, CommentUpdateRequestDTO comment) {
+        Comment updated = searchComment(commentId).updateComment(comment);
         return CommentResponseDTO.from(updated);
     }
 
-    private Comment searchComment(Long commentNo) {
-        return commentRepository.findByCommentNo(commentNo)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 대슥ㄹ 번호의 댓글이 존재하지 않습니다"));
+    private Comment searchComment(Long commentId) {
+        return commentRepository.findByCommentId(commentId)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 댓글 번호의 댓글이 존재하지 않습니다"));
     }
 
-    public void deleteComment(Long commentNo) {
-        commentRepository.delete(searchComment(commentNo));
+    public void deleteComment(Long commentId) {
+        commentRepository.delete(searchComment(commentId));
     }
 }

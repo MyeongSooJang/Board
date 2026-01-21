@@ -2,22 +2,23 @@ import client from './client'
 
 export const commentApi = {
   // 댓글 목록 조회
-  getList: (boardNo) =>
-    client.get(`/${boardNo}/comment`),
+  getList: (boardId) =>
+    client.get(`/boards/${boardId}/comment`),
 
   // 댓글 작성
-  create: (boardNo, commentContent, memberNo, commentParentNo = null) =>
-    client.post(`/${boardNo}/comment`, {
+  create: (boardId, commentContent, memberId, commentParentId = null) =>
+    client.post(`/boards/${boardId}/comment`, {
       commentContent,
-      memberNo,
-      ...(commentParentNo && { commentParentNo })
+      memberId,
+      boardId,
+      ...(commentParentId && { commentParentId })
     }),
 
   // 댓글 수정
-  update: (boardNo, commentNo, commentContent) =>
-    client.put(`/${boardNo}/comment/${commentNo}`, { commentContent }),
+  update: (boardId, commentId, commentContent) =>
+    client.put(`/boards/${boardId}/comment/${commentId}`, { commentContent }),
 
   // 댓글 삭제
-  delete: (boardNo, commentNo) =>
-    client.delete(`/${boardNo}/comment/${commentNo}`)
+  delete: (boardId, commentId) =>
+    client.delete(`/boards/${boardId}/comment/${commentId}`)
 }
