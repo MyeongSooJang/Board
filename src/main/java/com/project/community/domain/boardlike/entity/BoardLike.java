@@ -13,6 +13,7 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 public class BoardLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeNo;
+    private Long likeId;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

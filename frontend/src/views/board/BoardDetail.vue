@@ -24,6 +24,12 @@ const currentMemberId = ref(localStorage.getItem('memberId') || '')
 
 const boardId = ref(route.params.boardId)
 
+// 좋아요 관련
+const liked = ref(false)
+const likeCount = ref(0)
+const isTogglingLike = ref(false)
+let likeDebounceTimeout = null
+
 const loadBoard = async () => {
   isLoading.value = true
   error.value = ''
@@ -31,6 +37,8 @@ const loadBoard = async () => {
   try {
     const response = await boardApi.getDetail(boardId.value)
     board.value = response.data
+    likeCount.value = 0  // 초기값 (나중에 서버에서 받을 수 있음)
+    liked.value = false  // 초기값
   } catch (err) {
     error.value = err.response?.data?.message || '게시물을 불러오지 못했습니다'
   } finally {
@@ -147,6 +155,50 @@ const handleEditBoard = () => {
   router.push(`/boards/${boardId.value}/edit`)
 }
 
+// 좋아요 토글 (낙관적 업데이트 + 디바운싱)
+const handleLikeClick = () => {
+  if (!isLoggedIn.value) {
+    alert('좋아요를 누르려면 로그인해야 합니다')
+    router.push('/login')
+    return
+  }
+
+  // 낙관적 업데이트: 즉시 UI 업데이트
+  const wasLiked = liked.value
+  const previousCount = likeCount.value
+
+  liked.value = !liked.value
+  likeCount.value = liked.value ? previousCount + 1 : previousCount - 1
+
+  // 기존 요청 취소
+  if (likeDebounceTimeout) {
+    clearTimeout(likeDebounceTimeout)
+  }
+
+  // 디바운싱: 500ms 후 서버에 요청
+  likeDebounceTimeout = setTimeout(() => {
+    toggleLikeDebounced(wasLiked, previousCount)
+  }, 500)
+}
+
+const toggleLikeDebounced = async (wasLiked, previousCount) => {
+  isTogglingLike.value = true
+
+  try {
+    const response = await boardApi.toggleLike(boardId.value)
+    // 서버의 최신 정보로 동기화
+    liked.value = response.data.liked
+    likeCount.value = response.data.likeCount
+  } catch (err) {
+    // 에러 발생 시 롤백
+    liked.value = wasLiked
+    likeCount.value = previousCount
+    console.error('좋아요 토글 실패:', err)
+  } finally {
+    isTogglingLike.value = false
+  }
+}
+
 const formatDate = (date) => {
   if (!date) return ''
   const d = new Date(date)
@@ -180,6 +232,14 @@ onMounted(() => {
           <div class="board-meta">
             <span>작성자: {{ board.memberName }}</span>
             <span>조회: {{ board.boardViewCount || 0 }}</span>
+            <button
+              @click="handleLikeClick"
+              class="btn-like"
+              :class="{ liked }"
+              :disabled="isTogglingLike"
+            >
+              {{ liked ? '❤️' : '🤍' }} {{ likeCount }}
+            </button>
             <span>{{ formatDate(board.updateTime) }}</span>
           </div>
           <div class="board-actions">
@@ -378,6 +438,39 @@ body { color: #000; background-color: #f5f5f5; }
 .board-meta span {
   display: flex;
   align-items: center;
+}
+
+.btn-like {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 4px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.btn-like:hover:not(:disabled) {
+  background: #fff0f0;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.btn-like.liked {
+  background: #ffe0e0;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.btn-like:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .board-actions {

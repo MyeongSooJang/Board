@@ -29,9 +29,10 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(String memberId, String role) {
+    public String generateAccessToken(String memberId, String username, String role) {
         return Jwts.builder()
                 .subject(memberId)
+                .claim("username", username)
                 .claim("role", role)
                 .issuedAt(now())
                 .expiration(accessTokenExpiration())
@@ -72,6 +73,15 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public String getUsername(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("username", String.class);
     }
 
     public String getRole(String token) {

@@ -32,7 +32,7 @@ public class AuthService {
         Member member = searchByIdAndEmail(request.getUsername());
         checkPassword(request, member);
 
-        String accessToken = jwtTokenProvider.generateAccessToken(member.getUsername(), member.getRole());
+        String accessToken = jwtTokenProvider.generateAccessToken(member.getMemberId().toString(), member.getUsername(), member.getRole());
         String refreshToken = jwtTokenProvider.generateRefreshToken(member.getUsername());
         Date refreshTokenExpireDate = jwtTokenProvider.refreshTokenExpiration();
 
@@ -75,7 +75,7 @@ public class AuthService {
 
         Member member = searchByIdAndEmail(searchToken.getUsername());
 
-        String accessToken = jwtTokenProvider.generateAccessToken(member.getUsername(), member.getRole());
+        String accessToken = jwtTokenProvider.generateAccessToken(member.getMemberId().toString(), member.getUsername(), member.getRole());
         String refreshToken = jwtTokenProvider.generateRefreshToken(member.getUsername());
         Date refreshTokenExpireDate = jwtTokenProvider.refreshTokenExpiration();
 

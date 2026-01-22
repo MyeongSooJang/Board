@@ -31,5 +31,9 @@ export const boardApi = {
 
   // 게시물 삭제
   delete: (boardId) =>
-    client.delete(`/boards/${boardId}`)
+    client.delete(`/boards/${boardId}`),
+
+  // 좋아요 토글
+  toggleLike: (boardId) =>
+    client.post(`/boards/${boardId}/like`)
 }
