@@ -121,4 +121,6 @@ implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 - 국제표준 : username
 - member_id로 하면(PK로 헷갈림)
 
+## 1월 22일 
 
+### 좋아요 기능 -> 할때마다 SAVE를 날린다..?
