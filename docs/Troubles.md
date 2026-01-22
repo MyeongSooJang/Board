@@ -103,3 +103,22 @@ implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 ~~~
 구현체만 올리게 되고, 수정된 interface는 올리지 않은 체로, createOrder(Long userId, Integer count)
 -> NoSuchMethodError
+
+## 1월 21일
+
+### 컬럼명 네이밍 컨벤션 정리
+
+#### Primary Key(기본키)
+- 모든 엔티티의 PK는 ID로 통일
+- MEMBER_NO, BOARD_NO 이런식으로 사용하지 않음
+- 그냥 ID를 사용
+
+#### 일반 컬럼
+- 엔티티명 접두사를 불필요
+- member_name, member_email 이 아닌 email, name
+
+#### 로그인 ID
+- 국제표준 : username
+- member_id로 하면(PK로 헷갈림)
+
+
