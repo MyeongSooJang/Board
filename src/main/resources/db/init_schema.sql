@@ -79,11 +79,29 @@ CREATE TABLE comment
 CREATE TABLE refresh_token
 (
     token_id      BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username     VARCHAR(255) NOT NULL,
+    username      VARCHAR(255) NOT NULL,
     refresh_token VARCHAR(512) NOT NULL,
     expire_date   TIMESTAMP    NOT NULL,
     INDEX idx_token_username (username
-                             ),
+        ),
     INDEX idx_token_expire (expire_date)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+-- Report 테이블
+CREATE TABLE report
+(
+    report_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id   BIGINT NOT NULL,
+    board_id    BIGINT NOT NULL,
+    content     TEXT   NULL,
+    status      VARCHAR(20) DEFAULT 'SUBMITTED'
+        CHECK (status IN ('SUBMITTED', 'PENDING', 'ACCEPTED', 'REJECTED')),
+    create_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    delete_time       TIMESTAMP NULL,
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    FOREIGN KEY (board_id) REFERENCES board (board_id),
+    UNIQUE KEY uk_board_member (member_id, board_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
