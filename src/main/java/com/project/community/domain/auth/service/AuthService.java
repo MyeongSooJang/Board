@@ -42,7 +42,8 @@ public class AuthService {
                 accessToken,
                 refreshToken,
                 jwtTokenProvider.getAccessTokenExpiration(),
-                member.getMemberId()
+                member.getMemberId(),
+                member.getName()
         );
     }
 

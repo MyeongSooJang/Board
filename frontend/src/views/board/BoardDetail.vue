@@ -38,20 +38,20 @@ const loadBoard = async () => {
     const response = await boardApi.getDetail(boardId.value)
     board.value = response.data
 
-    // 로그인한 사용자인 경우 좋아요 상태 조회
+    // 게시글에서 받은 boardLikeCount 사용
+    likeCount.value = board.value.boardLikeCount || 0
+
+    // 로그인한 사용자인 경우 좋아요 상태만 조회
     if (isLoggedIn.value) {
       try {
         const likeResponse = await boardApi.getLikeStatus(boardId.value)
-        likeCount.value = likeResponse.data.likeCount
         liked.value = likeResponse.data.liked
       } catch (err) {
         // 좋아요 상태 조회 실패 시 기본값으로 설정
         console.error('좋아요 상태 조회 실패:', err)
-        likeCount.value = 0
         liked.value = false
       }
     } else {
-      likeCount.value = 0
       liked.value = false
     }
   } catch (err) {

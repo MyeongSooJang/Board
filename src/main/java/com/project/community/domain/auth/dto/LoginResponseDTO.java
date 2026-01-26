@@ -9,13 +9,15 @@ public class LoginResponseDTO {
     private String tokenType = "Bearer";
     private Long expiresIn;
     private Long memberId;
+    private String memberName;
 
 
-    public LoginResponseDTO(String accessToken, String refreshToken, Long expiresIn, Long memberId) {
+    public LoginResponseDTO(String accessToken, String refreshToken, Long expiresIn, Long memberId, String memberName) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiresIn = expiresIn;
         this.memberId = memberId;
+        this.memberName = memberName;
     }
 
 }

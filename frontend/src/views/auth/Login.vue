@@ -28,12 +28,13 @@ const handleLogin = async () => {
       formData.value.password
     )
 
-    const { accessToken, refreshToken, memberId } = response.data
+    const { accessToken, refreshToken, memberId, memberName } = response.data
 
     // 토큰 저장
     localStorage.setItem('accessToken', accessToken)
     localStorage.setItem('refreshToken', refreshToken)
     localStorage.setItem('memberId', memberId)
+    localStorage.setItem('memberName', memberName)
 
     router.push('/boards')
   } catch (err) {

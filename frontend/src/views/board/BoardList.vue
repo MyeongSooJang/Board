@@ -54,7 +54,7 @@ const loadCommentCounts = async () => {
   }
 
   try {
-    const promises = boards.value.map(board =>
+    const commentPromises = boards.value.map(board =>
       commentApi.getList(board.boardId)
         .then(res => ({
           boardId: board.boardId,
@@ -66,7 +66,7 @@ const loadCommentCounts = async () => {
         }))
     )
 
-    const commentCounts = await Promise.all(promises)
+    const commentCounts = await Promise.all(commentPromises)
 
     boardsWithComments.value = boards.value.map(board => ({
       ...board,
@@ -216,6 +216,7 @@ onMounted(() => {
           <th class="col-writer">글쓴이</th>
           <th class="col-date">작성일</th>
           <th class="col-view">조회</th>
+          <th class="col-like">좋아요</th>
         </tr>
       </thead>
       <tbody>
@@ -240,6 +241,10 @@ onMounted(() => {
           <td class="col-writer">{{ board.memberName }}</td>
           <td class="col-date">{{ formatDate(board.updateTime) }}</td>
           <td class="col-view">{{ board.boardViewCount || 0 }}</td>
+          <td class="col-like">
+            <span v-if="board.boardLikeCount > 0" class="like-count">❤️ {{ board.boardLikeCount }}</span>
+            <span v-else class="like-empty">-</span>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -364,12 +369,25 @@ onMounted(() => {
 }
 
 .search-select {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border: 1px solid #3d414d;
   border-radius: 3px;
   font-size: 13px;
   background: white;
+  color: #333;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.search-select:hover {
+  background: #f7f9fa;
+  border-color: #2c2f38;
+}
+
+.search-select:focus {
+  outline: none;
+  box-shadow: 0 0 3px #3d414d;
 }
 
 .search-input {
@@ -478,6 +496,23 @@ onMounted(() => {
   color: #777;
 }
 
+.col-like {
+  width: 70px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.like-count {
+  color: #ff6b6b;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.like-empty {
+  color: #ccc;
+  font-weight: 300;
+}
+
 /* 제목 스타일 */
 .title-wrapper {
   display: flex;
@@ -574,7 +609,8 @@ onMounted(() => {
   }
 
   .col-view,
-  .col-date {
+  .col-date,
+  .col-like {
     display: none;
   }
 

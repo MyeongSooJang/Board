@@ -16,8 +16,9 @@ public class BoardResponseDTO {
     private LocalDateTime updateTime;
     private LocalDateTime createTime;
     private Integer boardViewCount;
+    private Long boardLikeCount;
 
-    public static BoardResponseDTO from(Board board) {
+    public static BoardResponseDTO from(Board board, Long boardLikeCount) {
         return new BoardResponseDTO(
                 board.getBoardId(),
                 board.getBoardTitle(),
@@ -26,7 +27,8 @@ public class BoardResponseDTO {
                 board.getMember().getMemberId(),
                 board.getUpdateTime(),
                 board.getCreateTime(),
-                board.getBoardViewCount()
+                board.getBoardViewCount(),
+                boardLikeCount
         );
     }
 }
