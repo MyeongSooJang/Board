@@ -19,7 +19,7 @@ public class BoardLikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public BoardLikeResponseDTO convertStatus(Long boardId, String username) {
+    public BoardLikeResponseDTO toggleLike(Long boardId, String username) {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         Board board = boardRepository.findById(boardId)
@@ -32,7 +32,7 @@ public class BoardLikeService {
 
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
 
-        return new BoardLikeResponseDTO(liked, likeCount);
+        return new BoardLikeResponseDTO(board.getBoardId(), likeCount, liked);
     }
 
     private boolean convertLikeStatus(Optional<BoardLike> existing, Member member, Board board) {

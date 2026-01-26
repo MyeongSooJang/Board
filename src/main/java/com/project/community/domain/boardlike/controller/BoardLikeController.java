@@ -23,7 +23,7 @@ public class BoardLikeController {
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        BoardLikeResponseDTO response = boardLikeService.convertStatus(boardId, username);
+        BoardLikeResponseDTO response = boardLikeService.toggleLike(boardId, username);
         return ResponseEntity.ok(response);
     }
 }
