@@ -19,6 +19,19 @@ public class BoardLikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
+    public BoardLikeResponseDTO getLikeStatus(Long boardId, String username) {
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+
+        Optional<BoardLike> existing = boardLikeRepository.findByBoardIdAndMemberId(boardId, member.getMemberId());
+        boolean liked = existing.isPresent();
+        Long likeCount = boardLikeRepository.countByBoardId(boardId);
+
+        return new BoardLikeResponseDTO(board.getBoardId(), likeCount, liked);
+    }
+
     public BoardLikeResponseDTO toggleLike(Long boardId, String username) {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));

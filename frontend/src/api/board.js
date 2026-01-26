@@ -35,5 +35,9 @@ export const boardApi = {
 
   // 좋아요 토글
   toggleLike: (boardId) =>
-    client.post(`/boards/${boardId}/like`)
+    client.post(`/boards/${boardId}/like`),
+
+  // 좋아요 상태 조회
+  getLikeStatus: (boardId) =>
+    client.get(`/boards/${boardId}/like`)
 }
