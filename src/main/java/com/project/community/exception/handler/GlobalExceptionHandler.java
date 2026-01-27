@@ -1,6 +1,7 @@
 package com.project.community.exception.handler;
 
 import com.project.community.exception.DuplicateException;
+import com.project.community.exception.NotFoundException;
 import com.project.community.exception.ValidationException;
 import com.project.community.exception.dto.ErrorCode;
 import com.project.community.exception.dto.ErrorResponse;
@@ -26,6 +27,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateException(DuplicateException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
+        ErrorResponse response = new ErrorResponse(errorCode);
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
         ErrorCode errorCode = ex.getErrorCode();
         ErrorResponse response = new ErrorResponse(errorCode);
         return ResponseEntity

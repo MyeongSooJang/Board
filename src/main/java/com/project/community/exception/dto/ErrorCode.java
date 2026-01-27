@@ -29,7 +29,10 @@ public enum ErrorCode {
     // 403 Forbidden
     FORBIDDEN(403, "권한이 없습니다"),
 
-
+    // 404 NotFound
+    BOARD_NOT_FOUND(404,"게시글을 찾을 수 없습니다"),
+    MEMBER_NOT_FOUND(404, "회원을 찾을 수 없습니다"),
+    COMMENT_NOT_FOUND(404, "댓글을 찾을 수 없습니다"),
 
     // 비지니스 로직 오류 409
     DUPLICATE_MEMBER_ID(409, "이미 존재하는 아이디입니다"),

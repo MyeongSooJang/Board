@@ -3,6 +3,7 @@ package com.project.community.domain.report.entity;
 import com.project.community.domain.BaseEntity;
 import com.project.community.domain.board.entity.Board;
 import com.project.community.domain.member.entity.Member;
+import com.project.community.domain.report.dto.ReportRequestDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,9 +33,21 @@ public class Report extends BaseEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
+    private String type;
+
     @Column(nullable = false)
     private String content;
 
-    private String status;
+    private String status = "SUBMITTED";
 
+    private Report(Member member, Board board, ReportRequestDTO request){
+        this.member = member;
+        this.board = board;
+        this.type = request.getType();
+        this.content = request.getContent();
+    }
+
+    public static Report createReport(Member member, Board board, ReportRequestDTO request){
+        return new Report(member, board, request);
+    }
 }

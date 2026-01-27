@@ -95,6 +95,8 @@ CREATE TABLE report
     report_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id   BIGINT NOT NULL,
     board_id    BIGINT NOT NULL,
+    type VARCHAR(255) NOT NULL DEFAULT 'OTHER'
+        CHECK (type in ('SPAM','ABUSIVE','ILLEGAL','OTHER')),
     content     TEXT   NULL,
     status      VARCHAR(20) DEFAULT 'SUBMITTED'
         CHECK (status IN ('SUBMITTED', 'PENDING', 'ACCEPTED', 'REJECTED')),
