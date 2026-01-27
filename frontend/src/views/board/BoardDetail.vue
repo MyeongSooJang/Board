@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { boardApi } from '../../api/board'
 import { commentApi } from '../../api/comment'
+import ReportModal from '../../components/ReportModal.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -23,6 +24,9 @@ const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
 const currentMemberId = ref(localStorage.getItem('memberId') || '')
 
 const boardId = ref(route.params.boardId)
+
+// 신고 모달
+const isReportModalOpen = ref(false)
 
 // 좋아요 관련
 const liked = ref(false)
@@ -68,14 +72,19 @@ const loadComments = async () => {
 
     console.log('📌 전체 댓글 데이터:', allComments)
 
-    // 댓글을 parent 댓글과 child 댓글로 정렬
-    comments.value = allComments.map(comment => {
-      const children = allComments.filter(c => c.commentParentId === comment.commentId)
-      return {
-        ...comment,
-        children: children
-      }
-    }).filter(comment => !comment.commentParentId)
+    // 댓글을 parent 댓글과 child 댓글로 정렬 (최신순)
+    comments.value = allComments
+      .map(comment => {
+        const children = allComments
+          .filter(c => c.commentParentId === comment.commentId)
+          .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+        return {
+          ...comment,
+          children: children
+        }
+      })
+      .filter(comment => !comment.commentParentId)
+      .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
 
     console.log('📌 정렬된 댓글:', comments.value)
     console.log('📌 총 원댓글 수:', comments.value.length)
@@ -225,6 +234,20 @@ const formatDate = (date) => {
   return `${month}.${day} ${hours}:${minutes}:${seconds}`
 }
 
+const handleReportClick = () => {
+  if (!isLoggedIn.value) {
+    alert('신고하려면 로그인해야 합니다')
+    router.push('/login')
+    return
+  }
+  isReportModalOpen.value = true
+}
+
+const handleReportSuccess = () => {
+  // 신고가 성공적으로 접수됨
+  isReportModalOpen.value = false
+}
+
 onMounted(() => {
   loadBoard()
   loadComments()
@@ -259,6 +282,7 @@ onMounted(() => {
           </div>
           <div class="board-actions">
             <button @click="router.push('/boards')" class="btn btn-secondary">목록</button>
+            <button @click="handleReportClick" class="btn btn-report">신고</button>
             <div v-if="currentMemberId && currentMemberId == board.memberId" class="action-group">
               <button @click="handleEditBoard" class="btn btn-primary">수정</button>
               <button @click="handleDeleteBoard" class="btn btn-danger">삭제</button>
@@ -377,6 +401,14 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <!-- 신고 모달 -->
+    <ReportModal
+      :boardId="Number(boardId)"
+      :isOpen="isReportModalOpen"
+      @close="() => isReportModalOpen = false"
+      @success="handleReportSuccess"
+    />
   </div>
 </template>
 
@@ -763,6 +795,15 @@ body { color: #000; background-color: #f5f5f5; }
 
 .btn-small.btn-reply:hover {
   background: #2980b9;
+}
+
+.btn-report {
+  background: #e67e22;
+  color: white;
+}
+
+.btn-report:hover {
+  background: #d35400;
 }
 
 .btn-close {
