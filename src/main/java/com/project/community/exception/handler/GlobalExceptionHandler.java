@@ -2,6 +2,7 @@ package com.project.community.exception.handler;
 
 import com.project.community.exception.DuplicateException;
 import com.project.community.exception.NotFoundException;
+import com.project.community.exception.TokenException;
 import com.project.community.exception.ValidationException;
 import com.project.community.exception.dto.ErrorCode;
 import com.project.community.exception.dto.ErrorResponse;
@@ -41,6 +42,15 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getHttpStatus())
                 .body(response);
     }
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ErrorResponse> handleTokenException(TokenException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
+        ErrorResponse response = new ErrorResponse(errorCode);
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(

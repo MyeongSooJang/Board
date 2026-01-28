@@ -1,5 +1,6 @@
 package com.project.community.security;
 
+import com.project.community.exception.TokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,6 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
     public final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -34,18 +37,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (token != null) {
-            jwtTokenProvider.validateToken(token);
             try {
+                jwtTokenProvider.validateToken(token);
+
                 String username = jwtTokenProvider.getUsername(token);
                 String memberRole = jwtTokenProvider.getRole(token);
 
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + memberRole);
                 List<GrantedAuthority> authorities = List.of(authority);
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,
-                        null, authorities);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            } catch (TokenException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+
+                String json = "{\"code\":\"" + e.getErrorCode().name() + "\",\"message\":\"" + e.getMessage() + "\"}";
+                response.getWriter().write(json);
+                return;
             } catch (Exception e) {
                 e.printStackTrace();
             }

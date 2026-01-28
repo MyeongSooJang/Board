@@ -1,6 +1,7 @@
 package com.project.community.security;
 
 import com.project.community.exception.TokenException;
+import com.project.community.exception.dto.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -100,13 +101,13 @@ public class JwtTokenProvider {
                     .build()
                     .parseSignedClaims(token);
         } catch (ExpiredJwtException e) {
-            throw new TokenException("토큰이 만료되었습니다", "EXPIRED_TOKEN");
+            throw new TokenException(ErrorCode.TOKEN_EXPIRED);
         } catch (SignatureException e) {
-            throw new TokenException("유효하지 않은 토큰입니다", "INVALID_TOKEN");
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
         } catch (MalformedJwtException e) {
-            throw new TokenException("잘못된 형식의 토큰입니다", "MALFORMED_JWT_TOKEN");
+            throw new TokenException(ErrorCode.MALFORMED_TOKEN);
         } catch (IllegalArgumentException e) {
-            throw new TokenException("토큰이 없습니다", "EMPTY_TOKEN");
+            throw new TokenException(ErrorCode.EMPTY_TOKEN);
         }
     }
 }

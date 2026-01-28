@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -10,6 +10,12 @@ const memberId = ref(localStorage.getItem('memberId') || '')
 
 const searchType = ref('title')
 const searchQuery = ref('')
+
+const updateAuthState = () => {
+  isLoggedIn.value = !!localStorage.getItem('accessToken')
+  memberName.value = localStorage.getItem('memberName') || ''
+  memberId.value = localStorage.getItem('memberId') || ''
+}
 
 const handleLogout = () => {
   localStorage.removeItem('accessToken')
@@ -44,10 +50,17 @@ const goHome = () => {
   router.push('/')
 }
 
+// 라우터 변경 시 로그인 상태 업데이트
+watch(
+  () => router.currentRoute.value.path,
+  () => {
+    updateAuthState()
+  }
+)
+
+// 다른 탭에서 변경할 때
 window.addEventListener('storage', () => {
-  isLoggedIn.value = !!localStorage.getItem('accessToken')
-  memberName.value = localStorage.getItem('memberName') || ''
-  memberId.value = localStorage.getItem('memberId') || ''
+  updateAuthState()
 })
 </script>
 

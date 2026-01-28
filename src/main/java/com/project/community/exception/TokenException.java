@@ -1,12 +1,9 @@
 package com.project.community.exception;
 
-public class TokenException extends RuntimeException {
-    private String code;
-    private String message;
+import com.project.community.exception.dto.ErrorCode;
 
-    public TokenException(String code, String message) {
-        super(message);
-        this.code = code;
-        this.message = message;
+public class TokenException extends CustomException {
+    public TokenException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

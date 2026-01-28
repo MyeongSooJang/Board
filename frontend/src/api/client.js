@@ -26,10 +26,39 @@ client.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
-      // 인증 실패 시 로그인 페이지로 이동
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
-      window.location.href = '/login'
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      // refreshToken이 있으면 새 accessToken 발급 시도
+      if (refreshToken && !error.config._retry) {
+        error.config._retry = true
+
+        return client.post('/auth/refresh', { refreshToken })
+          .then(res => {
+            // 새 토큰 저장
+            localStorage.setItem('accessToken', res.data.accessToken)
+            localStorage.setItem('refreshToken', res.data.refreshToken)
+
+            // 원래 요청의 Authorization 헤더 업데이트
+            error.config.headers.Authorization = `Bearer ${res.data.accessToken}`
+
+            // 원래 요청 재시도
+            return client(error.config)
+          })
+          .catch(() => {
+            // refreshToken도 만료되었을 때
+            localStorage.removeItem('accessToken')
+            localStorage.removeItem('refreshToken')
+            alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
+            window.location.href = '/login'
+            return Promise.reject(error)
+          })
+      } else {
+        // refreshToken이 없거나 이미 재시도했을 때
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
