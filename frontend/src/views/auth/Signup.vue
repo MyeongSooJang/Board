@@ -228,6 +228,7 @@ body { color: #000; background-color: #f5f5f5; }
   align-items: center;
   min-height: 100vh;
   padding: 2rem 0;
+  width: 100%;
 }
 
 .signup-card {

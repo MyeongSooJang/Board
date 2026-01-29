@@ -295,23 +295,26 @@ body {  background-color: #f5f5f5;  color: #000;  -webkit-color-scheme: light;  
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: nowrap;
 }
 
 .user-name {
   color: white;
   font-weight: 600;
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .admin-link {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   background-color: #ff9800;
   color: white;
   text-decoration: none;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .admin-link:hover {
@@ -321,15 +324,16 @@ body {  background-color: #f5f5f5;  color: #000;  -webkit-color-scheme: light;  
 }
 
 .logout-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .logout-btn:hover {

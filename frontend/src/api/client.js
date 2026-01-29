@@ -9,6 +9,17 @@ const client = axios.create({
   }
 })
 
+// refresh 요청용 별도 인스턴스 (인터셉터 없음)
+const refreshClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+// 로그아웃 중임을 나타내는 flag
+let isLoggingOut = false
+
 // 요청 인터셉터 - JWT 토큰 자동 추가
 client.interceptors.request.use(
   config => {
@@ -28,11 +39,16 @@ client.interceptors.response.use(
     if (error.response?.status === 401) {
       const refreshToken = localStorage.getItem('refreshToken')
 
+      // 이미 로그아웃 중이면 더 이상 처리하지 않음
+      if (isLoggingOut) {
+        return Promise.reject(error)
+      }
+
       // refreshToken이 있으면 새 accessToken 발급 시도
       if (refreshToken && !error.config._retry) {
         error.config._retry = true
 
-        return client.post('/auth/refresh', { refreshToken })
+        return refreshClient.post('/auth/refresh', { refreshToken })
           .then(res => {
             // 새 토큰 저장
             localStorage.setItem('accessToken', res.data.accessToken)
@@ -46,18 +62,28 @@ client.interceptors.response.use(
           })
           .catch(() => {
             // refreshToken도 만료되었을 때
-            localStorage.removeItem('accessToken')
-            localStorage.removeItem('refreshToken')
-            alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
-            window.location.href = '/login'
+            if (!isLoggingOut) {
+              isLoggingOut = true
+              localStorage.removeItem('accessToken')
+              localStorage.removeItem('refreshToken')
+              localStorage.removeItem('memberId')
+              localStorage.removeItem('memberName')
+              alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
+              window.location.href = '/login'
+            }
             return Promise.reject(error)
           })
       } else {
         // refreshToken이 없거나 이미 재시도했을 때
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-        alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
-        window.location.href = '/login'
+        if (!isLoggingOut) {
+          isLoggingOut = true
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          localStorage.removeItem('memberId')
+          localStorage.removeItem('memberName')
+          alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
+          window.location.href = '/login'
+        }
       }
     }
     return Promise.reject(error)

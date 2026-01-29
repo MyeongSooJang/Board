@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { boardApi } from '../../api/board'
 import { commentApi } from '../../api/comment'
@@ -23,7 +23,7 @@ const isSubmittingReply = ref(false)
 const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
 const currentMemberId = ref(localStorage.getItem('memberId') || '')
 
-const boardId = ref(route.params.boardId)
+const boardId = computed(() => route.params.boardId)
 
 // 신고 모달
 const isReportModalOpen = ref(false)

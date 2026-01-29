@@ -5,6 +5,7 @@ import BoardList from '../views/board/BoardList.vue'
 import BoardDetail from '../views/board/BoardDetail.vue'
 import BoardForm from '../views/board/BoardForm.vue'
 import ReportList from '../views/admin/ReportList.vue'
+import Profile from '../views/member/Profile.vue'
 
 const routes = [
   {
@@ -51,6 +52,12 @@ const routes = [
     path: '/admin/reports',
     name: 'ReportList',
     component: ReportList,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
     meta: { requiresAuth: true }
   }
 ]

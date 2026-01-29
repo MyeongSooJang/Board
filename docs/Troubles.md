@@ -124,3 +124,181 @@ implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 ## 1월 22일 
 
 ### 좋아요 기능 -> 할때마다 SAVE를 날린다..?
+
+### 1월 28일
+#### 토큰 만료 시 401 응답 처리
+
+**문제**: 토큰이 만료되면 TokenException 발생하지만 프론트엔드에 401 응답이 가지 않음
+
+**원인**: JwtAuthenticationFilter에서 TokenException을 제대로 처리하지 않음
+
+#### JwtAuthenticationFilter - 현재 코드 (문제 있음)
+```java
+if (token != null) {
+    jwtTokenProvider.validateToken(token);  // TokenException 발생 가능
+    try {
+        String username = jwtTokenProvider.getUsername(token);
+        String memberRole = jwtTokenProvider.getRole(token);
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + memberRole);
+        List<GrantedAuthority> authorities = List.of(authority);
+
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    } catch (Exception e) {
+        e.printStackTrace();  // 나중에 구현하기 위해서 console 출력만하는 상황
+    }
+}
+filterChain.doFilter(request, response);  // 401 응답을 못 받음
+```
+
+#### 해결 방법: Filter에서 TokenException 처리
+```java
+ catch (TokenException e) {
+    throw e;
+    return;  // 여기서 응답 종료
+
+```
+
+#### 핵심 학습: Filter vs Controller 예외 처리
+
+**Filter 단계의 예외는 GlobalExceptionHandler로 전파되지 않음!**
+
+```
+요청 → [Filter] ← 여기서 예외 발생하면 Filter에서 직접 처리해야 함
+       ↓
+    [Controller] → GlobalExceptionHandler (여기서만 예외 처리 가능)
+```
+
+- Filter: 요청이 Controller에 도달하기 전에 가로챔
+- GlobalExceptionHandler: Controller 단계의 예외만 처리
+- **결론**: Filter에서 발생한 예외는 Filter 내에서 직접 처리해야 함
+
+---
+
+#### 백엔드 수정 사항
+
+**1. TokenException을 CustomException으로 상속 (완료)**
+```java
+public class TokenException extends CustomException {
+    public TokenException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+}
+```
+
+**2. JwtTokenProvider에서 ErrorCode로 throw (완료)**
+```java
+public void validateToken(String token) {
+    try {
+        // ...
+    } catch (ExpiredJwtException e) {
+        throw new TokenException(ErrorCode.TOKEN_EXPIRED);
+    } catch (SignatureException e) {
+        throw new TokenException(ErrorCode.INVALID_TOKEN);
+    } catch (MalformedJwtException e) {
+        throw new TokenException(ErrorCode.MALFORMED_TOKEN);
+    } catch (IllegalArgumentException e) {
+        throw new TokenException(ErrorCode.EMPTY_TOKEN);
+    }
+}
+```
+
+**3. GlobalExceptionHandler에 TokenException 핸들러 추가 (완료)**
+```java
+@ExceptionHandler(TokenException.class)
+public ResponseEntity<ErrorResponse> handleTokenException(TokenException ex) {
+    ErrorCode errorCode = ex.getErrorCode();
+    ErrorResponse response = new ErrorResponse(errorCode);
+    return ResponseEntity
+            .status(errorCode.getHttpStatus())
+            .body(response);
+}
+```
+
+**4. JwtAuthenticationFilter에서 TokenException 직접 처리 (필요함)**
+
+Filter에서 직접 401 응답을 작성해야 함:
+```java
+if (token != null) {
+    try {
+        jwtTokenProvider.validateToken(token);
+        String username = jwtTokenProvider.getUsername(token);
+        String memberRole = jwtTokenProvider.getRole(token);
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + memberRole);
+        List<GrantedAuthority> authorities = List.of(authority);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    } catch (TokenException e) {
+        // Filter에서 직접 401 응답 작성
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write("{\"code\":\"" + e.getErrorCode().name() + "\",\"message\":\"" + e.getMessage() + "\"}");
+        return;  // 여기서 응답 종료
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+filterChain.doFilter(request, response);
+```
+
+---
+
+#### 프론트엔드 수정 사항 (완료)
+
+**client.js의 응답 인터셉터 수정:**
+```javascript
+client.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      const errorData = error.response?.data
+      const message = errorData?.message || '로그인이 만료되었습니다. 다시 로그인해주세요.'
+
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+
+      alert(message)  // 사용자에게 메시지 표시
+      window.location.href = '/login'  // 로그인 페이지로 이동
+    }
+    return Promise.reject(error)
+  }
+)
+```
+
+---
+
+#### 백엔드 응답 예시
+
+토큰 만료 시:
+```json
+{
+  "code": "TOKEN_EXPIRED",
+  "message": "토큰이 만료되었습니다",
+  "httpStatus": 401,
+  "timestamp": "2026-01-28T..."
+}
+```
+
+---
+
+#### Security Config -> requestMatcher(HttpMethod.POST,"/auth/refresh").permitAll())
+- accessToken이 만료 -> 401 에러 발생이 됨
+- Client: RefreshToken으로 /auth/refresh 호출해서 새로 발급을 해야함.
+- Server: 요청이 들어오면 RefreshToken을 검증하고 accessToken을 발급
+- Client: 요청을 시도 하는 순으로 진행
+
+#### 요청시에 토큰이 만료되었기 때문에 Header에 accessToken이 없기 때문에 인증이 안됨
+- JWT토큰 없이도 요청을 하도록 해주어야 한다.
+

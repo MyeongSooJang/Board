@@ -99,7 +99,7 @@ CREATE TABLE report
         CHECK (type in ('SPAM','ABUSIVE','ILLEGAL','OTHER')),
     content     TEXT   NULL,
     status      VARCHAR(20) DEFAULT 'SUBMITTED'
-        CHECK (status IN ('SUBMITTED', 'PENDING', 'ACCEPTED', 'REJECTED')),
+        CHECK (status IN ('SUBMITTED', 'APPROVED', 'REJECTED')),
     create_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     delete_time       TIMESTAMP NULL,

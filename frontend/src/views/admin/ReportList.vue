@@ -377,7 +377,7 @@ onMounted(() => {
 
 .report-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(700px, 1fr));
   gap: 20px;
 }
 
@@ -427,6 +427,7 @@ onMounted(() => {
   gap: 12px;
   margin-bottom: 12px;
   font-size: 13px;
+  align-items: center;
 }
 
 .info-row.full-width {
@@ -441,6 +442,9 @@ onMounted(() => {
 .info-row .value {
   color: #2c3e50;
   word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .report-content {
@@ -471,6 +475,7 @@ onMounted(() => {
   padding: 12px 16px;
   background: #f8f9fa;
   border-top: 1px solid #ecf0f1;
+  flex-wrap: nowrap;
 }
 
 .card-footer.disabled {
@@ -492,6 +497,7 @@ onMounted(() => {
   font-weight: 600;
   font-size: 13px;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .btn-reject {
@@ -561,6 +567,12 @@ onMounted(() => {
 
   .info-row {
     grid-template-columns: 80px 1fr;
+    font-size: 12px;
+  }
+
+  .btn {
+    font-size: 12px;
+    padding: 6px 10px;
   }
 
   .header h1 {

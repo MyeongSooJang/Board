@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import com.project.community.domain.BaseEntity;
@@ -30,9 +31,10 @@ public class Member extends BaseEntity {
 
     private Integer age;
 
+    @Email
     private String email;
 
-    @Email
+    @Pattern(regexp = "^01[0-9]-\\d{3,4}-\\d{4}$", message = "휴대폰 형식: 010-1234-5678")
     private String phone;
 
     private String role = "GUEST";
