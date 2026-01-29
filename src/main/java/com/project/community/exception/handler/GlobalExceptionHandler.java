@@ -9,7 +9,10 @@ import com.project.community.exception.dto.ErrorResponse;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -49,6 +52,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
                 .body(response);
+    }
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+        return ResponseEntity
+                .status(ErrorCode.UNAUTHORIZED.getHttpStatus())
+                .body(new ErrorResponse(ErrorCode.UNAUTHORIZED));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity
+                .status(ErrorCode.FORBIDDEN.getHttpStatus())
+                .body(new ErrorResponse(ErrorCode.FORBIDDEN));
     }
 
 

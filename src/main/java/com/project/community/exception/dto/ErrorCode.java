@@ -33,11 +33,13 @@ public enum ErrorCode {
     BOARD_NOT_FOUND(404,"게시글을 찾을 수 없습니다"),
     MEMBER_NOT_FOUND(404, "회원을 찾을 수 없습니다"),
     COMMENT_NOT_FOUND(404, "댓글을 찾을 수 없습니다"),
+    REPORT_NOT_FOUND(404,"신고를 찾을 수 없습니다"),
 
     // 비지니스 로직 오류 409
     DUPLICATE_MEMBER_ID(409, "이미 존재하는 아이디입니다"),
     DUPLICATE_EMAIL(409, "이미 존재하는 이메일입니다"),
-    DUPLICATE_PHONE(409, "이미 존재하는 전화번호입니다");
+    DUPLICATE_PHONE(409, "이미 존재하는 전화번호입니다"),
+    INVALID_REPORT_STATUS(409, "이미 처리된 신고입니다");
 
     private final int httpStatus;
     private final String message;
