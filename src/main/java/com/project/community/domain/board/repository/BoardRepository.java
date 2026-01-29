@@ -2,8 +2,6 @@ package com.project.community.domain.board.repository;
 
 import com.project.community.domain.board.entity.Board;
 
-import java.util.List;
-
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,17 +12,25 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    Page<Board> findAllByOrderByUpdateTimeDesc(Pageable pageable);
-    List<Board> findByBoardTitleContainingOrderByUpdateTimeDesc(String boardTitle);
-    List<Board> findByMemberNameOrderByUpdateTimeDesc(String memberName);
+    Page<Board> findAllByDeleteTimeIsNull(Pageable pageable);
+
+    @Query("""
+               SELECT b
+               FROM Board As b
+               WHERE b.boardTitle LIKE CONCAT ('%',:boardTitle, '%')
+               AND   b.deleteTime IS NULL
+            """)
+    Page<Board> findByBoardTitle(@Param("boardTitle") String boardTitle, Pageable pageable);
+
+    Page<Board> findByDeleteTimeIsNullAndMemberName(@Param("memberName") String memberName, Pageable pageable);
+
     @Query("""
               SELECT b
               FROM Board AS b
-              WHERE b.boardContent LIKE CONCAT ('%',:keyword, '%') OR
-                    b.boardTitle LIKE CONCAT ('%', :keyword, '%')
-              ORDER BY b.updateTime DESC
+              WHERE (b.boardContent LIKE CONCAT ('%',:keyword, '%') OR b.boardTitle LIKE CONCAT ('%', :keyword, '%'))
+              AND b.deleteTime IS NULL
             """)
-    List<Board> findByKeywordInTitleOrContent(@Param("keyword") String keyword);
-    Optional<Board> findByBoardId(Long boardId);
+    Page<Board> findByKeywordInTitleOrContent(@Param("keyword") String keyword, Pageable pageable);
 
+    Optional<Board> findByBoardIdAndDeleteTimeIsNull(@Param("boardId") Long boardId);
 }

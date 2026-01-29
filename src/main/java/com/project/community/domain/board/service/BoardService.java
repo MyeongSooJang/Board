@@ -8,7 +8,8 @@ import com.project.community.domain.board.repository.BoardRepository;
 import com.project.community.domain.boardlike.repository.BoardLikeRepository;
 import com.project.community.domain.member.entity.Member;
 import com.project.community.domain.member.repository.MemberRepository;
-import java.util.List;
+import com.project.community.exception.NotFoundException;
+import com.project.community.exception.dto.ErrorCode;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,36 +25,35 @@ public class BoardService {
     private final BoardLikeRepository boardLikeRepository;
 
     public Page<BoardResponseDTO> searchAll(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByOrderByUpdateTimeDesc(pageable);
+        Page<Board> boards = boardRepository.findAllByDeleteTimeIsNull(pageable);
+        return covertToDTOPage(boards);
+    }
+
+    public Page<BoardResponseDTO> searchBoardsByBoardTitle(String title ,Pageable pageable) {
+        Page<Board> boards = boardRepository.findByBoardTitle(title,pageable);
+        return covertToDTOPage(boards);
+    }
+
+    private Page<BoardResponseDTO> covertToDTOPage(Page<Board> boards) {
         return boards.map(board -> BoardResponseDTO.from(board,
                 boardLikeRepository.countByBoardId(board.getBoardId())));
     }
 
-    public List<BoardResponseDTO> searchBoardsByBoardTitle(String title) {
-        List<Board> boards = boardRepository.findByBoardTitleContainingOrderByUpdateTimeDesc(title);
-        return covertToDTOList(boards);
+
+    public Page<BoardResponseDTO> searchBoardsByMemberName(String memberName ,Pageable pageable) {
+        Page<Board> boards = boardRepository.findByDeleteTimeIsNullAndMemberName(memberName,pageable);
+        return covertToDTOPage(boards);
     }
 
-    private List<BoardResponseDTO> covertToDTOList(List<Board> boards) {
-        return boards.stream()
-                .map(board -> BoardResponseDTO.from(board, boardLikeRepository.countByBoardId(board.getBoardId())))
-                .toList();
-    }
-
-    public List<BoardResponseDTO> searchBoardsByMemberName(String memberName) {
-        List<Board> boards = boardRepository.findByMemberNameOrderByUpdateTimeDesc(memberName);
-        return covertToDTOList(boards);
-    }
-
-    public List<BoardResponseDTO> searchBoardsByKeyWord(String keyword) {
-        List<Board> boards = boardRepository.findByKeywordInTitleOrContent(keyword);
-        return covertToDTOList(boards);
+    public Page<BoardResponseDTO> searchBoardsByKeyWord(String keyword, Pageable pageable) {
+        Page<Board> boards = boardRepository.findByKeywordInTitleOrContent(keyword, pageable);
+        return covertToDTOPage(boards);
     }
 
     @Transactional
     public BoardResponseDTO searchByBoardId(Long boardId) {
-        Board board = boardRepository.findByBoardId(boardId)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
+        Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
         board.increaseBoardViewCount();
         boardRepository.save(board);
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
@@ -63,14 +63,14 @@ public class BoardService {
     @Transactional
     public Long createBoard(BoardCreateRequestDTO board) {
         Member member = memberRepository.findById(board.getMemberId())
-                .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         return boardRepository.save(Board.createBoard(board, member)).getBoardId();
     }
 
     @Transactional
     public BoardResponseDTO updateBoard(Long boardId, BoardUpdateRequestDTO boardUpdateRequestDTO) {
-        Board board = boardRepository.findByBoardId(boardId)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
+        Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
         board.updateBoard(boardUpdateRequestDTO);
         return BoardResponseDTO.from(board, likeCount);
@@ -78,9 +78,10 @@ public class BoardService {
 
     @Transactional
     public void deleteBoard(Long boardId) {
-        Board board = boardRepository.findByBoardId(boardId)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 게시글 번호의 게시글이 존재하지 않습니다"));
-        boardRepository.delete(board);
+        Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+        board.softDelete();
+        boardRepository.save(board);
     }
 
 }

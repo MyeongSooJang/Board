@@ -11,12 +11,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 @Entity
 @NoArgsConstructor
 @Getter
+
 public class Board extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +44,10 @@ public class Board extends BaseEntity {
     public void updateBoard(BoardUpdateRequestDTO updateBoard) {
         boardTitle = updateBoard.getBoardTitle();
         boardContent = updateBoard.getBoardContent();
+    }
+
+    public void softDelete() {
+        this.deleteTime = LocalDateTime.now();
     }
 
     public void increaseBoardViewCount() {
