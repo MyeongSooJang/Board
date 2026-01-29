@@ -12,12 +12,13 @@ import com.project.community.domain.report.dto.ReportResponseDTO;
 import com.project.community.domain.report.entity.Report;
 import com.project.community.domain.report.repository.ReportRepository;
 import com.project.community.exception.NotFoundException;
+import com.project.community.exception.ValidationException;
 import com.project.community.exception.dto.ErrorCode;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,5 +43,43 @@ public class ReportService {
     public Page<ReportAdminDTO> findAllReports(Pageable pageable) {
         Page<Report> reports = reportRepository.findAll(pageable);
         return reports.map(ReportAdminDTO::from);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReportAdminDTO approve(Long reportId) {
+        Report report = searchReportById(reportId);
+        validateSubmit(report);
+
+        Report approveReport = report.approve();
+        reportRepository.save(approveReport);
+
+        Board board = approveReport.getBoard();
+        board.softDelete();
+        boardRepository.save(board);
+
+
+        return ReportAdminDTO.from(approveReport);
+    }
+
+    private Report searchReportById(Long reportId) {
+        return reportRepository.findById(reportId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.REPORT_NOT_FOUND));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReportAdminDTO reject(Long reportId) {
+        Report report = searchReportById(reportId);
+        validateSubmit(report);
+
+        Report rejectReport = report.reject();
+        reportRepository.save(rejectReport);
+
+        return ReportAdminDTO.from(rejectReport);
+    }
+
+    private void validateSubmit(Report report) {
+        if (!report.getStatus().equals("SUBMITTED")) {
+            throw new ValidationException(ErrorCode.INVALID_REPORT_STATUS);
+        }
     }
 }

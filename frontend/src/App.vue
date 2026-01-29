@@ -7,6 +7,7 @@ const router = useRouter()
 const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
 const memberName = ref(localStorage.getItem('memberName') || '')
 const memberId = ref(localStorage.getItem('memberId') || '')
+const isAdmin = ref(localStorage.getItem('role') === 'ADMIN')
 
 const searchType = ref('title')
 const searchQuery = ref('')
@@ -15,6 +16,7 @@ const updateAuthState = () => {
   isLoggedIn.value = !!localStorage.getItem('accessToken')
   memberName.value = localStorage.getItem('memberName') || ''
   memberId.value = localStorage.getItem('memberId') || ''
+  isAdmin.value = localStorage.getItem('role') === 'ADMIN'
 }
 
 const handleLogout = () => {
@@ -22,9 +24,11 @@ const handleLogout = () => {
   localStorage.removeItem('refreshToken')
   localStorage.removeItem('memberId')
   localStorage.removeItem('memberName')
+  localStorage.removeItem('role')
   isLoggedIn.value = false
   memberName.value = ''
   memberId.value = ''
+  isAdmin.value = false
   router.push('/')
 }
 
@@ -99,6 +103,11 @@ window.addEventListener('storage', () => {
           <template v-if="isLoggedIn">
             <div class="user-info">
               <span class="user-name">{{ memberName || memberId }}</span>
+              <template v-if="isAdmin">
+                <router-link to="/admin/reports" class="admin-link">
+                  🔔 신고처리
+                </router-link>
+              </template>
               <button class="logout-btn" @click="handleLogout">
                 로그아웃
               </button>
@@ -292,6 +301,23 @@ body {  background-color: #f5f5f5;  color: #000;  -webkit-color-scheme: light;  
   color: white;
   font-weight: 600;
   font-size: 0.95rem;
+}
+
+.admin-link {
+  padding: 0.5rem 1rem;
+  background-color: #ff9800;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.admin-link:hover {
+  background-color: #f57c00;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(255, 152, 0, 0.3);
 }
 
 .logout-btn {

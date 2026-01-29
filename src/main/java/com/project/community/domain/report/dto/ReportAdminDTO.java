@@ -1,10 +1,10 @@
 package com.project.community.domain.report.dto;
 
-import com.project.community.domain.board.entity.Board;
 import com.project.community.domain.report.entity.Report;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 
 @AllArgsConstructor
 @Getter

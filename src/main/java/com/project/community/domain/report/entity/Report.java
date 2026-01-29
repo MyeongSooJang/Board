@@ -40,14 +40,24 @@ public class Report extends BaseEntity {
 
     private String status = "SUBMITTED";
 
-    private Report(Member member, Board board, ReportRequestDTO request){
+    private Report(Member member, Board board, ReportRequestDTO request) {
         this.member = member;
         this.board = board;
         this.type = request.getType();
         this.content = request.getContent();
     }
 
-    public static Report createReport(Member member, Board board, ReportRequestDTO request){
+    public static Report createReport(Member member, Board board, ReportRequestDTO request) {
         return new Report(member, board, request);
+    }
+
+    public Report approve() {
+        this.status = "APPROVED";
+        return this;
+    }
+
+    public Report reject() {
+        this.status = "REJECTED";
+        return this;
     }
 }
