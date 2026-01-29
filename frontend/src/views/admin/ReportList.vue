@@ -1,6 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { reportApi } from '../../api/report'
+import ReportDetailModal from '../../components/ReportDetailModal.vue'
+
+const router = useRouter()
 
 const reports = ref([])
 const currentPage = ref(0)
@@ -10,6 +14,10 @@ const totalPages = ref(0)
 const isLoading = ref(false)
 const error = ref('')
 const successMessage = ref('')
+
+// 모달 상태
+const isModalOpen = ref(false)
+const selectedReport = ref(null)
 
 const reportStatusMap = {
   SUBMITTED: { label: '대기중', color: '#f39c12', bgColor: '#fff3cd' },
@@ -99,10 +107,46 @@ const nextPage = () => {
   goToPage(currentPage.value + 1)
 }
 
-// 포맷팅 함수
+// 포맷팅 함수 (테이블용 - 간략 형식)
 const formatDate = (dateString) => {
   const date = new Date(dateString)
-  return date.toLocaleString('ko-KR')
+  return date.toLocaleDateString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).replace(/\. /g, '.').replace(/\.$/, '')
+}
+
+// 모달 열기 - 행 클릭 시
+const openDetailModal = (report) => {
+  selectedReport.value = report
+  isModalOpen.value = true
+}
+
+// 모달 닫기
+const closeDetailModal = () => {
+  isModalOpen.value = false
+  selectedReport.value = null
+}
+
+// 게시글 상세 페이지로 이동 (새 탭)
+const goToBoardDetail = (boardId) => {
+  const route = router.resolve(`/boards/${boardId}`)
+  window.open(route.href, '_blank')
+}
+
+// 모달에서 승인
+const handleApproveFromModal = async (reportId) => {
+  closeDetailModal()
+  await approveReport(reportId)
+}
+
+// 모달에서 거절
+const handleRejectFromModal = async (reportId) => {
+  closeDetailModal()
+  await rejectReport(reportId)
 }
 
 onMounted(() => {
@@ -139,97 +183,77 @@ onMounted(() => {
         <p>신고 내역이 없습니다</p>
       </div>
 
-      <div v-else class="report-grid">
-        <div v-for="report in reports" :key="report.reportId" class="report-card">
-          <!-- 헤더 -->
-          <div class="card-header">
-            <div class="report-id">신고 ID: {{ report.reportId }}</div>
-            <div
-              class="status-badge"
-              :style="{
-                color: reportStatusMap[report.status].color,
-                backgroundColor: reportStatusMap[report.status].bgColor,
-                borderColor: reportStatusMap[report.status].color
-              }"
-            >
-              {{ reportStatusMap[report.status].label }}
-            </div>
-          </div>
-
-          <!-- 신고 정보 -->
-          <div class="card-content">
-            <!-- 신고 기본 정보 -->
-            <div class="info-row">
-              <span class="label">신고 유형:</span>
-              <span class="value">{{ reportTypeMap[report.type] }}</span>
-            </div>
-
-            <div class="info-row">
-              <span class="label">신고일시:</span>
-              <span class="value">{{ formatDate(report.reportedDate) }}</span>
-            </div>
-
-            <!-- 신고 내용 -->
-            <div class="info-row full-width">
-              <span class="label">신고 내용:</span>
-              <p class="report-content">{{ report.content }}</p>
-            </div>
-
-            <!-- 신고자 정보 -->
-            <div class="info-section">
-              <h4>신고자</h4>
-              <div class="info-row">
-                <span class="label">이름:</span>
-                <span class="value">{{ report.reporterName }}</span>
-              </div>
-              <div class="info-row">
-                <span class="label">아이디:</span>
-                <span class="value">{{ report.reporterUsername }}</span>
-              </div>
-            </div>
-
-            <!-- 피신고 게시글 정보 -->
-            <div class="info-section">
-              <h4>신고된 게시글</h4>
-              <div class="info-row">
-                <span class="label">게시글 ID:</span>
-                <span class="value">{{ report.boardId }}</span>
-              </div>
-              <div class="info-row">
-                <span class="label">제목:</span>
-                <span class="value">{{ report.boardTitle }}</span>
-              </div>
-              <div class="info-row">
-                <span class="label">작성자:</span>
-                <span class="value">{{ report.reportedName }} ({{ report.reportedUsername }})</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 액션 버튼 -->
-          <div
-            v-if="report.status === 'SUBMITTED'"
-            class="card-footer"
+      <table v-else class="report-table">
+        <thead>
+          <tr>
+            <th class="col-id">ID</th>
+            <th class="col-status">상태</th>
+            <th class="col-type">유형</th>
+            <th class="col-reporter">신고자</th>
+            <th class="col-board-title">게시글제목</th>
+            <th class="col-date">날짜</th>
+            <th class="col-actions">액션</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="report in reports"
+            :key="report.reportId"
+            @click="openDetailModal(report)"
+            class="report-row"
           >
-            <button
-              @click="rejectReport(report.reportId)"
-              class="btn btn-reject"
-            >
-              거절
-            </button>
-            <button
-              @click="approveReport(report.reportId)"
-              class="btn btn-approve"
-            >
-              승인
-            </button>
-          </div>
-
-          <div v-else class="card-footer disabled">
-            <span class="processed-text">이미 처리된 신고입니다</span>
-          </div>
-        </div>
-      </div>
+            <td class="col-id">{{ report.reportId }}</td>
+            <td class="col-status">
+              <span
+                class="status-badge"
+                :style="{
+                  color: reportStatusMap[report.status].color,
+                  backgroundColor: reportStatusMap[report.status].bgColor,
+                  borderColor: reportStatusMap[report.status].color
+                }"
+              >
+                {{ reportStatusMap[report.status].label }}
+              </span>
+            </td>
+            <td class="col-type">{{ reportTypeMap[report.type] }}</td>
+            <td class="col-reporter">{{ report.reporterName }}</td>
+            <td class="col-board-title">
+              <div class="title-wrapper">
+                <span class="title-text">{{ report.boardTitle }}</span>
+              </div>
+            </td>
+            <td class="col-date">{{ formatDate(report.reportedDate) }}</td>
+            <td class="col-actions" @click.stop>
+              <div class="action-buttons">
+                <button
+                  @click="goToBoardDetail(report.boardId)"
+                  class="btn btn-view"
+                  title="게시글 보기"
+                >
+                  보기
+                </button>
+                <button
+                  v-if="report.status === 'SUBMITTED'"
+                  @click="approveReport(report.reportId)"
+                  class="btn btn-approve"
+                  title="신고 승인"
+                >
+                  승인
+                </button>
+                <button
+                  v-if="report.status === 'SUBMITTED'"
+                  @click="rejectReport(report.reportId)"
+                  class="btn btn-reject"
+                  title="신고 거절"
+                >
+                  거절
+                </button>
+                <span v-else class="processed-text">처리됨</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- 페이지네이션 -->
@@ -255,6 +279,15 @@ onMounted(() => {
         다음
       </button>
     </div>
+
+    <!-- 신고 상세 모달 -->
+    <ReportDetailModal
+      :report="selectedReport"
+      :is-open="isModalOpen"
+      @close="closeDetailModal"
+      @approve="handleApproveFromModal"
+      @reject="handleRejectFromModal"
+    />
   </div>
 </template>
 
@@ -370,134 +403,158 @@ onMounted(() => {
   border: 1px dashed #bdc3c7;
 }
 
-/* 신고 카드 그리드 */
+/* 신고 테이블 섹션 */
 .report-section {
   margin-bottom: 30px;
-}
-
-.report-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(700px, 1fr));
-  gap: 20px;
-}
-
-.report-card {
   background: white;
   border: 1px solid #ecf0f1;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease;
 }
 
-.report-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
+.report-table thead {
   background: #f8f9fa;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 2px solid #ecf0f1;
 }
 
-.report-id {
+.report-table th {
+  padding: 14px 12px;
   font-weight: 600;
   color: #2c3e50;
-  font-size: 14px;
-}
-
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  border: 1px solid;
-}
-
-.card-content {
-  padding: 16px;
-}
-
-.info-row {
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ecf0f1;
   font-size: 13px;
-  align-items: center;
 }
 
-.info-row.full-width {
-  grid-template-columns: 1fr;
+.report-table tbody tr {
+  border-bottom: 1px solid #ecf0f1;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
-.info-row .label {
+.report-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.report-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.report-table td {
+  padding: 12px;
+  color: #2c3e50;
+  vertical-align: middle;
+}
+
+/* 컬럼별 스타일 */
+.col-id {
+  width: 80px;
+  text-align: center;
   font-weight: 600;
   color: #7f8c8d;
 }
 
-.info-row .value {
+.col-status {
+  width: 100px;
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.col-type {
+  width: 110px;
+  text-align: center;
   color: #2c3e50;
-  word-break: break-word;
+  font-size: 12px;
+}
+
+.col-reporter {
+  width: 100px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.col-board-title {
+  text-align: left;
+  padding-left: 16px !important;
+  max-width: 300px;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.title-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.report-content {
-  margin: 8px 0 0;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 4px;
-  line-height: 1.5;
   color: #2c3e50;
 }
 
-.info-section {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #ecf0f1;
+.report-row:hover .title-text {
+  color: #3498db;
+  text-decoration: underline;
 }
 
-.info-section h4 {
-  margin: 0 0 12px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #2c3e50;
+.col-date {
+  width: 140px;
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 12px;
 }
 
-.card-footer {
+.col-actions {
+  width: 210px;
+  text-align: center;
+}
+
+.action-buttons {
   display: flex;
-  gap: 8px;
-  padding: 12px 16px;
-  background: #f8f9fa;
-  border-top: 1px solid #ecf0f1;
-  flex-wrap: nowrap;
-}
-
-.card-footer.disabled {
+  gap: 4px;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .processed-text {
-  font-size: 13px;
+  font-size: 11px;
   color: #95a5a6;
   font-weight: 500;
 }
 
 .btn {
-  flex: 1;
-  padding: 8px 12px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 11px;
   transition: all 0.2s;
   white-space: nowrap;
+}
+
+.btn-view {
+  background: #3498db;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #2980b9;
 }
 
 .btn-reject {
@@ -560,19 +617,69 @@ onMounted(() => {
 }
 
 /* 반응형 */
-@media (max-width: 768px) {
-  .report-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 1024px) {
+  .report-table {
+    font-size: 12px;
   }
 
-  .info-row {
-    grid-template-columns: 80px 1fr;
-    font-size: 12px;
+  .col-type {
+    width: 90px;
+  }
+
+  .col-reporter {
+    width: 80px;
+  }
+
+  .col-actions {
+    width: 180px;
   }
 
   .btn {
-    font-size: 12px;
-    padding: 6px 10px;
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-list-container {
+    padding: 10px;
+  }
+
+  .report-table {
+    font-size: 11px;
+  }
+
+  .col-type,
+  .col-date {
+    display: none;
+  }
+
+  .col-id {
+    width: 50px;
+  }
+
+  .col-status {
+    width: 80px;
+  }
+
+  .col-reporter {
+    width: 70px;
+    font-size: 11px;
+  }
+
+  .col-actions {
+    width: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 10px;
   }
 
   .header h1 {

@@ -36,7 +36,10 @@ client.interceptors.request.use(
 client.interceptors.response.use(
   response => response,
   error => {
-    if (error.response?.status === 401) {
+    // 로그인 요청은 401 에러를 자동 처리하지 않음 (아이디/비밀번호 틀림)
+    const isLoginRequest = error.config?.url === '/auth/login'
+
+    if (error.response?.status === 401 && !isLoginRequest) {
       const refreshToken = localStorage.getItem('refreshToken')
 
       // 이미 로그아웃 중이면 더 이상 처리하지 않음

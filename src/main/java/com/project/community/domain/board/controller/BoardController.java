@@ -86,10 +86,10 @@ public class BoardController {
     @PostMapping
     @Operation(summary = "게시글 작성",
             description = "새로운 게시글 작성")
-    public ResponseEntity<URI> createBoard(@RequestBody BoardCreateRequestDTO board) {
+    public ResponseEntity<BoardResponseDTO> createBoard(@RequestBody BoardCreateRequestDTO board) {
         Long boardId = boardService.createBoard(board);
-        URI location = URI.create("/boards/" + boardId);
-        return ResponseEntity.created(location).body(location);
+        BoardResponseDTO response = boardService.searchByBoardId(boardId);
+        return ResponseEntity.created(URI.create("/boards/" + boardId)).body(response);
     }
 
     @PutMapping("/{boardId}")
