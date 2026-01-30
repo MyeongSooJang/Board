@@ -12,7 +12,9 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -53,11 +55,18 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getHttpStatus())
                 .body(response);
     }
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialException(AuthenticationException ex) {
         return ResponseEntity
-                .status(ErrorCode.UNAUTHORIZED.getHttpStatus())
-                .body(new ErrorResponse(ErrorCode.UNAUTHORIZED));
+                .status(ErrorCode.INVALID_CREDENTIALS.getHttpStatus())
+                .body(new ErrorResponse(ErrorCode.INVALID_CREDENTIALS));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(AuthenticationException ex) {
+        return ResponseEntity
+                .status(ErrorCode.INVALID_CREDENTIALS.getHttpStatus())
+                .body(new ErrorResponse(ErrorCode.INVALID_CREDENTIALS));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
