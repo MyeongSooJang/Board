@@ -1,21 +1,25 @@
 package com.project.community.domain.board.controller;
 
+
 import com.project.community.domain.board.dto.BoardCreateRequestDTO;
 import com.project.community.domain.board.dto.BoardResponseDTO;
 import com.project.community.domain.board.dto.BoardUpdateRequestDTO;
 import com.project.community.domain.board.service.BoardService;
+import com.project.community.exception.UnauthorizedException;
+import com.project.community.exception.dto.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
-import org.springdoc.core.annotations.ParameterObject;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -99,8 +103,11 @@ public class BoardController {
             @Parameter(description = "수정할 게시글 번호")
             @PathVariable Long boardId,
             @Parameter(description = "수정할 상세 내용")
-            @RequestBody BoardUpdateRequestDTO requestDTO) {
-        return ResponseEntity.ok(boardService.updateBoard(boardId, requestDTO));
+            @RequestBody BoardUpdateRequestDTO requestDTO,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if(userDetails == null) throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
+        return ResponseEntity.ok(boardService.updateBoard(boardId, requestDTO, userDetails.getUsername()));
     }
 
     @DeleteMapping("/{boardId}")

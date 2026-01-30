@@ -28,6 +28,7 @@ public enum ErrorCode {
 
     // 403 Forbidden
     FORBIDDEN(403, "권한이 없습니다"),
+    NOT_AUTHOR(403, "작성만 수정이 가능합니다"),
 
     // 404 NotFound
     BOARD_NOT_FOUND(404,"게시글을 찾을 수 없습니다"),

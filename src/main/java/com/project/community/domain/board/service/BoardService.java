@@ -9,6 +9,7 @@ import com.project.community.domain.boardlike.repository.BoardLikeRepository;
 import com.project.community.domain.member.entity.Member;
 import com.project.community.domain.member.repository.MemberRepository;
 import com.project.community.exception.NotFoundException;
+import com.project.community.exception.UnauthorizedException;
 import com.project.community.exception.dto.ErrorCode;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
@@ -68,12 +69,21 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDTO updateBoard(Long boardId, BoardUpdateRequestDTO boardUpdateRequestDTO) {
+    public BoardResponseDTO updateBoard(Long boardId, BoardUpdateRequestDTO boardUpdateRequestDTO, String username) {
         Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+
+        validateRequestUser(board,username);
+
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
         board.updateBoard(boardUpdateRequestDTO);
         return BoardResponseDTO.from(board, likeCount);
+    }
+
+    private void validateRequestUser(Board board, String username) {
+        if(board.getMember().getUsername().equals(username)){
+            throw new UnauthorizedException(ErrorCode.NOT_AUTHOR);
+        }
     }
 
     @Transactional
