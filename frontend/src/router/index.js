@@ -6,6 +6,7 @@ import BoardDetail from '../views/board/BoardDetail.vue'
 import BoardForm from '../views/board/BoardForm.vue'
 import ReportList from '../views/admin/ReportList.vue'
 import Profile from '../views/member/Profile.vue'
+import MyPage from '../views/member/MyPage.vue'
 
 const routes = [
   {
@@ -58,6 +59,12 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: Profile,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/mypage',
+    name: 'MyPage',
+    component: MyPage,
     meta: { requiresAuth: true }
   }
 ]

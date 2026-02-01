@@ -20,6 +20,11 @@ const replyingToCommentId = ref(null)
 const replyContent = ref('')
 const isSubmittingReply = ref(false)
 
+// 댓글 수정 관련
+const editingCommentId = ref(null)
+const editCommentContent = ref('')
+const isEditingComment = ref(false)
+
 const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
 const currentMemberId = ref(localStorage.getItem('memberId') || '')
 
@@ -149,6 +154,35 @@ const handleAddReply = async (parentCommentId) => {
     alert(err.response?.data?.message || '답글 작성에 실패했습니다')
   } finally {
     isSubmittingReply.value = false
+  }
+}
+
+const handleEditCommentClick = (comment) => {
+  editingCommentId.value = comment.commentId
+  editCommentContent.value = comment.commentContent
+  isEditingComment.value = true
+}
+
+const handleCancelEditComment = () => {
+  editingCommentId.value = null
+  editCommentContent.value = ''
+  isEditingComment.value = false
+}
+
+const handleSaveEditComment = async (commentId) => {
+  if (!editCommentContent.value.trim()) {
+    alert('댓글을 입력해주세요')
+    return
+  }
+
+  try {
+    await commentApi.update(boardId.value, commentId, editCommentContent.value)
+    editingCommentId.value = null
+    editCommentContent.value = ''
+    isEditingComment.value = false
+    loadComments()
+  } catch (err) {
+    alert(err.response?.data?.message || '댓글 수정에 실패했습니다')
   }
 }
 
@@ -344,10 +378,37 @@ onMounted(() => {
                 </button>
                 <button
                   v-if="currentMemberId && currentMemberId == comment.memberId"
+                  @click="handleEditCommentClick(comment)"
+                  class="btn-small btn-edit"
+                >
+                  수정
+                </button>
+                <button
+                  v-if="currentMemberId && currentMemberId == comment.memberId"
                   @click="handleDeleteComment(comment.commentId)"
                   class="btn-small btn-danger"
                 >
                   삭제
+                </button>
+              </div>
+
+              <!-- 댓글 수정 폼 -->
+              <div v-if="editingCommentId === comment.commentId && isEditingComment" class="edit-form">
+                <div class="edit-form-header">
+                  <span class="edit-form-title">댓글 수정</span>
+                  <button @click="handleCancelEditComment" class="btn-close">✕</button>
+                </div>
+                <textarea
+                  v-model="editCommentContent"
+                  placeholder="댓글을 수정하세요"
+                  class="edit-input"
+                  rows="3"
+                ></textarea>
+                <button
+                  @click="handleSaveEditComment(comment.commentId)"
+                  class="btn btn-comment-submit"
+                >
+                  저장
                 </button>
               </div>
             </div>
@@ -388,10 +449,36 @@ onMounted(() => {
                     class="comment-actions"
                   >
                     <button
+                      @click="handleEditCommentClick(reply)"
+                      class="btn-small btn-edit"
+                    >
+                      수정
+                    </button>
+                    <button
                       @click="handleDeleteComment(reply.commentId)"
                       class="btn-small btn-danger"
                     >
                       삭제
+                    </button>
+                  </div>
+
+                  <!-- 대댓글 수정 폼 -->
+                  <div v-if="editingCommentId === reply.commentId && isEditingComment" class="edit-form">
+                    <div class="edit-form-header">
+                      <span class="edit-form-title">댓글 수정</span>
+                      <button @click="handleCancelEditComment" class="btn-close">✕</button>
+                    </div>
+                    <textarea
+                      v-model="editCommentContent"
+                      placeholder="댓글을 수정하세요"
+                      class="edit-input"
+                      rows="3"
+                    ></textarea>
+                    <button
+                      @click="handleSaveEditComment(reply.commentId)"
+                      class="btn btn-comment-submit"
+                    >
+                      저장
                     </button>
                   </div>
                 </div>
@@ -797,6 +884,15 @@ body { color: #000; background-color: #f5f5f5; }
   background: #2980b9;
 }
 
+.btn-small.btn-edit {
+  background: #f39c12;
+  color: white;
+}
+
+.btn-small.btn-edit:hover {
+  background: #e67e22;
+}
+
 .btn-report {
   background: #e67e22;
   color: white;
@@ -833,6 +929,18 @@ body { color: #000; background-color: #f5f5f5; }
   gap: 8px;
 }
 
+.edit-form {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background: #f9f9f9;
+  border: 1px solid #ffc107;
+  border-radius: 3px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .reply-form-header {
   display: flex;
   justify-content: space-between;
@@ -844,6 +952,20 @@ body { color: #000; background-color: #f5f5f5; }
 
 .reply-form-title {
   color: #3d414d;
+}
+
+.edit-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.edit-form-title {
+  color: #f39c12;
+  font-weight: 600;
 }
 
 .reply-input {
@@ -861,6 +983,24 @@ body { color: #000; background-color: #f5f5f5; }
 .reply-input:focus {
   outline: none;
   border-color: #3d414d;
+}
+
+.edit-input {
+  padding: 8px 10px;
+  border: 1px solid #ffc107;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: none;
+  line-height: 1.4;
+  box-sizing: border-box;
+  min-height: 60px;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #f39c12;
+  box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
 }
 
 .btn-comment-submit {

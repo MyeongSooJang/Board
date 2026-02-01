@@ -17,6 +17,7 @@ const formData = ref({
 const errors = ref({})
 const isLoading = ref(false)
 const successMessage = ref('')
+const isDeleteConfirmOpen = ref(false)
 
 onMounted(async () => {
   // 현재 사용자 정보 조회
@@ -104,6 +105,35 @@ const handleSubmit = async () => {
 const handleCancel = () => {
   router.push('/boards')
 }
+
+const handleDeleteAccountClick = () => {
+  isDeleteConfirmOpen.value = true
+}
+
+const handleDeleteAccount = async () => {
+  try {
+    await memberApi.delete(memberId.value)
+    alert('계정이 삭제되었습니다.')
+
+    // 로그아웃 처리
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('memberId')
+    localStorage.removeItem('memberName')
+    localStorage.removeItem('role')
+
+    router.push('/login')
+  } catch (err) {
+    const errorMsg = err.response?.data?.message || '계정 삭제에 실패했습니다'
+    alert(errorMsg)
+  } finally {
+    isDeleteConfirmOpen.value = false
+  }
+}
+
+const handleCancelDelete = () => {
+  isDeleteConfirmOpen.value = false
+}
 </script>
 
 <template>
@@ -184,7 +214,33 @@ const handleCancel = () => {
             취소
           </button>
         </div>
+
+        <hr class="divider" />
+
+        <div class="danger-section">
+          <h3>계정 관리</h3>
+          <p class="danger-description">이 작업은 되돌릴 수 없습니다.</p>
+          <button type="button" class="delete-account-btn" @click="handleDeleteAccountClick">
+            계정 삭제
+          </button>
+        </div>
       </form>
+
+      <!-- 계정 삭제 확인 모달 -->
+      <div v-if="isDeleteConfirmOpen" class="modal-overlay">
+        <div class="modal-content">
+          <h3>계정을 삭제하시겠습니까?</h3>
+          <p class="warning-text">이 작업은 되돌릴 수 없습니다. 모든 게시글과 댓글이 유지되지만, 계정으로는 더 이상 로그인할 수 없습니다.</p>
+          <div class="modal-actions">
+            <button @click="handleCancelDelete" class="btn-modal-cancel">
+              취소
+            </button>
+            <button @click="handleDeleteAccount" class="btn-modal-confirm">
+              삭제
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -297,5 +353,123 @@ const handleCancel = () => {
 
 .cancel-btn:hover {
   background-color: #7f8c8d;
+}
+
+.divider {
+  margin: 2rem 0;
+  border: none;
+  border-top: 2px solid #ecf0f1;
+}
+
+.danger-section {
+  padding: 1.5rem;
+  background-color: #fff5f5;
+  border: 1px solid #ffcccb;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.danger-section h3 {
+  color: #c0392b;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.danger-description {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+}
+
+.delete-account-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-account-btn:hover {
+  background-color: #a93226;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin: 0 0 1rem 0;
+  color: #c0392b;
+  font-size: 1.2rem;
+}
+
+.warning-text {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.btn-modal-cancel {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-modal-cancel:hover {
+  background-color: #7f8c8d;
+}
+
+.btn-modal-confirm {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-modal-confirm:hover {
+  background-color: #a93226;
 }
 </style>

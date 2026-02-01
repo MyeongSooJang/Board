@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { authApi } from './api/auth'
 
 const router = useRouter()
 
@@ -19,7 +20,16 @@ const updateAuthState = () => {
   isAdmin.value = localStorage.getItem('role') === 'ADMIN'
 }
 
-const handleLogout = () => {
+const handleLogout = async () => {
+  try {
+    // 서버에 로그아웃 요청
+    await authApi.logout()
+  } catch (err) {
+    console.error('로그아웃 API 호출 실패:', err)
+    // 에러 발생 시에도 클라이언트 로그아웃 진행
+  }
+
+  // 로컬스토리지에서 토큰 및 사용자 정보 제거
   localStorage.removeItem('accessToken')
   localStorage.removeItem('refreshToken')
   localStorage.removeItem('memberId')
@@ -52,6 +62,10 @@ const handleSearchKeydown = (event) => {
 
 const goHome = () => {
   router.push('/')
+}
+
+const goToMyPage = () => {
+  router.push('/mypage')
 }
 
 // 라우터 변경 시 로그인 상태 업데이트
@@ -102,7 +116,9 @@ window.addEventListener('storage', () => {
         <div class="header-right">
           <template v-if="isLoggedIn">
             <div class="user-info">
-              <span class="user-name">{{ memberName || memberId }}</span>
+              <button class="mypage-btn" @click="goToMyPage" title="마이페이지">
+                👤 {{ memberName || memberId }}
+              </button>
               <template v-if="isAdmin">
                 <router-link to="/admin/reports" class="admin-link">
                   🔔 신고처리
@@ -303,6 +319,25 @@ body {  background-color: #f5f5f5;  color: #000;  -webkit-color-scheme: light;  
   font-weight: 600;
   font-size: 0.95rem;
   white-space: nowrap;
+}
+
+.mypage-btn {
+  padding: 0.4rem 0.8rem;
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mypage-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
 }
 
 .admin-link {

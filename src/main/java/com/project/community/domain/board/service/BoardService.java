@@ -81,7 +81,7 @@ public class BoardService {
     }
 
     private void validateRequestUser(Board board, String username) {
-        if(board.getMember().getUsername().equals(username)){
+        if(!board.getMember().getUsername().equals(username)){
             throw new UnauthorizedException(ErrorCode.NOT_AUTHOR);
         }
     }
