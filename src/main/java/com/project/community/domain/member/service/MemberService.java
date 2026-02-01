@@ -66,7 +66,10 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO updateMember(Long memberId, MemberUpdateRequestDTO request) {
-        String encodingPassword = encodePassword(request.getPassword());
+        String encodingPassword = null;
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            encodingPassword = encodePassword(request.getPassword());
+        }
         Member updated = searchByMemberId(memberId).updateMember(encodingPassword, request);
         return MemberResponseDTO.from(updated);
     }

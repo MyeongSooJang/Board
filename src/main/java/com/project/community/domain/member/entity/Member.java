@@ -62,10 +62,18 @@ public class Member extends BaseEntity {
     }
 
     public Member updateMember(String encodingPassword, MemberUpdateRequestDTO request) {
-        this.name = request.getName();
-        this.password = encodingPassword;
-        this.age = request.getAge();
-        this.phone = request.getPhone();
+        if (request.getName() != null && !request.getName().isEmpty()) {
+            this.name = request.getName();
+        }
+        if (encodingPassword != null && !encodingPassword.isEmpty()) {
+            this.password = encodingPassword;
+        }
+        if (request.getAge() != null) {
+            this.age = request.getAge();
+        }
+        if (request.getPhone() != null && !request.getPhone().isEmpty()) {
+            this.phone = request.getPhone();
+        }
         return this;
     }
 }
