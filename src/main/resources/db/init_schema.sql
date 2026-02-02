@@ -93,18 +93,33 @@ CREATE TABLE refresh_token
 CREATE TABLE report
 (
     report_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_id   BIGINT NOT NULL,
-    board_id    BIGINT NOT NULL,
-    type VARCHAR(255) NOT NULL DEFAULT 'OTHER'
-        CHECK (type in ('SPAM','ABUSIVE','ILLEGAL','OTHER')),
-    content     TEXT   NULL,
-    status      VARCHAR(20) DEFAULT 'SUBMITTED'
+    member_id   BIGINT       NOT NULL,
+    board_id    BIGINT       NOT NULL,
+    type        VARCHAR(255) NOT NULL DEFAULT 'OTHER'
+        CHECK (type in ('SPAM', 'ABUSIVE', 'ILLEGAL', 'OTHER')),
+    content     TEXT         NULL,
+    status      VARCHAR(20)           DEFAULT 'SUBMITTED'
         CHECK (status IN ('SUBMITTED', 'APPROVED', 'REJECTED')),
-    create_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    delete_time       TIMESTAMP NULL,
+    create_time TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    delete_time TIMESTAMP    NULL,
     FOREIGN KEY (member_id) REFERENCES member (member_id),
     FOREIGN KEY (board_id) REFERENCES board (board_id),
     UNIQUE KEY uk_board_member (member_id, board_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+-- BoardFile
+
+CREATE TABLE BoardFile
+(
+    file_id     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id    BIGINT       NOT NULL,
+    file_name   VARCHAR(255) NOT NULL,
+    file_size   INT          NOT NULL,
+    file_url    VARCHAR(500),  -- S3 URL
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (board_id) REFERENCES board (board_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
