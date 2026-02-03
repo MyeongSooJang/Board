@@ -113,12 +113,13 @@ CREATE TABLE report
 
 CREATE TABLE BoardFile
 (
-    file_id     BIGINT AUTO_INCREMENT PRIMARY KEY,
-    board_id    BIGINT       NOT NULL,
-    file_name   VARCHAR(255) NOT NULL,
-    file_size   INT          NOT NULL,
-    file_url    VARCHAR(500),  -- S3 URL
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    file_id    BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id   BIGINT       NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    saved_name  VARCHAR(255) NOT NULL,
+    size  INT          NOT NULL,
+    url   VARCHAR(500), -- S3
+    upload_time TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (board_id) REFERENCES board (board_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
