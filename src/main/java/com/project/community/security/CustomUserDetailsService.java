@@ -1,7 +1,7 @@
 package com.project.community.security;
 
-import com.project.community.domain.member.entity.Member;
-import com.project.community.domain.member.repository.MemberRepository;
+import com.project.community.member.entity.Member;
+import com.project.community.member.repository.MemberRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
