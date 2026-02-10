@@ -1,9 +1,14 @@
-DROP TABLE IF EXISTS REPORT;
-DROP TABLE IF EXISTS refresh_token;
-DROP TABLE IF EXISTS comment;
-DROP TABLE IF EXISTS board_like;
-DROP TABLE IF EXISTS board;
-DROP TABLE IF EXISTS member;
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS board_file;     -- board 참조
+DROP TABLE IF EXISTS report;          -- member, board 참조
+DROP TABLE IF EXISTS comment;         -- board, member, comment 참조
+DROP TABLE IF EXISTS board_like;      -- member, board 참조
+DROP TABLE IF EXISTS board;           -- member 참조
+DROP TABLE IF EXISTS refresh_token;   -- 독립적
+DROP TABLE IF EXISTS member;          -- 독립적
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- Member 테이블
 CREATE TABLE member
@@ -111,7 +116,7 @@ CREATE TABLE report
 
 -- BoardFile
 
-CREATE TABLE BoardFile
+CREATE TABLE board_file
 (
     file_id    BIGINT AUTO_INCREMENT PRIMARY KEY,
     board_id   BIGINT       NOT NULL,

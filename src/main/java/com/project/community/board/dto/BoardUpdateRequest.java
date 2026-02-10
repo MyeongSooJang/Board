@@ -3,10 +3,9 @@ package com.project.community.board.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-public class BoardCreateRequestDTO {
+@Getter
+public class BoardUpdateRequest {
     private String boardTitle;
     private String boardContent;
-    private Long memberId;
 }

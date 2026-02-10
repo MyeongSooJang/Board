@@ -1,9 +1,10 @@
 package com.project.community.board.controller;
 
 
-import com.project.community.board.dto.BoardCreateRequestDTO;
-import com.project.community.board.dto.BoardResponseDTO;
-import com.project.community.board.dto.BoardUpdateRequestDTO;
+import com.project.community.board.dto.BoardCreateRequest;
+import com.project.community.board.dto.BoardResponse;
+import com.project.community.board.dto.BoardSearchRequest;
+import com.project.community.board.dto.BoardUpdateRequest;
 import com.project.community.board.service.BoardService;
 import com.project.community.exception.UnauthorizedException;
 import com.project.community.exception.dto.ErrorCode;
@@ -41,47 +42,25 @@ public class BoardController {
     @GetMapping
     @Operation(summary = "모든 게시물 조회",
             description = "최신순으로 모든 게시물을 조회합니다")
-    public ResponseEntity<Page<BoardResponseDTO>> findAll(
+    public ResponseEntity<Page<BoardResponse>> findAll(
             @ParameterObject
-            @PageableDefault(size = 10, sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 10, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(boardService.searchAll(pageable));
     }
 
-    @GetMapping("/search/title")
-    @Operation(summary = "제목으로 게시물 조회",
-            description = "입력한 제목이 포함된 게시글을 최신순으로 조회합니다")
-    public ResponseEntity<Page<BoardResponseDTO>> searchBoardsByBoardTitle(
-            @Parameter(description = "검색할 게시물의 제목", example = "안녕하세요")
-            @RequestParam String boardTitle,
-            @PageableDefault(size = 10, sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(boardService.searchBoardsByBoardTitle(boardTitle, pageable));
-    }
-
-    @GetMapping("/search/writer")
-    @Operation(summary = "작성자로 게시물 조회",
-            description = "작성자가 일치하는 게시글을 최신순으로 조회합니다")
-    public ResponseEntity<Page<BoardResponseDTO>> searchBoardsByMemberName(
-            @Parameter(description = "검색할 게시물 작성자 이름", example = "ms")
-            @RequestParam String memberName,
-            @PageableDefault(size = 10, sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(boardService.searchBoardsByMemberName(memberName, pageable));
-    }
-
-    @GetMapping("/search/keyword")
-    @Operation(summary = "키워드로 게시물 조회",
-            description = "제목과 내용에 키워드가 포함된 게시글을 최신순으로 조회합니다")
-    public ResponseEntity<Page<BoardResponseDTO>> searchBoardsByKeyWord(
-            @Parameter(description = "검색할 키워드 (제목, 내용 포함)", example = "Java")
-            @RequestParam String keyword,
-            @PageableDefault(size = 10, sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        return ResponseEntity.ok(boardService.searchBoardsByKeyWord(keyword, pageable));
+    @GetMapping("/search")
+    @Operation(summary = "게시물 검색",
+            description = "제목 / 작성자 / 제목 + 내용 으로 게시물을 검색합니다")
+    public ResponseEntity<Page<BoardResponse>> search(
+            @ParameterObject BoardSearchRequest request,
+            @PageableDefault(size = 10, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(boardService.searchBoard(request, pageable));
     }
 
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 클릭시 게시물 내용 출력",
             description = "해당하는 번호의 게시글 내용 출력")
-    public ResponseEntity<BoardResponseDTO> findByBoardId(
+    public ResponseEntity<BoardResponse> findByBoardId(
             @Parameter(description = "보여줄 게시글 번호")
             @PathVariable Long boardId) {
         return ResponseEntity.ok(boardService.searchByBoardId(boardId));
@@ -90,23 +69,25 @@ public class BoardController {
     @PostMapping
     @Operation(summary = "게시글 작성",
             description = "새로운 게시글 작성")
-    public ResponseEntity<BoardResponseDTO> createBoard(@RequestBody BoardCreateRequestDTO board) {
+    public ResponseEntity<BoardResponse> createBoard(@RequestBody BoardCreateRequest board) {
         Long boardId = boardService.createBoard(board);
-        BoardResponseDTO response = boardService.searchByBoardId(boardId);
+        BoardResponse response = boardService.searchByBoardId(boardId);
         return ResponseEntity.created(URI.create("/boards/" + boardId)).body(response);
     }
 
     @PutMapping("/{boardId}")
     @Operation(summary = "게시글 수정",
             description = "게시물 번호에 해당하는 상세 내용 수정")
-    public ResponseEntity<BoardResponseDTO> updateBoard(
+    public ResponseEntity<BoardResponse> updateBoard(
             @Parameter(description = "수정할 게시글 번호")
             @PathVariable Long boardId,
             @Parameter(description = "수정할 상세 내용")
-            @RequestBody BoardUpdateRequestDTO requestDTO,
+            @RequestBody BoardUpdateRequest requestDTO,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if(userDetails == null) throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
+        if (userDetails == null) {
+            throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
+        }
         return ResponseEntity.ok(boardService.updateBoard(boardId, requestDTO, userDetails.getUsername()));
     }
 

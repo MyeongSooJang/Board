@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class BoardResponseDTO {
+public class BoardResponse {
     private Long boardId;
     private String boardTitle;
     private String boardContent;
@@ -18,8 +18,8 @@ public class BoardResponseDTO {
     private Integer boardViewCount;
     private Long boardLikeCount;
 
-    public static BoardResponseDTO from(Board board, Long boardLikeCount) {
-        return new BoardResponseDTO(
+    public static BoardResponse from(Board board, Long boardLikeCount) {
+        return new BoardResponse(
                 board.getBoardId(),
                 board.getBoardTitle(),
                 board.getBoardContent(),

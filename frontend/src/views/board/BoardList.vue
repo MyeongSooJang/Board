@@ -25,14 +25,15 @@ const loadBoards = async () => {
   try {
     let response
 
-    if (searchType.value === 'title') {
-      response = await boardApi.searchByTitle(searchQuery.value, currentPage.value, pageSize.value)
-    } else if (searchType.value === 'writer') {
-      response = await boardApi.searchByWriter(searchQuery.value, currentPage.value, pageSize.value)
-    } else if (searchType.value === 'keyword') {
-      response = await boardApi.searchByKeyword(searchQuery.value, currentPage.value, pageSize.value)
-    } else {
+    if (searchType.value === 'all') {
       response = await boardApi.getList(currentPage.value, pageSize.value)
+    } else {
+      response = await boardApi.search(
+        searchType.value,
+        searchQuery.value,
+        currentPage.value,
+        pageSize.value
+      )
     }
 
     boards.value = response.data.content || response.data
@@ -182,9 +183,10 @@ onMounted(() => {
     <div class="search-bar">
       <select v-model="searchType" class="search-select">
         <option value="all">전체</option>
-        <option value="title">제목</option>
-        <option value="writer">작성자</option>
-        <option value="keyword">제목+내용</option>
+        <option value="TITLE">제목</option>
+        <option value="CONTENT">내용</option>
+        <option value="TITLE_AND_CONTENT">제목+내용</option>
+        <option value="WRITER">작성자</option>
       </select>
       <input
         v-model="searchQuery"

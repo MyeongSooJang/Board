@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    Page<Board> findAllByDeleteTimeIsNull(Pageable pageable);
+    Page<Board> findByDeleteTimeIsNull(Pageable pageable);
 
     @Query("""
                SELECT b
@@ -22,7 +22,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             """)
     Page<Board> findByBoardTitle(@Param("boardTitle") String boardTitle, Pageable pageable);
 
-    Page<Board> findByDeleteTimeIsNullAndMemberName(@Param("memberName") String memberName, Pageable pageable);
+    @Query("""
+               SELECT b
+               FROM Board As b
+               WHERE b.boardContent LIKE CONCAT ('%',:boardContent, '%')
+               AND   b.deleteTime IS NULL
+            """)
+    Page<Board> findByBoardContent(@Param("boardContent") String boardContent, Pageable pageable);
 
     @Query("""
               SELECT b
@@ -30,7 +36,17 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
               WHERE (b.boardContent LIKE CONCAT ('%',:keyword, '%') OR b.boardTitle LIKE CONCAT ('%', :keyword, '%'))
               AND b.deleteTime IS NULL
             """)
-    Page<Board> findByKeywordInTitleOrContent(@Param("keyword") String keyword, Pageable pageable);
+    Page<Board> findByKeyWord(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("""
+              SELECT b
+              FROM Board AS b
+              WHERE b.member.name = :memberName
+              AND b.deleteTime IS NULL
+            """)
+    Page<Board> findByWriter(@Param("memberName") String memberName, Pageable pageable);
+
+
 
     Optional<Board> findByBoardIdAndDeleteTimeIsNull(@Param("boardId") Long boardId);
 }

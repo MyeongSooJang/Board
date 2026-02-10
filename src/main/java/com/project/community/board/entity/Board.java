@@ -1,8 +1,8 @@
 package com.project.community.board.entity;
 
 import com.project.community.common.BaseEntity;
-import com.project.community.board.dto.BoardCreateRequestDTO;
-import com.project.community.board.dto.BoardUpdateRequestDTO;
+import com.project.community.board.dto.BoardCreateRequest;
+import com.project.community.board.dto.BoardUpdateRequest;
 import com.project.community.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,11 +37,11 @@ public class Board extends BaseEntity {
         this.member = member;
     }
 
-    public static Board createBoard(BoardCreateRequestDTO board, Member member) {
+    public static Board createBoard(BoardCreateRequest board, Member member) {
         return new Board(board.getBoardTitle(), board.getBoardContent(), member);
     }
 
-    public void updateBoard(BoardUpdateRequestDTO updateBoard) {
+    public void updateBoard(BoardUpdateRequest updateBoard) {
         boardTitle = updateBoard.getBoardTitle();
         boardContent = updateBoard.getBoardContent();
     }
