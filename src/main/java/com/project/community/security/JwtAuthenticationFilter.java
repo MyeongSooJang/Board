@@ -22,7 +22,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
     public final JwtTokenProvider jwtTokenProvider;
-    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -46,12 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + memberRole);
                 List<GrantedAuthority> authorities = List.of(authority);
 
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails,
+                        username,
                         null,
-                        userDetails.getAuthorities());
+                        authorities);
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (TokenException e) {
