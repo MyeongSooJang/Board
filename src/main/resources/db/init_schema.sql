@@ -1,12 +1,12 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS board_file;     -- board 참조
-DROP TABLE IF EXISTS report;          -- member, board 참조
-DROP TABLE IF EXISTS comment;         -- board, member, comment 참조
-DROP TABLE IF EXISTS board_like;      -- member, board 참조
-DROP TABLE IF EXISTS board;           -- member 참조
-DROP TABLE IF EXISTS refresh_token;   -- 독립적
-DROP TABLE IF EXISTS member;          -- 독립적
+DROP TABLE IF EXISTS board_file; -- board 참조
+DROP TABLE IF EXISTS report; -- member, board 참조
+DROP TABLE IF EXISTS comment; -- board, member, comment 참조
+DROP TABLE IF EXISTS board_like; -- member, board 참조
+DROP TABLE IF EXISTS board; -- member 참조
+DROP TABLE IF EXISTS refresh_token; -- 독립적
+DROP TABLE IF EXISTS member; -- 독립적
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -33,14 +33,15 @@ CREATE TABLE member
 -- Board 테이블
 CREATE TABLE board
 (
-    board_id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    board_title      VARCHAR(255) NOT NULL,
-    board_content    TEXT,
-    member_id        BIGINT       NOT NULL,
-    board_view_count INT          NOT NULL DEFAULT 0,
-    create_time      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    update_time      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    delete_time      TIMESTAMP    NULL,
+    board_id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_title         VARCHAR(255) NOT NULL,
+    board_content       TEXT,
+    member_id           BIGINT       NOT NULL,
+    board_view_count    BIGINT       NOT NULL DEFAULT 0,
+    board_comment_count BIGINT       NOT NULL DEFAULT 0,
+    create_time         TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    update_time         TIMESTAMP             DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    delete_time         TIMESTAMP    NULL,
     FOREIGN KEY (member_id) REFERENCES member (member_id),
     INDEX idx_board_member (member_id),
     INDEX idx_board_delete_update (delete_time, update_time)
@@ -116,16 +117,16 @@ CREATE TABLE report
 
 -- BoardFile
 
-CREATE TABLE board_file
-(
-    file_id    BIGINT AUTO_INCREMENT PRIMARY KEY,
-    board_id   BIGINT       NOT NULL,
-    original_name VARCHAR(255) NOT NULL,
-    saved_name  VARCHAR(255) NOT NULL,
-    size  INT          NOT NULL,
-    url   VARCHAR(500), -- S3
-    upload_time TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (board_id) REFERENCES board (board_id) ON DELETE CASCADE
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4;
+# CREATE TABLE board_file
+# (
+#     file_id    BIGINT AUTO_INCREMENT PRIMARY KEY,
+#     board_id   BIGINT       NOT NULL,
+#     original_name VARCHAR(255) NOT NULL,
+#     saved_name  VARCHAR(255) NOT NULL,
+#     size  INT          NOT NULL,
+#     url   VARCHAR(500), -- S3
+#     upload_time TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+#
+#     FOREIGN KEY (board_id) REFERENCES board (board_id) ON DELETE CASCADE
+# ) ENGINE = InnoDB
+#   DEFAULT CHARSET = utf8mb4;

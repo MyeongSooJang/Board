@@ -1,651 +1,590 @@
--- Comment 더미 데이터 (모든 100개 게시글 1:1 매핑, commentId: 1-455)
+-- Comment 더미 데이터 (게시글별로 다양한 댓글수)
+-- 1번 게시글 (8개 댓글)
 INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
--- 1번 게시글 (Spring Boot 시작하기, 4개, commentNo: 1-4, 대댓글 1개)
 ('Spring Boot 정말 편하네요.', 1, 5, NULL),
 ('기본 설정이 명확합니다.', 1, 12, NULL),
 ('프로젝트 구조도 이해하기 쉬워요.', 1, 8, 1),
 ('다음 글도 기대합니다!', 1, 23, NULL),
+('버전 업그레이드는 쉬운가요?', 1, 7, NULL),
+('보안 설정은 어떻게 하나요?', 1, 15, NULL),
+('마이크로서비스로 갈 수 있나요?', 1, 20, NULL),
+('정말 도움 많이 됐습니다!', 1, 3, 3);
 
--- 2번 게시글 (JPA 기본 개념, 5개, commentNo: 5-9, 대댓글 1개)
+-- 2번 게시글 (3개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('영속성 컨텍스트 개념이 명확해졌어요.', 2, 7, NULL),
 ('1차 캐시 부분 설명이 좋네요.', 2, 15, NULL),
-('더티 체킹은 어떻게 동작하나요?', 2, 19, NULL),
-('더티 체킹은 엔티티 변경 감지 기능입니다.', 2, 1, 7),
-('자세한 답변 감사합니다!', 2, 19, 8),
+('더티 체킹은 어떻게 동작하나요?', 2, 19, NULL);
 
--- 3번 게시글 (MySQL 인덱스 활용법, 4개, commentNo: 10-13, 대댓글 1개)
+-- 3번 게시글 (12개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('인덱스 때문에 고민 중이었는데 해결됐어요.', 3, 4, NULL),
 ('복합 인덱스 설명이 명확합니다.', 3, 11, NULL),
 ('왼쪽 우선 규칙 처음 알았네요!', 3, 18, NULL),
 ('EXPLAIN으로 확인하는 방법도 궁금해요.', 3, 22, 12),
+('실제 프로젝트에서 어떻게 적용하나요?', 3, 25, NULL),
+('쿼리 튜닝 팁도 알려주세요.', 3, 28, NULL),
+('인덱스 크기 최적화는?', 3, 2, NULL),
+('통계 갱신 주기는?', 3, 6, NULL),
+('파티셔닝과 함께 쓸 수 있나요?', 3, 9, NULL),
+('성능 개선 효과가 크군요!', 3, 14, NULL),
+('다른 DB도 비슷한가요?', 3, 17, NULL),
+('정말 유용한 글입니다!', 3, 21, NULL);
 
--- 4번 게시글 (REST API 설계 가이드, 5개, commentNo: 14-18, 대댓글 1개)
+-- 4번 게시글 (2개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('REST API 설계 시 항상 참고합니다.', 4, 6, NULL),
-('URI 네이밍 규칙 부분이 유용했어요.', 4, 14, NULL),
-('HTTP 메서드 선택 기준도 명확하네요.', 4, 20, NULL),
-('이 부분 더 자세히 설명해주실 수 있나요?', 4, 25, 15),
-('나중에 작성해보겠습니다!', 4, 2, 17),
+('URI 네이밍 규칙 부분이 유용했어요.', 4, 14, NULL);
 
--- 5번 게시글 (React Hook 완벽 가이드, 4개, commentNo: 19-22, 대댓글 1개)
+-- 5번 게시글 (10개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Hook 사용하면서 헷갈렸던 부분이 정리됐어요.', 5, 9, NULL),
 ('useEffect 의존성 배열 설명 좋습니다!', 5, 16, NULL),
 ('커스텀 Hook 만드는 방법도 알려주세요.', 5, 21, NULL),
-('다음 글 주제로 고려해볼게요!', 5, 3, 21),
+('useState는 어떻게 동작하나요?', 5, 3, NULL),
+('렌더링 최적화 방법은?', 5, 10, NULL),
+('Suspense와 함께 쓸 수 있나요?', 5, 13, NULL),
+('useCallback vs useMemo는?', 5, 18, NULL),
+('Context API는?', 5, 24, NULL),
+('정말 도움 됐습니다!', 5, 27, NULL),
+('더 많은 예제 기대합니다!', 5, 30, NULL);
 
--- 6번 게시글 (Docker 컨테이너 입문, 5개, commentNo: 23-27, 대댓글 1개)
+-- 6번 게시글 (5개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Docker 입문자에게 최고의 글이네요.', 6, 10, NULL),
 ('컨테이너 개념이 이해됐습니다.', 6, 17, NULL),
 ('Dockerfile 작성법도 다뤄주세요!', 6, 24, NULL),
-('좋은 제안 감사합니다.', 6, 3, 25),
-('다음 글에서 포함하겠습니다!', 6, 5, 26),
+('좋은 제안 감사합니다.', 6, 3, NULL),
+('이미지 최적화는?', 6, 11, NULL);
 
--- 7번 게시글 (Git 브랜치 전략, 4개, commentNo: 28-31, 대댓글 1개)
+-- 7번 게시글 (15개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Git Flow 복잡하다고 느꼈는데 이해했어요.', 7, 2, NULL),
 ('우리 팀은 Github Flow 쓰는데 참고됩니다.', 7, 13, NULL),
 ('브랜치 전략 선택 기준이 명확하네요.', 7, 19, NULL),
-('릴리즈 브랜치는 어떻게 관리하나요?', 7, 25, 30),
+('릴리즈 브랜치는 어떻게 관리하나요?', 7, 25, NULL),
+('핫픽스 브랜치도 있나요?', 7, 5, NULL),
+('롤백은 어떻게 하나요?', 7, 8, NULL),
+('태그 관리는 어떻게?', 7, 12, NULL),
+('머지 충돌은 어떻게 해결?', 7, 15, NULL),
+('리베이스와 머지 차이는?', 7, 18, NULL),
+('스쿼시 머지는?', 7, 22, NULL),
+('깃 훅은 어떻게?', 7, 26, NULL),
+('CI/CD 연동은?', 7, 29, NULL),
+('깃 운영 정말 중요하네요!', 7, 3, NULL),
+('더 많은 팁 부탁합니다!', 7, 7, NULL),
+('감사합니다!', 7, 9, NULL);
 
--- 8번 게시글 (AWS EC2 배포 가이드, 5개, commentNo: 32-36, 대댓글 1개)
-('EC2 배포 성공했습니다! 감사합니다.', 8, 5, NULL),
-('보안 그룹 설정 부분 덕분에 삽질 안 했어요.', 8, 12, NULL),
-('RDS 연결하는 방법도 궁금합니다.', 8, 18, NULL),
-('RDS는 다음 글에서 다뤄볼게요.', 8, 4, 34),
-('감사합니다!', 8, 18, 35),
+-- 8번 게시글 (1개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
+('EC2 배포 성공했습니다! 감사합니다.', 8, 5, NULL);
 
--- 9번 게시글 (JWT 인증 구현하기, 4개, commentNo: 37-40, 대댓글 1개)
+-- 9번 게시글 (7개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('JWT 구현하면서 막혔던 부분이 해결됐어요.', 9, 1, NULL),
 ('RefreshToken 관리 방법이 명확하네요.', 9, 15, NULL),
 ('토큰 만료 시간은 보통 얼마로 설정하나요?', 9, 20, NULL),
 ('AccessToken 1시간, RefreshToken 7일 정도 권장합니다.', 9, 5, 39),
+('토큰 탈취는 어떻게 방지?', 9, 10, NULL),
+('HTTPS는 필수인가요?', 9, 16, NULL),
+('정말 유용합니다!', 9, 21, NULL);
 
--- 10번 게시글 (테스트 코드 작성법, 5개, commentNo: 41-45, 대댓글 1개)
+-- 10번 게시글 (11개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('테스트 코드의 중요성을 다시 느낍니다.', 10, 3, NULL),
 ('Mockito 사용법이 잘 설명되어 있어요.', 10, 14, NULL),
 ('@Mock과 @InjectMocks 차이가 궁금해요.', 10, 22, NULL),
 ('@Mock은 모의 객체, @InjectMocks는 주입 대상입니다.', 10, 5, 43),
 ('이해됐습니다. 감사합니다!', 10, 22, 44),
+('통합 테스트는?', 10, 8, NULL),
+('E2E 테스트는?', 10, 12, NULL),
+('테스트 커버리지는?', 10, 18, NULL),
+('CI에서 자동 테스트는?', 10, 24, NULL),
+('정말 필수 지식이네요!', 10, 27, NULL),
+('감사합니다!', 10, 30, NULL);
 
--- 11번 게시글 (Soft Delete 패턴, 4개, commentNo: 46-49, 대댓글 1개)
+-- 11번 게시글 (4개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('논리적 삭제가 정말 유용하네요.', 11, 8, NULL),
 ('데이터 복구도 쉽고 좋습니다.', 11, 16, NULL),
 ('성능 영향은 없나요?', 11, 24, NULL),
-('인덱스를 잘 설계하면 괜찮습니다.', 11, 5, 48),
+('인덱스를 잘 설계하면 괜찮습니다.', 11, 5, 48);
 
--- 12번 게시글 (CORS 에러 해결하기, 5개, commentNo: 50-54, 대댓글 1개)
+-- 12번 게시글 (9개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('CORS 에러로 몇 시간을 날렸는데 해결됐어요.', 12, 7, NULL),
 ('Spring에서 설정하는 방법이 명확합니다.', 12, 13, NULL),
 ('프리플라이트 요청도 잘 설명되어 있네요.', 12, 19, NULL),
 ('질문이 있는데 답변 가능할까요?', 12, 6, 52),
 ('네, 댓글로 남겨주세요!', 12, 5, 53),
+('OPTIONS 메서드는?', 12, 11, NULL),
+('Credentials는?', 12, 15, NULL),
+('커스텀 헤더는?', 12, 20, NULL),
+('정말 도움됩니다!', 12, 25, NULL);
 
--- 13번 게시글 (Redis 캐싱 전략, 4개, commentNo: 55-58, 대댓글 1개)
+-- 13번 게시글 (6개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Redis 캐싱으로 성능이 확 올라갔어요.', 13, 2, NULL),
 ('캐시 무효화 전략이 유용합니다.', 13, 17, NULL),
 ('TTL 설정 기준도 알려주세요.', 13, 21, NULL),
 ('데이터 특성에 맞게 설정하면 됩니다.', 13, 5, 57),
+('메모리 관리는?', 13, 10, NULL),
+('감사합니다!', 13, 14, NULL);
 
--- 14번 게시글 (SQL vs NoSQL, 5개, commentNo: 59-63, 대댓글 1개)
+-- 14번 게시글 (13개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('SQL과 NoSQL 차이 정확히 이해했어요.', 14, 4, NULL),
 ('각각의 장단점이 명확하네요.', 14, 10, NULL),
 ('어떤 상황에 어떤 것을 써야 하나요?', 14, 18, NULL),
 ('프로젝트 요구사항에 따라 결정하면 됩니다.', 14, 5, NULL),
 ('좋은 가이드 감사합니다!', 14, 18, 62),
+('확장성은?', 14, 7, NULL),
+('비용은?', 14, 12, NULL),
+('운영 난이도는?', 14, 17, NULL),
+('스키마는?', 14, 21, NULL),
+('쿼리 성능은?', 14, 23, NULL),
+('라이센스는?', 14, 26, NULL),
+('커뮤니티는?', 14, 28, NULL),
+('정말 좋은 비교입니다!', 14, 31, NULL);
 
--- 15번 게시글 (CI/CD 파이프라인 구축, 4개, commentNo: 64-67, 대댓글 1개)
+-- 15번 게시글 (3개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Github Actions로 CI/CD 구축했어요.', 15, 6, NULL),
 ('자동화 배포가 정말 편하네요.', 15, 12, NULL),
-('테스트 자동화도 가능한가요?', 15, 23, NULL),
-('당연하지요! 굉장히 유용합니다.', 15, 5, 66),
+('테스트 자동화도 가능한가요?', 15, 23, NULL);
 
--- 16번 게시글 (Nginx 리버스 프록시, 5개, commentNo: 68-72, 대댓글 1개)
+-- 16번 게시글 (8개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Nginx 로드밸런싱 설정이 명확합니다.', 16, 9, NULL),
 ('리버스 프록시 개념이 이해됐어요.', 16, 14, NULL),
 ('무중단 배포도 가능한가요?', 16, 20, NULL),
 ('헬스 체크와 함께 사용하면 가능합니다.', 16, 5, NULL),
 ('정말 유용한 팁이 많네요!', 16, 20, 71),
+('스트림 캐싱은?', 16, 8, NULL),
+('gzip 압축은?', 16, 13, NULL),
+('감사합니다!', 16, 18, NULL);
 
--- 17번 게시글 (TypeScript 기초, 4개, commentNo: 73-76, 대댓글 1개)
+-- 17번 게시글 (14개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('TypeScript로 마이그레이션하는 중입니다.', 17, 1, NULL),
 ('타입 안전성이 정말 좋네요.', 17, 11, NULL),
 ('초보자도 배우기 쉬운가요?', 17, 19, NULL),
 ('JavaScript 경험이 있으면 금방 배웁니다!', 17, 5, 75),
+('Generics는?', 17, 7, NULL),
+('Interfaces는?', 17, 9, NULL),
+('Decorators는?', 17, 12, NULL),
+('Type Guards는?', 17, 15, NULL),
+('Union Types는?', 17, 17, NULL),
+('Intersection Types는?', 17, 20, NULL),
+('Enums는?', 17, 22, NULL),
+('Modules는?', 17, 24, NULL),
+('정말 강력한 언어네요!', 17, 26, NULL),
+('감사합니다!', 17, 28, NULL);
 
--- 18번 게시글 (Next.js SSR 이해하기, 5개, commentNo: 77-81, 대댓글 1개)
+-- 18번 게시글 (2개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('SSR의 이점이 명확하네요.', 18, 5, NULL),
-('SEO 최적화도 가능하군요.', 18, 15, NULL),
-('성능은 어떤가요?', 18, 24, NULL),
-('페이지 로드 속도가 정말 빨라집니다.', 18, 5, NULL),
-('Next.js 정말 추천합니다!', 18, 24, 80),
+('SEO 최적화도 가능하군요.', 18, 15, NULL);
 
--- 19번 게시글 (Python 크롤링 입문, 4개, commentNo: 82-85, 대댓글 1개)
+-- 19번 게시글 (10개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('BeautifulSoup으로 크롤링 시작했어요.', 19, 3, NULL),
 ('웹 데이터 수집이 이렇게 쉽다니!', 19, 16, NULL),
 ('법적 문제는 없나요?', 19, 21, NULL),
 ('robots.txt와 이용약관을 반드시 확인하세요.', 19, 5, 84),
+('Selenium은?', 19, 8, NULL),
+('Puppeteer는?', 19, 11, NULL),
+('데이터 파싱은?', 19, 14, NULL),
+('에러 처리는?', 19, 17, NULL),
+('속도 최적화는?', 19, 20, NULL),
+('감사합니다!', 19, 23, NULL);
 
--- 20번 게시글 (Pandas 데이터 분석, 5개, commentNo: 86-90, 대댓글 1개)
+-- 20번 게시글 (7개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Pandas로 데이터 전처리하는 중입니다.', 20, 7, NULL),
 ('DataFrame 조작이 정말 직관적이네요.', 20, 13, NULL),
 ('대용량 데이터 처리는 어떻게 하나요?', 20, 25, NULL),
 ('Dask나 Spark을 고려해보세요.', 20, 5, NULL),
 ('유용한 팁 감사합니다!', 20, 25, 89),
+('GroupBy는?', 20, 9, NULL),
+('Merge는?', 20, 12, NULL);
 
--- 21번 게시글 (MongoDB 설계 패턴, 4개, commentNo: 91-94, 대댓글 1개)
+-- 21번 게시글 (11개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('NoSQL 스키마 설계가 명확해졌어요.', 21, 2, NULL),
 ('임베딩 vs 참조 개념이 좋습니다.', 21, 17, NULL),
 ('정규화가 항상 답은 아니네요.', 21, 23, NULL),
 ('맞습니다! 유연한 설계가 중요합니다.', 21, 5, 93),
+('인덱싱은?', 21, 6, NULL),
+('샤딩은?', 21, 10, NULL),
+('복제는?', 21, 14, NULL),
+('트랜잭션은?', 21, 19, NULL),
+('일관성은?', 21, 22, NULL),
+('성능은?', 21, 26, NULL),
+('감사합니다!', 21, 29, NULL);
 
--- 22번 게시글 (GraphQL vs REST, 5개, commentNo: 95-99, 대댓글 1개)
+-- 22번 게시글 (4개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('GraphQL 장점이 정말 많네요.', 22, 4, NULL),
 ('쿼리 최적화가 쉬워졌어요.', 22, 12, NULL),
 ('REST API에서 마이그레이션 어렵지 않나요?', 22, 18, NULL),
-('단계적으로 도입할 수 있습니다.', 22, 5, NULL),
-('정말 유용한 정보 감사합니다!', 22, 18, 98),
+('단계적으로 도입할 수 있습니다.', 22, 5, NULL);
 
--- 23번 게시글 (Kotlin 코루틴 활용, 4개, commentNo: 100-103, 대댓글 1개)
+-- 23번 게시글 (9개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Kotlin 코루틴 정말 멋있네요.', 23, 8, NULL),
 ('async/await 문법이 직관적입니다.', 23, 14, NULL),
 ('Java와의 상호운용성도 좋고요.', 23, 19, NULL),
 ('Kotlin은 정말 좋은 언어입니다!', 23, 5, 102),
+('Extension Functions는?', 23, 7, NULL),
+('Data Classes는?', 23, 11, NULL),
+('Sealed Classes는?', 23, 15, NULL),
+('Delegation은?', 23, 18, NULL),
+('감사합니다!', 23, 21, NULL);
 
--- 24번 게시글 (Android Jetpack Compose, 5개, commentNo: 104-108, 대댓글 1개)
+-- 24번 게시글 (5개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Jetpack Compose 배우는 중입니다.', 24, 6, NULL),
 ('선언형 UI가 훨씬 간단하네요.', 24, 11, NULL),
 ('Material Design3 지원도 좋아요.', 24, 20, NULL),
-('상태 관리가 직관적합니다!', 24, 5, NULL),
-('레이아웃 코드가 너무 깔끔해졌어요.', 24, 20, 107),
+('상태 관리가 직관적입니다!', 24, 5, NULL),
+('레이아웃 코드가 너무 깔끔해졌어요.', 24, 20, 107);
 
--- 25번 게시글 (Vue.js 시작하기, 4개, commentNo: 109-112, 대댓글 1개)
+-- 25번 게시글 (12개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Vue.js 정말 배우기 좋네요.', 25, 9, NULL),
 ('문법이 간단하고 우아합니다.', 25, 19, NULL),
 ('React보다 낮은 진입장벽이 좋아요.', 25, 25, NULL),
 ('Vue는 처음 배우기 정말 좋습니다!', 25, 5, 111),
+('v-model은?', 25, 7, NULL),
+('computed는?', 25, 10, NULL),
+('watch는?', 25, 13, NULL),
+('lifecycle hooks는?', 25, 16, NULL),
+('component는?', 25, 18, NULL),
+('props는?', 25, 21, NULL),
+('emit은?', 25, 23, NULL),
+('감사합니다!', 25, 26, NULL);
 
--- 26번 게시글 (Vuex 상태 관리, 5개, commentNo: 113-117, 대댓글 1개)
+-- 26번 게시글 (6개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Vuex로 상태 관리 정말 편하네요.', 26, 10, NULL),
 ('State, Mutation, Action 구분이 명확합니다.', 26, 20, NULL),
 ('Pinia는 어떤가요?', 26, 26, NULL),
 ('Pinia도 좋지만 Vuex도 충분합니다.', 26, 5, 115),
 ('모두 시도해봐야겠어요!', 26, 26, 116),
+('감사합니다!', 26, 28, NULL);
 
--- 27번 게시글 (Flutter 위젯 정리, 4개, commentNo: 118-121, 대댓글 1개)
+-- 27번 게시글 (8개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Flutter 위젯 종류가 이렇게 많네요.', 27, 11, NULL),
 ('StatefulWidget과 StatelessWidget 차이 이해했어요.', 27, 21, NULL),
 ('기본 위젯들이 잘 정리되어 있습니다.', 27, 1, NULL),
 ('Flutter 개발할 때 참고하겠습니다!', 27, 5, 120),
+('Material Design은?', 27, 8, NULL),
+('Cupertino는?', 27, 12, NULL),
+('Custom Widgets는?', 27, 15, NULL),
+('감사합니다!', 27, 18, NULL);
 
--- 28번 게시글 (Dart 언어 특징, 5개, commentNo: 122-126, 대댓글 1개)
+-- 28번 게시글 (15개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Dart 언어가 생각보다 강력하네요.', 28, 12, NULL),
 ('null safety 기능이 정말 좋습니다.', 28, 22, NULL),
 ('타입 추론도 잘 동작해요.', 28, 2, NULL),
 ('비동기 처리도 간단하고요.', 28, 5, NULL),
 ('Dart로 Flutter 개발하기 정말 좋아요!', 28, 22, 125),
+('Variables는?', 28, 7, NULL),
+('Functions는?', 28, 10, NULL),
+('Classes는?', 28, 13, NULL),
+('Mixins는?', 28, 16, NULL),
+('Extensions는?', 28, 19, NULL),
+('Generics는?', 28, 21, NULL),
+('Type inference는?', 28, 24, NULL),
+('Pattern matching은?', 28, 26, NULL),
+('Records는?', 28, 28, NULL),
+('정말 좋은 언어입니다!', 28, 31, NULL);
 
--- 29번 게시글 (Elasticsearch 검색 최적화, 4개, commentNo: 127-130, 대댓글 1개)
+-- 29번 게시글 (3개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Elasticsearch 검색 속도가 놀라워요.', 29, 13, NULL),
 ('인덱싱 방식이 효율적입니다.', 29, 23, NULL),
-('전문 검색 기능이 정말 강력합니다.', 29, 3, NULL),
-('대용량 데이터 검색에 최고네요!', 29, 5, 129),
+('전문 검색 기능이 정말 강력합니다.', 29, 3, NULL);
 
--- 30번 게시글 (Kafka 메시지 큐, 5개, commentNo: 131-135, 대댓글 1개)
+-- 30번 게시글 (10개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Kafka 처리량이 정말 크네요.', 30, 14, NULL),
 ('파티션 구조가 확장성 좋습니다.', 30, 24, NULL),
 ('컨슈머 그룹 관리도 유연하고요.', 30, 4, NULL),
 ('분산 시스템에 최적화되어 있어요.', 30, 5, NULL),
 ('고가용성 시스템 구축할 때 추천합니다!', 30, 24, 134),
+('Offset은?', 30, 8, NULL),
+('Replication은?', 30, 11, NULL),
+('Retention은?', 30, 15, NULL),
+('Throughput은?', 30, 18, NULL),
+('감사합니다!', 30, 21, NULL);
 
--- 31번 게시글 (Linux 명령어 모음, 4개, commentNo: 136-139, 대댓글 1개)
+-- 31번 게시글 (7개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Linux 명령어 모음이 정말 유용해요.', 31, 1, NULL),
 ('모든 필수 명령어가 다 있네요.', 31, 11, NULL),
 ('예제도 실용적이고 좋습니다.', 31, 21, NULL),
 ('리눅스 초보자 강추합니다!', 31, 5, 138),
+('권한 관리는?', 31, 7, NULL),
+('파일 시스템은?', 31, 10, NULL),
+('감사합니다!', 31, 14, NULL);
 
--- 32번 게시글 (Shell Script 작성법, 5개, commentNo: 140-144, 대댓글 1개)
+-- 32번 게시글 (11개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Shell Script로 자동화하니 정말 편하네요.', 32, 2, NULL),
 ('배치 작업 작성이 간단해졌어요.', 32, 12, NULL),
 ('스크립트 최적화 팁도 좋아요.', 32, 22, NULL),
 ('크론 작업과 함께 사용하면 최고예요.', 32, 5, NULL),
 ('시스템 관리자 필독서네요!', 32, 22, 143),
+('Variables는?', 32, 6, NULL),
+('Functions는?', 32, 9, NULL),
+('Loops는?', 32, 13, NULL),
+('Conditionals는?', 32, 16, NULL),
+('Error Handling은?', 32, 19, NULL),
+('감사합니다!', 32, 23, NULL);
 
--- 33번 게시글 (PostgreSQL vs MySQL, 4개, commentNo: 145-148, 대댓글 1개)
+-- 33번 게시글 (4개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('PostgreSQL이 더 강력하네요.', 33, 3, NULL),
 ('JSON 지원이 정말 유용합니다.', 33, 13, NULL),
 ('Advanced 기능들이 많고요.', 33, 23, NULL),
-('엔터프라이즈 프로젝트에 좋아요!', 33, 5, 147),
+('엔터프라이즈 프로젝트에 좋아요!', 33, 5, 147);
 
--- 34번 게시글 (DB 인덱스 설계, 5개, commentNo: 149-153, 대댓글 1개)
+-- 34번 게시글 (9개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('인덱스 설계가 성능에 큰 영향이네요.', 34, 4, NULL),
 ('B-tree 원리를 이해하니 설계가 쉬워요.', 34, 14, NULL),
 ('복합 인덱스 활용법이 실무적이네요.', 34, 24, NULL),
 ('EXPLAIN으로 쿼리 분석이 가능하군요.', 34, 9, NULL),
 ('DB 성능 최적화 필수 지식이에요!', 34, 5, 152),
+('Hash Index는?', 34, 7, NULL),
+('Full Text Index는?', 34, 11, NULL),
+('Partial Index는?', 34, 16, NULL),
+('감사합니다!', 34, 20, NULL);
 
--- 35번 게시글 (gRPC 통신 구현, 4개, commentNo: 154-157, 대댓글 1개)
+-- 35번 게시글 (5개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('gRPC 성능이 정말 빠르네요.', 35, 5, NULL),
 ('Protocol Buffer가 효율적입니다.', 35, 15, NULL),
 ('REST보다 대역폭 사용이 적어요.', 35, 25, NULL),
 ('마이크로서비스 아키텍처 필수군요!', 35, 5, 156),
+('감사합니다!', 35, 28, NULL);
 
--- 36번 게시글 (WebSocket 실시간 통신, 5개, commentNo: 158-162, 대댓글 1개)
+-- 36번 게시글 (13개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('WebSocket으로 실시간 통신이 정말 좋아요.', 36, 6, NULL),
 ('채팅 기능 구현이 간단하네요.', 36, 16, NULL),
 ('Heartbeat 설정도 중요하군요.', 36, 26, NULL),
 ('재연결 로직은 어떻게 구현하나요?', 36, 2, NULL),
 ('클라이언트 측에서 처리하면 됩니다!', 36, 5, 161),
+('메시지 포맷은?', 36, 8, NULL),
+('보안은?', 36, 11, NULL),
+('성능은?', 36, 14, NULL),
+('확장성은?', 36, 17, NULL),
+('모니터링은?', 36, 20, NULL),
+('에러 처리는?', 36, 23, NULL),
+('테스트는?', 36, 25, NULL),
+('감사합니다!', 36, 28, NULL);
 
--- 37번 게시글 (RabbitMQ 메시지 브로커, 4개, commentNo: 163-166, 대댓글 1개)
+-- 37번 게시글 (2개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('RabbitMQ 신뢰성이 정말 높네요.', 37, 7, NULL),
-('메시지 라우팅이 유연합니다.', 37, 17, NULL),
-('Dead Letter Queue가 정말 유용해요.', 37, 1, NULL),
-('비동기 처리에 최고의 선택이에요!', 37, 5, 165),
+('메시지 라우팅이 유연합니다.', 37, 17, NULL);
 
--- 38번 게시글 (MSA 아키텍처 설계, 5개, commentNo: 167-171, 대댓글 1개)
+-- 38번 게시글 (8개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('MSA 설계 방법이 명확하네요.', 38, 8, NULL),
 ('서비스 분할 기준이 좋습니다.', 38, 18, NULL),
 ('API 게이트웨이의 역할이 중요하군요.', 38, 28, NULL),
 ('서비스 간 통신 복잡도는 어떻게 처리해요?', 38, 3, NULL),
 ('메시지 큐와 이벤트 기반 아키텍처를 추천합니다!', 38, 5, 170),
+('Saga 패턴은?', 38, 10, NULL),
+('서킷 브레이커는?', 38, 15, NULL),
+('감사합니다!', 38, 22, NULL);
 
--- 39번 게시글 (OAuth 2.0 인증, 4개, commentNo: 172-175, 대댓글 1개)
+-- 39번 게시글 (10개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('OAuth 2.0 플로우 정말 명확해요.', 39, 9, NULL),
 ('소셜 로그인 구현이 간단합니다.', 39, 19, NULL),
 ('보안이 잘 고려되어 있네요.', 39, 29, NULL),
 ('현대 웹 애플리케이션 필수예요!', 39, 5, 174),
+('Authorization Code는?', 39, 6, NULL),
+('Implicit Flow는?', 39, 12, NULL),
+('Client Credentials는?', 39, 16, NULL),
+('Refresh Token은?', 39, 21, NULL),
+('PKCE는?', 39, 25, NULL),
+('감사합니다!', 39, 27, NULL);
 
--- 40번 게시글 (Spring Security 설정, 5개, commentNo: 176-180, 대댓글 1개)
+-- 40번 게시글 (6개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Spring Security 설정이 강력하네요.', 40, 10, NULL),
 ('CSRF, CORS 보호가 자동으로 되고요.', 40, 20, NULL),
 ('커스텀 인증도 쉽게 구현할 수 있어요.', 40, 30, NULL),
 ('JWT와 조합하면 정말 좋습니다.', 40, 5, NULL),
 ('보안 강화 필수 프레임워크예요!', 40, 20, 179),
+('감사합니다!', 40, 35, NULL);
 
--- 41번 게시글 (DDD 도메인 설계, 4개, commentNo: 181-184, 대댓글 1개)
+-- 41번 게시글 (14개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('DDD 설계 원칙이 정말 유용해요.', 41, 11, NULL),
 ('비즈니스 로직 중심으로 설계하니 좋네요.', 41, 21, NULL),
 ('Entity와 Value Object 구분이 명확합니다.', 41, 31, NULL),
 ('복잡한 도메인 설계에 꼭 필요해요!', 41, 5, 183),
+('Aggregate는?', 41, 7, NULL),
+('Repository는?', 41, 10, NULL),
+('Service는?', 41, 13, NULL),
+('Factory는?', 41, 16, NULL),
+('Specification는?', 41, 19, NULL),
+('이벤트는?', 41, 22, NULL),
+('컨텍스트는?', 41, 25, NULL),
+('언어는?', 41, 27, NULL),
+('다이어그램은?', 41, 29, NULL),
+('감사합니다!', 41, 32, NULL);
 
--- 42번 게시글 (CQRS 패턴, 5개, commentNo: 185-189, 대댓글 1개)
+-- 42번 게시글 (3개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('CQRS 패턴 이해했습니다.', 42, 12, NULL),
 ('읽기/쓰기 분리로 성능 향상되네요.', 42, 22, NULL),
-('Event Sourcing과 함께 쓰면 강력해요.', 42, 32, NULL),
-('초기 도입이 복잡하진 않나요?', 42, 7, NULL),
-('점진적으로 도입하면 괜찮습니다!', 42, 5, 188),
+('Event Sourcing과 함께 쓰면 강력해요.', 42, 32, NULL);
 
--- 43번 게시글 (Event Sourcing, 4개, commentNo: 190-193, 대댓글 1개)
+-- 43번 게시글 (7개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Event Sourcing 개념이 신선하네요.', 43, 13, NULL),
 ('모든 상태 변화를 추적할 수 있어요.', 43, 23, NULL),
 ('감사(Audit) 요구사항 충족이 쉽습니다.', 43, 33, NULL),
 ('대용량 시스템에 좋은 패턴이에요!', 43, 5, 192),
+('Snapshots는?', 43, 8, NULL),
+('Replay는?', 43, 11, NULL),
+('감사합니다!', 43, 15, NULL);
 
--- 44번 게시글 (Hexagonal Architecture, 5개, commentNo: 194-198, 대댓글 1개)
+-- 44번 게시글 (12개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('육각형 아키텍처가 정말 우아하네요.', 44, 14, NULL),
 ('비즈니스 로직이 프레임워크에 독립적이에요.', 44, 24, NULL),
 ('테스트 작성이 정말 쉬워집니다.', 44, 34, NULL),
 ('포트와 어댑터 개념이 명확해요.', 44, 4, NULL),
 ('깔끔한 아키텍처 설계네요!', 44, 5, 197),
+('InPorts는?', 44, 7, NULL),
+('OutPorts는?', 44, 10, NULL),
+('Adapters는?', 44, 13, NULL),
+('Dependencies는?', 44, 16, NULL),
+('Testing은?', 44, 19, NULL),
+('Modularity는?', 44, 22, NULL),
+('감사합니다!', 44, 25, NULL);
 
--- 45번 게시글 (TDD 실전 적용, 4개, commentNo: 199-202, 대댓글 1개)
+-- 45번 게시글 (5개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('TDD 방식이 정말 효과적이네요.', 45, 1, NULL),
 ('테스트 먼저 작성하니 품질이 높아요.', 45, 11, NULL),
 ('리팩토링도 자신감 있게 할 수 있습니다.', 45, 21, NULL),
 ('점진적으로 도입해보겠습니다!', 45, 5, 201),
+('감사합니다!', 45, 24, NULL);
 
--- 46번 게시글 (Clean Code 원칙, 5개, commentNo: 203-207, 대댓글 1개)
+-- 46번 게시글 (11개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Clean Code 원칙 다시 배웠어요.', 46, 2, NULL),
 ('변수명과 함수명 중요성 느껴집니다.', 46, 12, NULL),
 ('작은 함수로 나누니 가독성이 좋아요.', 46, 22, NULL),
 ('주석도 거의 필요 없을 정도네요.', 46, 6, NULL),
 ('코드 품질이 정말 향상됩니다!', 46, 5, 206),
+('Naming Convention은?', 46, 8, NULL),
+('Functions는?', 46, 11, NULL),
+('Comments는?', 46, 14, NULL),
+('Formatting은?', 46, 17, NULL),
+('Objects는?', 46, 20, NULL),
+('감사합니다!', 46, 23, NULL);
 
--- 47번 게시글 (Refactoring 기법, 4개, commentNo: 208-211, 대댓글 1개)
+-- 47번 게시글 (4개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('리팩토링 기법이 정말 체계적이네요.', 47, 3, NULL),
 ('레거시 코드 개선이 가능하군요.', 47, 13, NULL),
 ('작은 단계로 진행하는 것이 중요해요.', 47, 23, NULL),
-('점진적 개선으로 품질 향상이 가능해요!', 47, 5, 210),
+('점진적 개선으로 품질 향상이 가능해요!', 47, 5, 210);
 
--- 48번 게시글 (Design Pattern 정리, 5개, commentNo: 212-216, 대댓글 1개)
+-- 48번 게시글 (9개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Design Pattern이 이렇게 체계적이네요.', 48, 4, NULL),
 ('각 패턴의 사용 사례가 명확합니다.', 48, 14, NULL),
 ('Singleton과 Factory 구분 잘했어요.', 48, 24, NULL),
 ('Observer, Decorator 패턴도 좋네요.', 48, 10, NULL),
 ('패턴 마스터 되겠습니다!', 48, 5, 215),
+('Strategy Pattern은?', 48, 7, NULL),
+('Adapter Pattern은?', 48, 11, NULL),
+('Proxy Pattern은?', 48, 15, NULL),
+('감사합니다!', 48, 19, NULL);
 
--- 49번 게시글 (Agile 개발 방법론, 4개, commentNo: 217-220, 대댓글 1개)
+-- 49번 게시글 (6개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Agile 방법론이 정말 실용적이에요.', 49, 5, NULL),
 ('스크럼과 칸반 차이 명확하네요.', 49, 15, NULL),
 ('스프린트 계획이 효율적입니다.', 49, 25, NULL),
 ('우리 팀도 도입해보겠습니다!', 49, 5, 219),
+('Ceremonies는?', 49, 8, NULL),
+('감사합니다!', 49, 12, NULL);
 
--- 50번 게시글 (Code Review 문화, 5개, commentNo: 221-225, 대댓글 1개)
+-- 50번 게시글 (8개 댓글)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
 ('Code Review 문화의 중요성 느껴져요.', 50, 6, NULL),
 ('건설적인 피드백이 코드 품질 높여요.', 50, 16, NULL),
 ('리뷰 과정을 존중해야 하는군요.', 50, 26, NULL),
 ('팀 커뮤니케이션도 좋아지고요.', 50, 2, NULL),
 ('리뷰 문화 꼭 필요하네요!', 50, 5, 224),
+('Bot은?', 50, 9, NULL),
+('자동화는?', 50, 13, NULL),
+('감사합니다!', 50, 18, NULL);
 
--- 51번 게시글 (성능 테스트 도구, 4개, commentNo: 226-229, 대댓글 1개)
-('JMeter로 성능 테스트 중이에요.', 51, 7, NULL),
-('부하 테스트 시나리오 작성이 쉽네요.', 51, 17, NULL),
-('결과 분석이 명확해집니다.', 51, 27, NULL),
-('성능 문제 조기 발견이 가능해요!', 51, 5, 228),
-
--- 52번 게시글 (모니터링 시스템 구축, 5개, commentNo: 230-234, 대댓글 1개)
-('Prometheus 설정이 간단하네요.', 52, 8, NULL),
-('Grafana 대시보드가 정말 예쁩니다.', 52, 18, NULL),
-('실시간 모니터링이 가능하고요.', 52, 28, NULL),
-('알람 설정도 유연하군요.', 52, 3, NULL),
-('시스템 안정성이 확 높아졌어요!', 52, 5, 233),
-
--- 53번 게시글 (로깅 전략, 4개, commentNo: 235-238, 대댓글 1개)
-('로깅 전략이 정말 중요하네요.', 53, 9, NULL),
-('Logback 설정이 유연합니다.', 53, 19, NULL),
-('로그 레벨 분류가 명확해요.', 53, 29, NULL),
-('ELK 스택 도입해볼 만하네요!', 53, 5, 237),
-
--- 54번 게시글 (에러 추적 시스템, 5개, commentNo: 239-243, 대댓글 1개)
-('Sentry로 에러 모니터링 중이에요.', 54, 10, NULL),
-('실시간 에러 알림이 정말 좋습니다.', 54, 20, NULL),
-('스택 트레이스가 상세하네요.', 54, 30, NULL),
-('팀 협업 기능도 훌륭해요.', 54, 4, NULL),
-('에러 추적 필수 도구네요!', 54, 5, 242),
-
--- 55번 게시글 (부하 테스트 방법, 4개, commentNo: 244-247, 대댓글 1개)
-('nGrinder로 부하 테스트 중이에요.', 55, 11, NULL),
-('성능 측정이 정확하네요.', 55, 21, NULL),
-('테스트 시나리오 작성이 쉽습니다.', 55, 31, NULL),
-('병목 지점 찾기가 가능해요!', 55, 5, 246),
-
--- 56번 게시글 (DB 커넥션 풀, 5개, commentNo: 248-252, 대댓글 1개)
-('HikariCP 설정 최적화 중이에요.', 56, 2, NULL),
-('커넥션 풀 크기 조정으로 성능 향상됐어요.', 56, 12, NULL),
-('최대 수명 설정이 중요하네요.', 56, 22, NULL),
-('DB 성능이 전체 시스템에 영향이 크군요.', 56, 32, NULL),
-('커넥션 풀 튜닝 정말 추천해요!', 56, 5, 251),
-
--- 57번 게시글 (캐시 전략 패턴, 4개, commentNo: 253-256, 대댓글 1개)
-('캐시 전략이 정말 중요하네요.', 57, 13, NULL),
-('Cache-Aside와 Write-Through 구분 명확해요.', 57, 23, NULL),
-('캐시 일관성 문제도 고려해야 하고요.', 57, 33, NULL),
-('성능 최적화 필수 지식이에요!', 57, 5, 255),
-
--- 58번 게시글 (분산 트랜잭션, 5개, commentNo: 257-261, 대댓글 1개)
-('분산 트랜잭션 Saga 패턴 배웠어요.', 58, 14, NULL),
-('보상 트랜잭션 개념이 신선하네요.', 58, 24, NULL),
-('서비스 간 일관성 보장이 가능해요.', 58, 34, NULL),
-('트랜잭션 순서가 중요하군요.', 58, 5, NULL),
-('복잡한 시스템 설계에 필수네요!', 58, 5, 260),
-
--- 59번 게시글 (API Gateway 구축, 4개, commentNo: 262-265, 대댓글 1개)
-('API Gateway 구축이 정말 유용해요.', 59, 15, NULL),
-('라우팅이 중앙화되니 관리가 쉽네요.', 59, 25, NULL),
-('인증도 게이트웨이에서 처리하니 좋아요.', 59, 35, NULL),
-('마이크로서비스 핵심 컴포넌트네요!', 59, 5, 264),
-
--- 60번 게시글 (Service Mesh, 5개, commentNo: 266-270, 대댓글 1개)
-('Service Mesh Istio 배웠어요.', 60, 6, NULL),
-('트래픽 관리가 정말 강력하네요.', 60, 16, NULL),
-('카나리 배포도 쉽게 할 수 있어요.', 60, 26, NULL),
-('관찰성(Observability) 기능도 훌륭합니다.', 60, 36, NULL),
-('대규모 쿠버네티스에 필수네요!', 60, 5, 269),
-
--- 61번 게시글 (Container Orchestration, 4개, commentNo: 271-274, 대댓글 1개)
-('Kubernetes 입문 완료했어요.', 61, 7, NULL),
-('Pod와 Service 개념이 명확합니다.', 61, 17, NULL),
-('Deployment로 자동 스케일링 되네요.', 61, 27, NULL),
-('쿠버네티스 정말 강력한 도구네요!', 61, 5, 273),
-
--- 62번 게시글 (Docker Compose, 5개, commentNo: 275-279, 대댓글 1개)
-('Docker Compose로 개발 환경 구성했어요.', 62, 8, NULL),
-('멀티 컨테이너 관리가 편하네요.', 62, 18, NULL),
-('네트워크 설정도 간단하고요.', 62, 28, NULL),
-('환경 변수 설정이 유연해요.', 62, 38, NULL),
-('개발 생산성이 정말 올라갔어요!', 62, 5, 278),
-
--- 63번 게시글 (Helm Chart 작성, 4개, commentNo: 280-283, 대댓글 1개)
-('Helm Chart 작성 배웠어요.', 63, 9, NULL),
-('Kubernetes 패키지 관리가 편하네요.', 63, 19, NULL),
-('templates 구조가 유연합니다.', 63, 29, NULL),
-('패키지 관리 너무 수월하네요!', 63, 5, 282),
-
--- 64번 게시글 (ArgoCD GitOps, 5개, commentNo: 284-288, 대댓글 1개)
-('ArgoCD로 GitOps 도입했어요.', 64, 10, NULL),
-('Git에서 자동 배포되니 정말 좋아요.', 64, 20, NULL),
-('배포 이력 관리가 명확합니다.', 64, 30, NULL),
-('Rollback도 쉽게 가능하네요.', 64, 40, NULL),
-('선언적 배포 정말 편하네요!', 64, 5, 287),
-
--- 65번 게시글 (Terraform IaC, 4개, commentNo: 289-292, 대댓글 1개)
-('Terraform으로 인프라 관리 중이에요.', 65, 1, NULL),
-('IaC로 버전 관리가 가능하네요.', 65, 11, NULL),
-('AWS 리소스 자동 프로비저닝 좋아요.', 65, 21, NULL),
-('인프라 자동화 정말 필수네요!', 65, 5, 291),
-
--- 66번 게시글 (Ansible 자동화, 5개, commentNo: 293-297, 대댓글 1개)
-('Ansible로 서버 설정 자동화 중이에요.', 66, 2, NULL),
-('Playbook 문법이 간단하네요.', 66, 12, NULL),
-('Inventory 관리도 편합니다.', 66, 22, NULL),
-('Role 구조로 재사용이 가능해요.', 66, 32, NULL),
-('인프라 자동화 정말 강력하네요!', 66, 5, 296),
-
--- 67번 게시글 (AWS Lambda 서버리스, 4개, commentNo: 298-301, 대댓글 1개)
-('Lambda로 서버리스 배포 중이에요.', 67, 3, NULL),
-('서버 관리 안 하니 정말 편하네요.', 67, 13, NULL),
-('비용도 사용량만 내면 되고요.', 67, 23, NULL),
-('서버리스 아키텍처 정말 좋네요!', 67, 5, 300),
-
--- 68번 게시글 (S3 스토리지 활용, 5개, commentNo: 302-306, 대댓글 1개)
-('S3 스토리지로 파일 관리 중이에요.', 68, 4, NULL),
-('객체 스토리지 가격이 저렴하네요.', 68, 14, NULL),
-('정적 웹 호스팅도 가능하고요.', 68, 24, NULL),
-('버전 관리 기능도 좋습니다.', 68, 34, NULL),
-('S3 정말 유용한 서비스네요!', 68, 5, 305),
-
--- 69번 게시글 (CloudFront CDN, 4개, commentNo: 307-310, 대댓글 1개)
-('CloudFront로 CDN 배포했어요.', 69, 5, NULL),
-('콘텐츠 전송이 정말 빨라졌어요.', 69, 15, NULL),
-('엣지 로케이션이 많네요.', 69, 25, NULL),
-('글로벌 서비스에 필수네요!', 69, 5, 309),
-
--- 70번 게시글 (Route 53 DNS, 5개, commentNo: 311-315, 대댓글 1개)
-('Route 53 DNS 설정 중이에요.', 70, 6, NULL),
-('라우팅 정책이 유연하네요.', 70, 16, NULL),
-('헬스 체크 자동 페일오버 좋아요.', 70, 26, NULL),
-('가중치 기반 라우팅도 가능하고요.', 70, 36, NULL),
-('Route 53 정말 강력한 서비스예요!', 70, 5, 314),
-
--- 71번 게시글 (RDS 데이터베이스, 4개, commentNo: 316-319, 대댓글 1개)
-('RDS로 관리형 DB 운영 중이에요.', 71, 7, NULL),
-('자동 백업이 정말 좋네요.', 71, 17, NULL),
-('성능 모니터링도 쉽습니다.', 71, 27, NULL),
-('DB 운영 정말 편하네요!', 71, 5, 318),
-
--- 72번 게시글 (DynamoDB NoSQL, 5개, commentNo: 320-324, 대댓글 1개)
-('DynamoDB로 NoSQL 관리 중이에요.', 72, 8, NULL),
-('확장성이 정말 뛰어나네요.', 72, 18, NULL),
-('처리량 자동 조정도 가능하고요.', 72, 28, NULL),
-('쿼리 모델 설계가 중요하군요.', 72, 38, NULL),
-('DynamoDB 정말 강력하네요!', 72, 5, 323),
-
--- 73번 게시글 (ElastiCache Redis, 4개, commentNo: 325-328, 대댓글 1개)
-('ElastiCache로 Redis 캐싱 중이에요.', 73, 9, NULL),
-('관리형 캐시 서비스 정말 좋네요.', 73, 19, NULL),
-('자동 페일오버도 지원하고요.', 73, 29, NULL),
-('성능 향상이 눈에 띄네요!', 73, 5, 327),
-
--- 74번 게시글 (SQS 메시지 큐, 5개, commentNo: 329-333, 대댓글 1개)
-('SQS로 메시지 큐 운영 중이에요.', 74, 10, NULL),
-('관리형 메시징 서비스 정말 좋습니다.', 74, 20, NULL),
-('신뢰성이 뛰어나네요.', 74, 30, NULL),
-('대기열 길이 모니터링도 쉽고요.', 74, 40, NULL),
-('SQS 정말 안정적인 서비스예요!', 74, 5, 332),
-
--- 75번 게시글 (SNS 알림 서비스, 4개, commentNo: 334-337, 대댓글 1개)
-('SNS로 푸시 알림 구현 중이에요.', 75, 11, NULL),
-('다양한 채널 지원이 좋네요.', 75, 21, NULL),
-('구독 관리도 편합니다.', 75, 31, NULL),
-('푸시 알림 구현 정말 간단해요!', 75, 5, 336),
-
--- 76번 게시글 (Cognito 인증, 5개, commentNo: 338-342, 대댓글 1개)
-('Cognito로 사용자 관리 중이에요.', 76, 2, NULL),
-('소셜 로그인 연동이 쉽네요.', 76, 12, NULL),
-('MFA 지원도 좋아요.', 76, 22, NULL),
-('사용자 속성 관리도 유연합니다.', 76, 32, NULL),
-('Cognito 정말 편한 서비스네요!', 76, 5, 341),
-
--- 77번 게시글 (API Gateway REST, 4개, commentNo: 343-346, 대댓글 1개)
-('API Gateway로 REST API 운영 중이에요.', 77, 3, NULL),
-('요청/응답 매핑이 강력합니다.', 77, 13, NULL),
-('API 키 관리도 편하네요.', 77, 23, NULL),
-('API 관리 정말 수월해요!', 77, 5, 345),
-
--- 78번 게시글 (Step Functions, 5개, commentNo: 347-351, 대댓글 1개)
-('Step Functions로 워크플로우 구성 중이에요.', 78, 4, NULL),
-('상태 머신 정의가 명확합니다.', 78, 14, NULL),
-('오류 처리도 쉽게 설정 가능하고요.', 78, 24, NULL),
-('장기 실행 작업 관리도 좋습니다.', 78, 34, NULL),
-('서버리스 워크플로우 정말 편하네요!', 78, 5, 350),
-
--- 79번 게시글 (ECS 컨테이너 서비스, 4개, commentNo: 352-355, 대댓글 1개)
-('ECS로 컨테이너 오케스트레이션 중이에요.', 79, 5, NULL),
-('작업 정의가 간단하네요.', 79, 15, NULL),
-('서비스 관리도 편합니다.', 79, 25, NULL),
-('ECS 정말 강력한 서비스예요!', 79, 5, 354),
-
--- 80번 게시글 (Fargate 서버리스, 5개, commentNo: 356-360, 대댓글 1개)
-('Fargate로 서버리스 컨테이너 실행 중이에요.', 80, 6, NULL),
-('서버 관리 없이 컨테이너 실행이 가능하네요.', 80, 16, NULL),
-('비용도 사용량 기반이고요.', 80, 26, NULL),
-('자동 스케일링도 지원합니다.', 80, 36, NULL),
-('Fargate 정말 편한 서비스네요!', 80, 5, 359),
-
--- 81번 게시글 (VPC 네트워크 설계, 4개, commentNo: 361-364, 대댓글 1개)
-('VPC로 네트워크 구성 중이에요.', 81, 7, NULL),
-('서브넷과 라우팅이 명확합니다.', 81, 17, NULL),
-('NAT 게이트웨이도 설정했어요.', 81, 27, NULL),
-('네트워크 설계 정말 중요하네요!', 81, 5, 363),
-
--- 82번 게시글 (Security Group 설정, 5개, commentNo: 365-369, 대댓글 1개)
-('Security Group으로 방화벽 설정 중이에요.', 82, 8, NULL),
-('인바운드/아웃바운드 규칙이 명확합니다.', 82, 18, NULL),
-('프로토콜별 설정도 세밀하게 가능하고요.', 82, 28, NULL),
-('보안 그룹 간 참조도 가능하네요.', 82, 38, NULL),
-('Security Group 정말 필수네요!', 82, 5, 368),
-
--- 83번 게시글 (IAM 권한 관리, 4개, commentNo: 370-373, 대댓글 1개)
-('IAM으로 접근 제어 중이에요.', 83, 9, NULL),
-('정책 작성이 유연하네요.', 83, 19, NULL),
-('역할별 권한 관리도 편합니다.', 83, 29, NULL),
-('IAM 권한 관리 정말 중요해요!', 83, 5, 372),
-
--- 84번 게시글 (KMS 암호화, 5개, commentNo: 374-378, 대댓글 1개)
-('KMS로 데이터 암호화 중이에요.', 84, 10, NULL),
-('키 로테이션이 자동으로 되네요.', 84, 20, NULL),
-('감사 로그도 자동 기록되고요.', 84, 30, NULL),
-('다른 AWS 서비스와 통합도 쉽습니다.', 84, 40, NULL),
-('KMS 정말 안전한 서비스네요!', 84, 5, 377),
-
--- 85번 게시글 (CloudWatch 모니터링, 4개, commentNo: 379-382, 대댓글 1개)
-('CloudWatch로 로그 수집 중이에요.', 85, 11, NULL),
-('메트릭 대시보드가 강력하네요.', 85, 21, NULL),
-('커스텀 메트릭도 등록할 수 있어요.', 85, 31, NULL),
-('CloudWatch 정말 필수 도구예요!', 85, 5, 381),
-
--- 86번 게시글 (X-Ray 분산 추적, 5개, commentNo: 383-387, 대댓글 1개)
-('X-Ray로 분산 추적 중이에요.', 86, 2, NULL),
-('서비스 맵 시각화가 훌륭합니다.', 86, 12, NULL),
-('성능 병목 지점 찾기가 쉬워요.', 86, 22, NULL),
-('오류 추적도 상세하게 가능하고요.', 86, 32, NULL),
-('X-Ray 정말 강력한 도구네요!', 86, 5, 386),
-
--- 87번 게시글 (CodePipeline CI/CD, 4개, commentNo: 388-391, 대댓글 1개)
-('CodePipeline으로 배포 자동화 중이에요.', 87, 3, NULL),
-('파이프라인 구성이 간단하네요.', 87, 13, NULL),
-('여러 스테이지 구성도 가능해요.', 87, 23, NULL),
-('CI/CD 파이프라인 정말 필수네요!', 87, 5, 390),
-
--- 88번 게시글 (CodeDeploy 자동 배포, 5개, commentNo: 392-396, 대댓글 1개)
-('CodeDeploy로 자동 배포 중이에요.', 88, 4, NULL),
-('무중단 배포가 가능하네요.', 88, 14, NULL),
-('롤백도 간단하게 할 수 있어요.', 88, 24, NULL),
-('여러 인스턴스에 동시 배포도 가능합니다.', 88, 34, NULL),
-('CodeDeploy 정말 편한 도구네요!', 88, 5, 395),
-
--- 89번 게시글 (Elastic Beanstalk, 4개, commentNo: 397-400, 대댓글 1개)
-('Elastic Beanstalk으로 앱 배포 중이에요.', 89, 5, NULL),
-('환경 설정이 간단하네요.', 89, 15, NULL),
-('자동 스케일링도 지원해요.', 89, 25, NULL),
-('Beanstalk 정말 편리한 PaaS네요!', 89, 5, 399),
-
--- 90번 게시글 (Amplify 프론트엔드, 5개, commentNo: 401-405, 대댓글 1개)
-('Amplify로 프론트엔드 호스팅 중이에요.', 90, 6, NULL),
-('배포가 정말 간단하네요.', 90, 16, NULL),
-('커스텀 도메인 설정도 쉬워요.', 90, 26, NULL),
-('SSL 인증서도 자동으로 발급되고요.', 90, 36, NULL),
-('Amplify 정말 편한 호스팅 서비스네요!', 90, 5, 404),
-
--- 91번 게시글 ([공지] 커뮤니티 이용 규칙 안내, 4개, commentNo: 406-409, 대댓글 1개)
-('규칙 잘 숙지하겠습니다.', 91, 7, NULL),
-('건전한 커뮤니티 만들어요!', 91, 17, NULL),
-('문의사항은 어디에 남기나요?', 91, 27, NULL),
-('FAQ 게시판에 남겨주세요.', 91, 37, 408),
-
--- 92번 게시글 ([공지] 신규 기능 업데이트 안내, 5개, commentNo: 410-414, 대댓글 1개)
-('대댓글 기능 감사합니다!', 92, 8, NULL),
-('UI가 깔끔해졌네요.', 92, 18, NULL),
-('모바일에서도 잘 보여요.', 92, 28, NULL),
-('정말 개선이 많이 됐어요.', 92, 5, NULL),
-('피드백 감사합니다!', 92, 5, 413),
-
--- 93번 게시글 ([이벤트] 좋은 글 작성 이벤트, 4개, commentNo: 415-418, 대댓글 1개)
-('이벤트 참여하고 싶어요!', 93, 9, NULL),
-('우수 게시글 기준이 궁금합니다.', 93, 19, NULL),
-('조회수가 기준인가요?', 93, 29, NULL),
-('조회수와 댓글 수를 종합 평가합니다.', 93, 39, 417),
-
--- 94번 게시글 ([공지] 서버 점검 안내, 5개, commentNo: 419-423, 대댓글 1개)
-('점검 시간 확인했습니다.', 94, 4, NULL),
-('점검 내용이 궁금해요.', 94, 14, NULL),
-('성능 개선 작업 예정입니다.', 94, 24, NULL),
-('얼마나 개선될까요?', 94, 34, NULL),
-('기대 이상으로 개선될 거예요!', 94, 5, 422),
-
--- 95번 게시글 ([FAQ] 자주 묻는 질문 모음, 4개, commentNo: 424-427, 대댓글 1개)
-('FAQ 도움됐어요!', 95, 8, NULL),
-('비밀번호 찾기 방법 찾았어요.', 95, 18, NULL),
-('추가 질문은 어디에 하나요?', 95, 28, NULL),
-('문의 게시판을 이용해주세요!', 95, 38, 426),
-
--- 96번 게시글 ([공지] 개인정보 처리방침 변경, 5개, commentNo: 428-432, 대댓글 1개)
-('개인정보 정책 확인했습니다.', 96, 9, NULL),
-('데이터 처리가 안전하군요.', 96, 19, NULL),
-('마케팅 수신 거부할 수 있나요?', 96, 29, NULL),
-('계정 설정에서 관리 가능합니다.', 96, 39, NULL),
-('정보 보호 중요하네요!', 96, 5, 431),
-
--- 97번 게시글 ([안내] 게시글 작성 가이드, 4개, commentNo: 433-436, 대댓글 1개)
-('게시글 작성 팁 감사합니다.', 97, 1, NULL),
-('이미지 첨부는 가능한가요?', 97, 11, NULL),
-('현재는 텍스트만 지원합니다.', 97, 21, NULL),
-('향후 업데이트 예정입니다!', 97, 5, 435),
-
--- 98번 게시글 ([공지] 불법 게시물 신고 안내, 5개, commentNo: 437-441, 대댓글 1개)
-('불법 게시물 신고 절차 확인했어요.', 98, 2, NULL),
-('신고는 어떻게 하나요?', 98, 12, NULL),
-('게시글 하단의 신고 버튼으로 신고 가능합니다.', 98, 22, NULL),
-('익명으로 신고할 수 있나요?', 98, 32, NULL),
-('네, 익명 신고도 가능합니다!', 98, 5, 440),
-
--- 99번 게시글 ([이벤트] 회원가입 이벤트, 4개, commentNo: 442-445, 대댓글 1개)
-('신규 회원 이벤트 정보 감사합니다!', 99, 10, NULL),
-('포인트는 언제 지급되나요?', 99, 20, NULL),
-('3일 이내 지급됩니다.', 99, 30, NULL),
-('이벤트 참여하겠습니다!', 99, 5, 444),
-
--- 100번 게시글 ([공지] 서비스 이용약관 변경, 5개, commentNo: 446-450, 대댓글 1개)
-('서비스 이용약관 변경 안내 감사합니다.', 100, 3, NULL),
-('주요 변경 내용이 뭔가요?', 100, 13, NULL),
-('결제 정책과 환불 규정이 변경됐습니다.', 100, 23, NULL),
-('환불은 어떻게 진행되나요?', 100, 33, NULL),
-('FAQ 게시판에서 확인해주세요!', 100, 5, 449);
+-- 51-100번 게시글 (각각 다양하게)
+INSERT INTO comment (comment_content, board_id, member_id, comment_parent_id) VALUES
+('JMeter로 성능 테스트 중이에요.', 51, 7, NULL), ('부하 테스트 시나리오 작성이 쉽네요.', 51, 17, NULL), ('결과 분석이 명확해집니다.', 51, 27, NULL), ('성능 문제 조기 발견이 가능해요!', 51, 5, 228),
+('Prometheus 설정이 간단하네요.', 52, 8, NULL), ('Grafana 대시보드가 정말 예쁩니다.', 52, 18, NULL), ('실시간 모니터링이 가능하고요.', 52, 28, NULL), ('알람 설정도 유연하군요.', 52, 3, NULL), ('시스템 안정성이 확 높아졌어요!', 52, 5, 233),
+('로깅 전략이 정말 중요하네요.', 53, 9, NULL), ('Logback 설정이 유연합니다.', 53, 19, NULL), ('로그 레벨 분류가 명확해요.', 53, 29, NULL), ('ELK 스택 도입해볼 만하네요!', 53, 5, 237),
+('Sentry로 에러 모니터링 중이에요.', 54, 10, NULL), ('실시간 에러 알림이 정말 좋습니다.', 54, 20, NULL), ('스택 트레이스가 상세하네요.', 54, 30, NULL), ('팀 협업 기능도 훌륭해요.', 54, 4, NULL), ('에러 추적 필수 도구네요!', 54, 5, 242),
+('nGrinder로 부하 테스트 중이에요.', 55, 11, NULL), ('성능 측정이 정확하네요.', 55, 21, NULL), ('테스트 시나리오 작성이 쉽습니다.', 55, 31, NULL), ('병목 지점 찾기가 가능해요!', 55, 5, 246),
+('HikariCP 설정 최적화 중이에요.', 56, 2, NULL), ('커넥션 풀 크기 조정으로 성능 향상됐어요.', 56, 12, NULL), ('최대 수명 설정이 중요하네요.', 56, 22, NULL), ('DB 성능이 전체 시스템에 영향이 크군요.', 56, 32, NULL), ('커넥션 풀 튜닝 정말 추천해요!', 56, 5, 251),
+('캐시 전략이 정말 중요하네요.', 57, 13, NULL), ('Cache-Aside와 Write-Through 구분 명확해요.', 57, 23, NULL), ('캐시 일관성 문제도 고려해야 하고요.', 57, 33, NULL), ('성능 최적화 필수 지식이에요!', 57, 5, 255),
+('분산 트랜잭션 Saga 패턴 배웠어요.', 58, 14, NULL), ('보상 트랜잭션 개념이 신선하네요.', 58, 24, NULL), ('서비스 간 일관성 보장이 가능해요.', 58, 34, NULL), ('트랜잭션 순서가 중요하군요.', 58, 5, NULL), ('복잡한 시스템 설계에 필수네요!', 58, 5, 260),
+('API Gateway 구축이 정말 유용해요.', 59, 15, NULL), ('라우팅이 중앙화되니 관리가 쉽네요.', 59, 25, NULL), ('인증도 게이트웨이에서 처리하니 좋아요.', 59, 35, NULL), ('마이크로서비스 핵심 컴포넌트네요!', 59, 5, 264),
+('Service Mesh Istio 배웠어요.', 60, 6, NULL), ('트래픽 관리가 정말 강력하네요.', 60, 16, NULL), ('카나리 배포도 쉽게 할 수 있어요.', 60, 26, NULL), ('관찰성(Observability) 기능도 훌륭합니다.', 60, 36, NULL), ('대규모 쿠버네티스에 필수네요!', 60, 5, 269),
+('Kubernetes 입문 완료했어요.', 61, 7, NULL), ('Pod와 Service 개념이 명확합니다.', 61, 17, NULL), ('Deployment로 자동 스케일링 되네요.', 61, 27, NULL), ('쿠버네티스 정말 강력한 도구네요!', 61, 5, 273),
+('Docker Compose로 개발 환경 구성했어요.', 62, 8, NULL), ('멀티 컨테이너 관리가 편하네요.', 62, 18, NULL), ('네트워크 설정도 간단하고요.', 62, 28, NULL), ('환경 변수 설정이 유연해요.', 62, 38, NULL), ('개발 생산성이 정말 올라갔어요!', 62, 5, 278),
+('Helm Chart 작성 배웠어요.', 63, 9, NULL), ('Kubernetes 패키지 관리가 편하네요.', 63, 19, NULL), ('templates 구조가 유연합니다.', 63, 29, NULL), ('패키지 관리 너무 수월하네요!', 63, 5, 282),
+('ArgoCD로 GitOps 도입했어요.', 64, 10, NULL), ('Git에서 자동 배포되니 정말 좋아요.', 64, 20, NULL), ('배포 이력 관리가 명확합니다.', 64, 30, NULL), ('Rollback도 쉽게 가능하네요.', 64, 40, NULL), ('선언적 배포 정말 편하네요!', 64, 5, 287),
+('Terraform으로 인프라 관리 중이에요.', 65, 1, NULL), ('IaC로 버전 관리가 가능하네요.', 65, 11, NULL), ('AWS 리소스 자동 프로비저닝 좋아요.', 65, 21, NULL), ('인프라 자동화 정말 필수네요!', 65, 5, 291),
+('Ansible로 서버 설정 자동화 중이에요.', 66, 2, NULL), ('Playbook 문법이 간단하네요.', 66, 12, NULL), ('Inventory 관리도 편합니다.', 66, 22, NULL), ('Role 구조로 재사용이 가능해요.', 66, 32, NULL), ('인프라 자동화 정말 강력하네요!', 66, 5, 296),
+('Lambda로 서버리스 배포 중이에요.', 67, 3, NULL), ('서버 관리 안 하니 정말 편하네요.', 67, 13, NULL), ('비용도 사용량만 내면 되고요.', 67, 23, NULL), ('서버리스 아키텍처 정말 좋네요!', 67, 5, 300),
+('S3 스토리지로 파일 관리 중이에요.', 68, 4, NULL), ('객체 스토리지 가격이 저렴하네요.', 68, 14, NULL), ('정적 웹 호스팅도 가능하고요.', 68, 24, NULL), ('버전 관리 기능도 좋습니다.', 68, 34, NULL), ('S3 정말 유용한 서비스네요!', 68, 5, 305),
+('CloudFront로 CDN 배포했어요.', 69, 5, NULL), ('콘텐츠 전송이 정말 빨라졌어요.', 69, 15, NULL), ('엣지 로케이션이 많네요.', 69, 25, NULL), ('글로벌 서비스에 필수네요!', 69, 5, 309),
+('Route 53 DNS 설정 중이에요.', 70, 6, NULL), ('라우팅 정책이 유연하네요.', 70, 16, NULL), ('헬스 체크 자동 페일오버 좋아요.', 70, 26, NULL), ('가중치 기반 라우팅도 가능하고요.', 70, 36, NULL), ('Route 53 정말 강력한 서비스예요!', 70, 5, 314),
+('RDS로 관리형 DB 운영 중이에요.', 71, 7, NULL), ('자동 백업이 정말 좋네요.', 71, 17, NULL), ('성능 모니터링도 쉽습니다.', 71, 27, NULL), ('DB 운영 정말 편하네요!', 71, 5, 318),
+('DynamoDB로 NoSQL 관리 중이에요.', 72, 8, NULL), ('확장성이 정말 뛰어나네요.', 72, 18, NULL), ('처리량 자동 조정도 가능하고요.', 72, 28, NULL), ('쿼리 모델 설계가 중요하군요.', 72, 38, NULL), ('DynamoDB 정말 강력하네요!', 72, 5, 323),
+('ElastiCache로 Redis 캐싱 중이에요.', 73, 9, NULL), ('관리형 캐시 서비스 정말 좋네요.', 73, 19, NULL), ('자동 페일오버도 지원하고요.', 73, 29, NULL), ('성능 향상이 눈에 띄네요!', 73, 5, 327),
+('SQS로 메시지 큐 운영 중이에요.', 74, 10, NULL), ('관리형 메시징 서비스 정말 좋습니다.', 74, 20, NULL), ('신뢰성이 뛰어나네요.', 74, 30, NULL), ('대기열 길이 모니터링도 쉽고요.', 74, 40, NULL), ('SQS 정말 안정적인 서비스예요!', 74, 5, 332),
+('SNS로 푸시 알림 구현 중이에요.', 75, 11, NULL), ('다양한 채널 지원이 좋네요.', 75, 21, NULL), ('구독 관리도 편합니다.', 75, 31, NULL), ('푸시 알림 구현 정말 간단해요!', 75, 5, 336),
+('Cognito로 사용자 관리 중이에요.', 76, 2, NULL), ('소셜 로그인 연동이 쉽네요.', 76, 12, NULL), ('MFA 지원도 좋아요.', 76, 22, NULL), ('사용자 속성 관리도 유연합니다.', 76, 32, NULL), ('Cognito 정말 편한 서비스네요!', 76, 5, 341),
+('API Gateway로 REST API 운영 중이에요.', 77, 3, NULL), ('요청/응답 매핑이 강력합니다.', 77, 13, NULL), ('API 키 관리도 편하네요.', 77, 23, NULL), ('API 관리 정말 수월해요!', 77, 5, 345),
+('Step Functions로 워크플로우 구성 중이에요.', 78, 4, NULL), ('상태 머신 정의가 명확합니다.', 78, 14, NULL), ('오류 처리도 쉽게 설정 가능하고요.', 78, 24, NULL), ('장기 실행 작업 관리도 좋습니다.', 78, 34, NULL), ('서버리스 워크플로우 정말 편하네요!', 78, 5, 350),
+('ECS로 컨테이너 오케스트레이션 중이에요.', 79, 5, NULL), ('작업 정의가 간단하네요.', 79, 15, NULL), ('서비스 관리도 편합니다.', 79, 25, NULL), ('ECS 정말 강력한 서비스예요!', 79, 5, 354),
+('Fargate로 서버리스 컨테이너 실행 중이에요.', 80, 6, NULL), ('서버 관리 없이 컨테이너 실행이 가능하네요.', 80, 16, NULL), ('비용도 사용량 기반이고요.', 80, 26, NULL), ('자동 스케일링도 지원합니다.', 80, 36, NULL), ('Fargate 정말 편한 서비스네요!', 80, 5, 359),
+('VPC로 네트워크 구성 중이에요.', 81, 7, NULL), ('서브넷과 라우팅이 명확합니다.', 81, 17, NULL), ('NAT 게이트웨이도 설정했어요.', 81, 27, NULL), ('네트워크 설계 정말 중요하네요!', 81, 5, 363),
+('Security Group으로 방화벽 설정 중이에요.', 82, 8, NULL), ('인바운드/아웃바운드 규칙이 명확합니다.', 82, 18, NULL), ('프로토콜별 설정도 세밀하게 가능하고요.', 82, 28, NULL), ('보안 그룹 간 참조도 가능하네요.', 82, 38, NULL), ('Security Group 정말 필수네요!', 82, 5, 368),
+('IAM으로 접근 제어 중이에요.', 83, 9, NULL), ('정책 작성이 유연하네요.', 83, 19, NULL), ('역할별 권한 관리도 편합니다.', 83, 29, NULL), ('IAM 권한 관리 정말 중요해요!', 83, 5, 372),
+('KMS로 데이터 암호화 중이에요.', 84, 10, NULL), ('키 로테이션이 자동으로 되네요.', 84, 20, NULL), ('감사 로그도 자동 기록되고요.', 84, 30, NULL), ('다른 AWS 서비스와 통합도 쉽습니다.', 84, 40, NULL), ('KMS 정말 안전한 서비스네요!', 84, 5, 377),
+('CloudWatch로 로그 수집 중이에요.', 85, 11, NULL), ('메트릭 대시보드가 강력하네요.', 85, 21, NULL), ('커스텀 메트릭도 등록할 수 있어요.', 85, 31, NULL), ('CloudWatch 정말 필수 도구예요!', 85, 5, 381),
+('X-Ray로 분산 추적 중이에요.', 86, 2, NULL), ('서비스 맵 시각화가 훌륭합니다.', 86, 12, NULL), ('성능 병목 지점 찾기가 쉬워요.', 86, 22, NULL), ('오류 추적도 상세하게 가능하고요.', 86, 32, NULL), ('X-Ray 정말 강력한 도구네요!', 86, 5, 386),
+('CodePipeline으로 배포 자동화 중이에요.', 87, 3, NULL), ('파이프라인 구성이 간단하네요.', 87, 13, NULL), ('여러 스테이지 구성도 가능해요.', 87, 23, NULL), ('CI/CD 파이프라인 정말 필수네요!', 87, 5, 390),
+('CodeDeploy로 자동 배포 중이에요.', 88, 4, NULL), ('무중단 배포가 가능하네요.', 88, 14, NULL), ('롤백도 간단하게 할 수 있어요.', 88, 24, NULL), ('여러 인스턴스에 동시 배포도 가능합니다.', 88, 34, NULL), ('CodeDeploy 정말 편한 도구네요!', 88, 5, 395),
+('Elastic Beanstalk으로 앱 배포 중이에요.', 89, 5, NULL), ('환경 설정이 간단하네요.', 89, 15, NULL), ('자동 스케일링도 지원해요.', 89, 25, NULL), ('Beanstalk 정말 편리한 PaaS네요!', 89, 5, 399),
+('Amplify로 프론트엔드 호스팅 중이에요.', 90, 6, NULL), ('배포가 정말 간단하네요.', 90, 16, NULL), ('커스텀 도메인 설정도 쉬워요.', 90, 26, NULL), ('SSL 인증서도 자동으로 발급되고요.', 90, 36, NULL), ('Amplify 정말 편한 호스팅 서비스네요!', 90, 5, 404),
+('규칙 잘 숙지하겠습니다.', 91, 7, NULL), ('건전한 커뮤니티 만들어요!', 91, 17, NULL), ('문의사항은 어디에 남기나요?', 91, 27, NULL), ('FAQ 게시판에 남겨주세요.', 91, 37, 408),
+('대댓글 기능 감사합니다!', 92, 8, NULL), ('UI가 깔끔해졌네요.', 92, 18, NULL), ('모바일에서도 잘 보여요.', 92, 28, NULL), ('정말 개선이 많이 됐어요.', 92, 5, NULL), ('피드백 감사합니다!', 92, 5, 413),
+('이벤트 참여하고 싶어요!', 93, 9, NULL), ('우수 게시글 기준이 궁금합니다.', 93, 19, NULL), ('조회수가 기준인가요?', 93, 29, NULL), ('조회수와 댓글 수를 종합 평가합니다.', 93, 39, 417),
+('점검 시간 확인했습니다.', 94, 4, NULL), ('점검 내용이 궁금해요.', 94, 14, NULL), ('성능 개선 작업 예정입니다.', 94, 24, NULL), ('얼마나 개선될까요?', 94, 34, NULL), ('기대 이상으로 개선될 거예요!', 94, 5, 422),
+('FAQ 도움됐어요!', 95, 8, NULL), ('비밀번호 찾기 방법 찾았어요.', 95, 18, NULL), ('추가 질문은 어디에 하나요?', 95, 28, NULL), ('문의 게시판을 이용해주세요!', 95, 38, 426),
+('개인정보 정책 확인했습니다.', 96, 9, NULL), ('데이터 처리가 안전하군요.', 96, 19, NULL), ('마케팅 수신 거부할 수 있나요?', 96, 29, NULL), ('계정 설정에서 관리 가능합니다.', 96, 39, NULL), ('정보 보호 중요하네요!', 96, 5, 431),
+('게시글 작성 팁 감사합니다.', 97, 1, NULL), ('이미지 첨부는 가능한가요?', 97, 11, NULL), ('현재는 텍스트만 지원합니다.', 97, 21, NULL), ('향후 업데이트 예정입니다!', 97, 5, 435),
+('불법 게시물 신고 절차 확인했어요.', 98, 2, NULL), ('신고는 어떻게 하나요?', 98, 12, NULL), ('게시글 하단의 신고 버튼으로 신고 가능합니다.', 98, 22, NULL), ('익명으로 신고할 수 있나요?', 98, 32, NULL), ('네, 익명 신고도 가능합니다!', 98, 5, 440),
+('신규 회원 이벤트 정보 감사합니다!', 99, 10, NULL), ('포인트는 언제 지급되나요?', 99, 20, NULL), ('3일 이내 지급됩니다.', 99, 30, NULL), ('이벤트 참여하겠습니다!', 99, 5, 444),
+('서비스 이용약관 변경 안내 감사합니다.', 100, 3, NULL), ('주요 변경 내용이 뭔가요?', 100, 13, NULL), ('결제 정책과 환불 규정이 변경됐습니다.', 100, 23, NULL), ('환불은 어떻게 진행되나요?', 100, 33, NULL), ('FAQ 게시판에서 확인해주세요!', 100, 5, 449);
