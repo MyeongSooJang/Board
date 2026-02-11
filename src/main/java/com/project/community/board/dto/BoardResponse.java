@@ -15,10 +15,11 @@ public class BoardResponse {
     private Long memberId;
     private LocalDateTime updateTime;
     private LocalDateTime createTime;
-    private Integer boardViewCount;
+    private Long boardViewCount;
     private Long boardLikeCount;
+    private Long boardCommentCount;
 
-    public static BoardResponse from(Board board, Long boardLikeCount) {
+    public static BoardResponse from(Board board, Long boardLikeCount, Long boardCommentCount) {
         return new BoardResponse(
                 board.getBoardId(),
                 board.getBoardTitle(),
@@ -28,7 +29,8 @@ public class BoardResponse {
                 board.getUpdateTime(),
                 board.getCreateTime(),
                 board.getBoardViewCount(),
-                boardLikeCount
+                boardLikeCount,
+                boardCommentCount
         );
     }
 }

@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { boardApi } from '../../api/board'
 import { commentApi } from '../../api/comment'
 import ReportModal from '../../components/ReportModal.vue'
+import CommentNode from '../../components/CommentNode.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -70,6 +71,16 @@ const loadBoard = async () => {
   }
 }
 
+const buildCommentTree = (allComments, parentId = null) => {
+  return allComments
+    .filter(c => c.commentParentId === parentId)
+    .map(comment => ({
+      ...comment,
+      children: buildCommentTree(allComments, comment.commentId)
+    }))
+    .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+}
+
 const loadComments = async () => {
   try {
     const response = await commentApi.getList(boardId.value)
@@ -77,19 +88,8 @@ const loadComments = async () => {
 
     console.log('📌 전체 댓글 데이터:', allComments)
 
-    // 댓글을 parent 댓글과 child 댓글로 정렬 (최신순)
-    comments.value = allComments
-      .map(comment => {
-        const children = allComments
-          .filter(c => c.commentParentId === comment.commentId)
-          .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
-        return {
-          ...comment,
-          children: children
-        }
-      })
-      .filter(comment => !comment.commentParentId)
-      .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+    // 재귀적으로 댓글 트리 구성
+    comments.value = buildCommentTree(allComments, null)
 
     console.log('📌 정렬된 댓글:', comments.value)
     console.log('📌 총 원댓글 수:', comments.value.length)
@@ -361,129 +361,27 @@ onMounted(() => {
         </div>
 
         <div v-else class="comments-list">
-          <!-- 원댓글 -->
+          <!-- 댓글 트리 (재귀) -->
           <template v-for="comment in comments" :key="comment.commentId">
-            <div class="comment-item">
-              <div class="comment-header">
-                <span class="comment-author">{{ comment.memberName }}</span>
-                <span class="comment-date">{{ formatDate(comment.createTime) }}</span>
-              </div>
-              <div class="comment-content">{{ comment.commentContent }}</div>
-              <div class="comment-actions">
-                <button
-                  @click="handleReplyClick(comment.commentId)"
-                  class="btn-small btn-reply"
-                >
-                  답글
-                </button>
-                <button
-                  v-if="currentMemberId && currentMemberId == comment.memberId"
-                  @click="handleEditCommentClick(comment)"
-                  class="btn-small btn-edit"
-                >
-                  수정
-                </button>
-                <button
-                  v-if="currentMemberId && currentMemberId == comment.memberId"
-                  @click="handleDeleteComment(comment.commentId)"
-                  class="btn-small btn-danger"
-                >
-                  삭제
-                </button>
-              </div>
-
-              <!-- 댓글 수정 폼 -->
-              <div v-if="editingCommentId === comment.commentId && isEditingComment" class="edit-form">
-                <div class="edit-form-header">
-                  <span class="edit-form-title">댓글 수정</span>
-                  <button @click="handleCancelEditComment" class="btn-close">✕</button>
-                </div>
-                <textarea
-                  v-model="editCommentContent"
-                  placeholder="댓글을 수정하세요"
-                  class="edit-input"
-                  rows="3"
-                ></textarea>
-                <button
-                  @click="handleSaveEditComment(comment.commentId)"
-                  class="btn btn-comment-submit"
-                >
-                  저장
-                </button>
-              </div>
-            </div>
-
-            <!-- 대댓글 입력 폼 -->
-            <div v-if="replyingToCommentId === comment.commentId" class="reply-form">
-              <div class="reply-form-header">
-                <span class="reply-form-title">답글 작성</span>
-                <button @click="handleCancelReply" class="btn-close">✕</button>
-              </div>
-              <textarea
-                v-model="replyContent"
-                placeholder="답글을 입력하세요"
-                class="reply-input"
-                rows="2"
-              ></textarea>
-              <button
-                @click="handleAddReply(comment.commentId)"
-                class="btn btn-comment-submit"
-                :disabled="isSubmittingReply"
-              >
-                {{ isSubmittingReply ? '작성 중' : '작성' }}
-              </button>
-            </div>
-
-            <!-- 대댓글 -->
-            <div v-if="comment.children && comment.children.length > 0" class="replies-container">
-              <div v-for="reply in comment.children" :key="reply.commentId" class="reply-item">
-                <div class="reply-indicator">↳</div>
-                <div class="reply-content">
-                  <div class="comment-header">
-                    <span class="comment-author">{{ reply.memberName }}</span>
-                    <span class="comment-date">{{ formatDate(reply.createTime) }}</span>
-                  </div>
-                  <div class="comment-content">{{ reply.commentContent }}</div>
-                  <div
-                    v-if="currentMemberId && currentMemberId == reply.memberId"
-                    class="comment-actions"
-                  >
-                    <button
-                      @click="handleEditCommentClick(reply)"
-                      class="btn-small btn-edit"
-                    >
-                      수정
-                    </button>
-                    <button
-                      @click="handleDeleteComment(reply.commentId)"
-                      class="btn-small btn-danger"
-                    >
-                      삭제
-                    </button>
-                  </div>
-
-                  <!-- 대댓글 수정 폼 -->
-                  <div v-if="editingCommentId === reply.commentId && isEditingComment" class="edit-form">
-                    <div class="edit-form-header">
-                      <span class="edit-form-title">댓글 수정</span>
-                      <button @click="handleCancelEditComment" class="btn-close">✕</button>
-                    </div>
-                    <textarea
-                      v-model="editCommentContent"
-                      placeholder="댓글을 수정하세요"
-                      class="edit-input"
-                      rows="3"
-                    ></textarea>
-                    <button
-                      @click="handleSaveEditComment(reply.commentId)"
-                      class="btn btn-comment-submit"
-                    >
-                      저장
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <CommentNode
+              :comment="comment"
+              :replyingToCommentId="replyingToCommentId"
+              :editingCommentId="editingCommentId"
+              :editCommentContent="editCommentContent"
+              :isEditingComment="isEditingComment"
+              :currentMemberId="currentMemberId"
+              :isSubmittingReply="isSubmittingReply"
+              :replyContent="replyContent"
+              @reply-click="handleReplyClick"
+              @reply-cancel="handleCancelReply"
+              @reply-add="handleAddReply"
+              @edit-click="handleEditCommentClick"
+              @edit-cancel="handleCancelEditComment"
+              @edit-save="handleSaveEditComment"
+              @delete="handleDeleteComment"
+              @update:editCommentContent="editCommentContent = $event"
+              @update:replyContent="replyContent = $event"
+            />
           </template>
         </div>
       </div>

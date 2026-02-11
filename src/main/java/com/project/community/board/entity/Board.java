@@ -26,7 +26,8 @@ public class Board extends BaseEntity {
     private Long boardId;
     private String boardTitle;
     private String boardContent;
-    private Integer boardViewCount = 0;
+    private Long boardViewCount = 0L;
+    private Long boardCommentCount = 0L;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -50,8 +51,18 @@ public class Board extends BaseEntity {
         this.deleteTime = LocalDateTime.now();
     }
 
-    public void increaseBoardViewCount() {
+    public void increaseViewCount() {
         boardViewCount++;
+    }
+
+    public void increaseCommentCount() {
+        boardCommentCount++;
+    }
+
+    public void decreaseBoardCommentCount() {
+        if (boardCommentCount > 0) {
+            boardCommentCount--;
+        }
     }
 
 }

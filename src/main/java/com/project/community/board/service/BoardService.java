@@ -8,6 +8,7 @@ import com.project.community.board.dto.SearchType;
 import com.project.community.board.entity.Board;
 import com.project.community.board.repository.BoardRepository;
 import com.project.community.boardlike.repository.BoardLikeRepository;
+import com.project.community.comment.repository.CommentRepository;
 import com.project.community.member.entity.Member;
 import com.project.community.member.repository.MemberRepository;
 import com.project.community.exception.NotFoundException;
@@ -25,6 +26,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final CommentRepository commentRepository;
 
     public Page<BoardResponse> searchAll(Pageable pageable) {
         Page<Board> boards = boardRepository.findByDeleteTimeIsNull(pageable);
@@ -34,31 +36,29 @@ public class BoardService {
     public Page<BoardResponse> searchBoard(BoardSearchRequest request, Pageable pageable) {
         Page<Board> boards =
                 switch (request.getSearchType()) {
-                    case SearchType.TITLE ->
-                            boardRepository.findByBoardTitle(request.getTitle(), pageable);
-                    case SearchType.CONTENT ->
-                            boardRepository.findByBoardContent(request.getKeyword(), pageable);
-                    case SearchType.TITLE_AND_CONTENT ->
-                            boardRepository.findByKeyWord(request.getKeyword(), pageable);
-                    case SearchType.WRITER ->
-                            boardRepository.findByWriter(request.getWriter(), pageable);
+                    case SearchType.TITLE -> boardRepository.findByBoardTitle(request.getTitle(), pageable);
+                    case SearchType.CONTENT -> boardRepository.findByBoardContent(request.getKeyword(), pageable);
+                    case SearchType.TITLE_AND_CONTENT -> boardRepository.findByKeyWord(request.getKeyword(), pageable);
+                    case SearchType.WRITER -> boardRepository.findByWriter(request.getWriter(), pageable);
                 };
         return covertToDTOPage(boards);
     }
 
     private Page<BoardResponse> covertToDTOPage(Page<Board> boards) {
         return boards.map(board -> BoardResponse.from(board,
-                boardLikeRepository.countByBoardId(board.getBoardId())));
+                boardLikeRepository.countByBoardId(board.getBoardId()),
+                board.getBoardCommentCount()
+        ));
     }
 
     @Transactional
     public BoardResponse searchByBoardId(Long boardId) {
         Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
-        board.increaseBoardViewCount();
+        board.increaseViewCount();
         boardRepository.save(board);
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
-        return BoardResponse.from(board, likeCount);
+        return BoardResponse.from(board, likeCount, board.getBoardCommentCount());
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class BoardService {
 
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
         board.updateBoard(boardUpdateRequest);
-        return BoardResponse.from(board, likeCount);
+        return BoardResponse.from(board, likeCount, board.getBoardCommentCount());
     }
 
     private void validateRequestUser(Board board, String username) {

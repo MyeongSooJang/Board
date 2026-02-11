@@ -17,6 +17,7 @@ const error = ref('')
 
 const searchType = ref('all')
 const searchQuery = ref('')
+const sortBy = ref('createTime,desc')
 
 const loadBoards = async () => {
   isLoading.value = true
@@ -26,13 +27,14 @@ const loadBoards = async () => {
     let response
 
     if (searchType.value === 'all') {
-      response = await boardApi.getList(currentPage.value, pageSize.value)
+      response = await boardApi.getList(currentPage.value, pageSize.value, sortBy.value)
     } else {
       response = await boardApi.search(
         searchType.value,
         searchQuery.value,
         currentPage.value,
-        pageSize.value
+        pageSize.value,
+        sortBy.value
       )
     }
 
@@ -137,6 +139,11 @@ const handleSearch = () => {
   loadBoards()
 }
 
+const handleSort = () => {
+  currentPage.value = 0
+  loadBoards()
+}
+
 const goToDetail = (boardId) => {
   router.push(`/boards/${boardId}`)
 }
@@ -196,6 +203,17 @@ onMounted(() => {
         @keyup.enter="handleSearch"
       />
       <button @click="handleSearch" class="search-btn">검색</button>
+    </div>
+
+    <!-- 정렬 바 -->
+    <div class="sort-bar">
+      <span class="sort-label">정렬:</span>
+      <select v-model="sortBy" @change="handleSort" class="sort-select">
+        <option value="createTime,desc">최신순</option>
+        <option value="boardViewCount,desc">조회수순</option>
+        <option value="boardLikeCount,desc">좋아요순</option>
+        <option value="boardCommentCount,desc">댓글수순</option>
+      </select>
     </div>
 
     <!-- 에러 메시지 -->
@@ -368,6 +386,43 @@ onMounted(() => {
   padding: 12px 20px;
   background: #f7f9fa;
   border-bottom: 1px solid #d5d5d5;
+}
+
+/* 정렬 바 */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: white;
+  border-bottom: 1px solid #d5d5d5;
+}
+
+.sort-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
+
+.sort-select {
+  padding: 6px 10px;
+  border: 1px solid #d5d5d5;
+  border-radius: 3px;
+  font-size: 13px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sort-select:hover {
+  border-color: #3d414d;
+  background: #f7f9fa;
+}
+
+.sort-select:focus {
+  outline: none;
+  box-shadow: 0 0 3px #3d414d;
 }
 
 .search-select {
@@ -608,6 +663,10 @@ onMounted(() => {
 
   .search-bar {
     flex-direction: column;
+  }
+
+  .sort-bar {
+    flex-direction: row;
   }
 
   .col-view,

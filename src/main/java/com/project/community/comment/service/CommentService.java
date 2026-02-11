@@ -29,8 +29,11 @@ public class CommentService {
     }
 
     public CommentResponseDTO createComment(Long boardId, CommentCreateRequestDTO comment) {
+        Board board = searchBoard(boardId);
         Comment saved = commentRepository.save(
-                Comment.createComment(comment, searchBoard(boardId), searchMember(comment)));
+                Comment.createComment(comment, board, searchMember(comment)));
+        board.increaseCommentCount();
+        boardRepository.save(board);
         return CommentResponseDTO.from(saved);
     }
 
@@ -55,6 +58,10 @@ public class CommentService {
     }
 
     public void deleteComment(Long commentId) {
-        commentRepository.delete(searchComment(commentId));
+        Comment comment = searchComment(commentId);
+        Board board = comment.getBoard();
+        commentRepository.delete(comment);
+        board.decreaseBoardCommentCount();
+        boardRepository.save(board);
     }
 }

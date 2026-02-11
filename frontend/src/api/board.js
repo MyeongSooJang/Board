@@ -2,8 +2,8 @@ import client from './client'
 
 export const boardApi = {
   // 게시판 목록 조회 (페이징)
-  getList: (page = 0, size = 10) =>
-    client.get('/boards', { params: { page, size } }),
+  getList: (page = 0, size = 10, sort = 'createTime,desc') =>
+    client.get('/boards', { params: { page, size, sort } }),
 
   // 게시물 상세 조회
   getDetail: (boardId) =>

@@ -44,13 +44,13 @@ public class BoardController {
             description = "최신순으로 모든 게시물을 조회합니다")
     public ResponseEntity<Page<BoardResponse>> findAll(
             @ParameterObject
-            @PageableDefault(size = 10, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 10, direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(boardService.searchAll(pageable));
     }
 
     @GetMapping("/search")
     @Operation(summary = "게시물 검색",
-            description = "제목 / 작성자 / 제목 + 내용 으로 게시물을 검색합니다")
+            description = "제목 / 내용 / 작성자 / 제목 + 내용 으로 게시물을 검색합니다")
     public ResponseEntity<Page<BoardResponse>> search(
             @ParameterObject BoardSearchRequest request,
             @PageableDefault(size = 10, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
