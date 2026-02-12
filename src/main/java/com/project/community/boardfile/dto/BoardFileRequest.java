@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
-public class BoardFileRequestDTO {
+public class BoardFileRequest {
     private Long boardId;
     private MultipartFile file;
 }

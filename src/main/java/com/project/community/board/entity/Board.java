@@ -24,17 +24,18 @@ public class Board extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardId;
-    private String boardTitle;
-    private String boardContent;
-    private Long boardViewCount = 0L;
-    private Long boardCommentCount = 0L;
+    private String title;
+    private String content;
+    private Long viewCount = 0L;
+    private Long commentCount = 0L;
+    private Long likeCount = 0L;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Board(String boardTitle, String boardContent, Member member) {
-        this.boardTitle = boardTitle;
-        this.boardContent = boardContent;
+    public Board(String title, String boardContent, Member member) {
+        this.title = title;
+        this.content = boardContent;
         this.member = member;
     }
 
@@ -43,8 +44,8 @@ public class Board extends BaseEntity {
     }
 
     public void updateBoard(BoardUpdateRequest updateBoard) {
-        boardTitle = updateBoard.getBoardTitle();
-        boardContent = updateBoard.getBoardContent();
+        title = updateBoard.getBoardTitle();
+        content = updateBoard.getBoardContent();
     }
 
     public void softDelete() {
@@ -52,16 +53,26 @@ public class Board extends BaseEntity {
     }
 
     public void increaseViewCount() {
-        boardViewCount++;
+        viewCount++;
     }
 
     public void increaseCommentCount() {
-        boardCommentCount++;
+        commentCount++;
     }
 
-    public void decreaseBoardCommentCount() {
-        if (boardCommentCount > 0) {
-            boardCommentCount--;
+    public void decreaseCommentCount() {
+        if (commentCount > 0) {
+            commentCount--;
+        }
+    }
+
+    public void increaseLikeCount() {
+        likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (likeCount > 0) {
+            likeCount--;
         }
     }
 

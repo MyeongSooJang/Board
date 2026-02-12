@@ -1,8 +1,8 @@
 package com.project.community.member.controller;
 
-import com.project.community.member.dto.MemberCreateRequestDTO;
-import com.project.community.member.dto.MemberResponseDTO;
-import com.project.community.member.dto.MemberUpdateRequestDTO;
+import com.project.community.member.dto.MemberCreateRequest;
+import com.project.community.member.dto.MemberResponse;
+import com.project.community.member.dto.MemberUpdateRequest;
 import com.project.community.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,28 +25,28 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<MemberResponseDTO> createMember(@Valid @RequestBody MemberCreateRequestDTO request) {
+    public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody MemberCreateRequest request) {
         return ResponseEntity.ok(memberService.enrollMember(request));
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<MemberResponseDTO> findByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<MemberResponse> findByMemberId(@PathVariable Long memberId) {
         return ResponseEntity.ok(memberService.findByMemberId(memberId));
     }
 
     @GetMapping("/by-username/{username}")
-    public ResponseEntity<MemberResponseDTO> findByUsername(@PathVariable String username) {
+    public ResponseEntity<MemberResponse> findByUsername(@PathVariable String username) {
         return ResponseEntity.ok(memberService.findByUsername(username));
     }
 
     @GetMapping
-    public ResponseEntity<Page<MemberResponseDTO>> findAllMembers(Pageable pageable) {
+    public ResponseEntity<Page<MemberResponse>> findAllMembers(Pageable pageable) {
         return ResponseEntity.ok(memberService.findAll(pageable));
     }
 
     @PutMapping("/{memberId}")
-    public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long memberId,
-                                                          @Valid @RequestBody MemberUpdateRequestDTO request) {
+    public ResponseEntity<MemberResponse> updateMember(@PathVariable Long memberId,
+                                                       @Valid @RequestBody MemberUpdateRequest request) {
         return ResponseEntity.ok(memberService.updateMember(memberId, request));
     }
 

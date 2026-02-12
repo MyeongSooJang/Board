@@ -2,7 +2,7 @@ package com.project.community.boardlike.service;
 
 import com.project.community.board.entity.Board;
 import com.project.community.board.repository.BoardRepository;
-import com.project.community.boardlike.dto.BoardLikeResponseDTO;
+import com.project.community.boardlike.dto.BoardLikeResponse;
 import com.project.community.boardlike.entity.BoardLike;
 import com.project.community.boardlike.repository.BoardLikeRepository;
 import com.project.community.member.entity.Member;
@@ -19,7 +19,7 @@ public class BoardLikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public BoardLikeResponseDTO getLikeStatus(Long boardId, String username) {
+    public BoardLikeResponse getLikeStatus(Long boardId, String username) {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         Board board = boardRepository.findById(boardId)
@@ -29,10 +29,10 @@ public class BoardLikeService {
         boolean liked = existing.isPresent();
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
 
-        return new BoardLikeResponseDTO(board.getBoardId(), likeCount, liked);
+        return new BoardLikeResponse(board.getBoardId(), likeCount, liked);
     }
 
-    public BoardLikeResponseDTO toggleLike(Long boardId, String username) {
+    public BoardLikeResponse toggleLike(Long boardId, String username) {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         Board board = boardRepository.findById(boardId)
@@ -45,7 +45,7 @@ public class BoardLikeService {
 
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
 
-        return new BoardLikeResponseDTO(board.getBoardId(), likeCount, liked);
+        return new BoardLikeResponse(board.getBoardId(), likeCount, liked);
     }
 
     private boolean convertLikeStatus(Optional<BoardLike> existing, Member member, Board board) {

@@ -6,9 +6,9 @@ import com.project.community.board.entity.Board;
 import com.project.community.board.repository.BoardRepository;
 import com.project.community.member.entity.Member;
 import com.project.community.member.repository.MemberRepository;
-import com.project.community.report.dto.ReportAdminDTO;
-import com.project.community.report.dto.ReportRequestDTO;
-import com.project.community.report.dto.ReportResponseDTO;
+import com.project.community.report.dto.ReportAdminResponse;
+import com.project.community.report.dto.ReportRequest;
+import com.project.community.report.dto.ReportResponse;
 import com.project.community.report.entity.Report;
 import com.project.community.report.repository.ReportRepository;
 import com.project.community.exception.NotFoundException;
@@ -29,7 +29,7 @@ public class ReportService {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
 
-    public ReportResponseDTO submitReport(ReportRequestDTO request, String username) {
+    public ReportResponse submitReport(ReportRequest request, String username) {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         Board board = boardRepository.findById(request.getBoardId())
@@ -37,16 +37,16 @@ public class ReportService {
 
         Report report = createReport(member, board, request);
         Report savedReport = reportRepository.save(report);
-        return ReportResponseDTO.from(savedReport);
+        return ReportResponse.from(savedReport);
     }
 
-    public Page<ReportAdminDTO> findAllReports(Pageable pageable) {
+    public Page<ReportAdminResponse> findAllReports(Pageable pageable) {
         Page<Report> reports = reportRepository.findAll(pageable);
-        return reports.map(ReportAdminDTO::from);
+        return reports.map(ReportAdminResponse::from);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public ReportAdminDTO approve(Long reportId) {
+    public ReportAdminResponse approve(Long reportId) {
         Report report = searchReportById(reportId);
         validateSubmit(report);
 
@@ -58,7 +58,7 @@ public class ReportService {
         boardRepository.save(board);
 
 
-        return ReportAdminDTO.from(approveReport);
+        return ReportAdminResponse.from(approveReport);
     }
 
     private Report searchReportById(Long reportId) {
@@ -67,14 +67,14 @@ public class ReportService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public ReportAdminDTO reject(Long reportId) {
+    public ReportAdminResponse reject(Long reportId) {
         Report report = searchReportById(reportId);
         validateSubmit(report);
 
         Report rejectReport = report.reject();
         reportRepository.save(rejectReport);
 
-        return ReportAdminDTO.from(rejectReport);
+        return ReportAdminResponse.from(rejectReport);
     }
 
     private void validateSubmit(Report report) {

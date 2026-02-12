@@ -1,6 +1,6 @@
 package com.project.community.boardlike.controller;
 
-import com.project.community.boardlike.dto.BoardLikeResponseDTO;
+import com.project.community.boardlike.dto.BoardLikeResponse;
 import com.project.community.boardlike.service.BoardLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,22 +19,22 @@ public class BoardLikeController {
     private final BoardLikeService boardLikeService;
 
     @GetMapping
-    public ResponseEntity<BoardLikeResponseDTO> getLikeStatus(
+    public ResponseEntity<BoardLikeResponse> getLikeStatus(
             @PathVariable Long boardId
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        BoardLikeResponseDTO response = boardLikeService.getLikeStatus(boardId, username);
+        BoardLikeResponse response = boardLikeService.getLikeStatus(boardId, username);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<BoardLikeResponseDTO> toggleLike(
+    public ResponseEntity<BoardLikeResponse> toggleLike(
             @PathVariable Long boardId
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        BoardLikeResponseDTO response = boardLikeService.toggleLike(boardId, username);
+        BoardLikeResponse response = boardLikeService.toggleLike(boardId, username);
         return ResponseEntity.ok(response);
     }
 }

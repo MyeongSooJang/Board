@@ -47,7 +47,7 @@ public class BoardService {
     private Page<BoardResponse> covertToDTOPage(Page<Board> boards) {
         return boards.map(board -> BoardResponse.from(board,
                 boardLikeRepository.countByBoardId(board.getBoardId()),
-                board.getBoardCommentCount()
+                board.getCommentCount()
         ));
     }
 
@@ -58,7 +58,7 @@ public class BoardService {
         board.increaseViewCount();
         boardRepository.save(board);
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
-        return BoardResponse.from(board, likeCount, board.getBoardCommentCount());
+        return BoardResponse.from(board, likeCount, board.getCommentCount());
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class BoardService {
 
         Long likeCount = boardLikeRepository.countByBoardId(boardId);
         board.updateBoard(boardUpdateRequest);
-        return BoardResponse.from(board, likeCount, board.getBoardCommentCount());
+        return BoardResponse.from(board, likeCount, board.getCommentCount());
     }
 
     private void validateRequestUser(Board board, String username) {

@@ -5,35 +5,31 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 @AllArgsConstructor
 @Getter
-public class ReportAdminDTO {
+public class ReportResponse {
     private Long reportId;
     private String type;
     private String content;
     private String status;
-    private String reporterUsername;
+    private Long reporterId;
     private String reporterName;
     private Long boardId;
     private String boardTitle;
-    private String reportedUsername;
-    private String reportedName;
-    private LocalDateTime reportedDate;
+    private LocalDateTime createTime;
 
-    public static ReportAdminDTO from(Report report) {
-        return new ReportAdminDTO(
+    public static ReportResponse from(Report report) {
+        return new ReportResponse(
                 report.getReportId(),
                 report.getType(),
                 report.getContent(),
                 report.getStatus(),
-                report.getMember().getUsername(),
+                report.getMember().getMemberId(),
                 report.getMember().getName(),
                 report.getBoard().getBoardId(),
-                report.getBoard().getBoardTitle(),
-                report.getBoard().getMember().getUsername(),
-                report.getBoard().getMember().getName(),
+                report.getBoard().getTitle(),
                 report.getCreateTime()
         );
     }
+
 }

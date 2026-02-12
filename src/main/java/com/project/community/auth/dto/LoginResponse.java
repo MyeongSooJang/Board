@@ -3,7 +3,7 @@ package com.project.community.auth.dto;
 import lombok.Getter;
 
 @Getter
-public class LoginResponseDTO {
+public class LoginResponse {
     private String accessToken;
     private String refreshToken;
     private String tokenType = "Bearer";
@@ -13,7 +13,7 @@ public class LoginResponseDTO {
     private String role;
 
 
-    public LoginResponseDTO(String accessToken, String refreshToken, Long expiresIn, String username, String memberName, String role) {
+    public LoginResponse(String accessToken, String refreshToken, Long expiresIn, String username, String memberName, String role) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiresIn = expiresIn;

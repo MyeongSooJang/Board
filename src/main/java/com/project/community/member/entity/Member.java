@@ -1,7 +1,7 @@
 package com.project.community.member.entity;
 
-import com.project.community.member.dto.MemberCreateRequestDTO;
-import com.project.community.member.dto.MemberUpdateRequestDTO;
+import com.project.community.member.dto.MemberCreateRequest;
+import com.project.community.member.dto.MemberUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,7 +50,7 @@ public class Member extends BaseEntity {
         this.role = role;
     }
 
-    public static Member createMember(String encodingPassword, MemberCreateRequestDTO request) {
+    public static Member createMember(String encodingPassword, MemberCreateRequest request) {
         return new Member(
                 request.getUsername(),
                 encodingPassword,
@@ -61,7 +61,7 @@ public class Member extends BaseEntity {
                 request.getRole());
     }
 
-    public Member updateMember(String encodingPassword, MemberUpdateRequestDTO request) {
+    public Member updateMember(String encodingPassword, MemberUpdateRequest request) {
         if (request.getName() != null && !request.getName().isEmpty()) {
             this.name = request.getName();
         }

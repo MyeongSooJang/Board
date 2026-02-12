@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class ReportRequestDTO {
+public class ReportRequest {
     private Long boardId;
     private String type;
     private String content;

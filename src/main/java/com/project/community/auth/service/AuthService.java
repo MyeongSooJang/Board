@@ -2,10 +2,10 @@ package com.project.community.auth.service;
 
 import static com.project.community.auth.entity.RefreshToken.createRefreshToken;
 
-import com.project.community.auth.dto.LoginRequestDTO;
-import com.project.community.auth.dto.LoginResponseDTO;
-import com.project.community.auth.dto.RefreshTokenRequestDTO;
-import com.project.community.auth.dto.RefreshTokenResponseDTO;
+import com.project.community.auth.dto.LoginRequest;
+import com.project.community.auth.dto.LoginResponse;
+import com.project.community.auth.dto.RefreshTokenRequest;
+import com.project.community.auth.dto.RefreshTokenResponse;
 import com.project.community.auth.entity.RefreshToken;
 import com.project.community.auth.repository.RefreshTokenRepository;
 import com.project.community.member.entity.Member;
@@ -28,7 +28,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
 
-    public LoginResponseDTO login(LoginRequestDTO request) {
+    public LoginResponse login(LoginRequest request) {
         Member member = searchByIdAndEmail(request.getUsername());
         checkPassword(request, member);
 
@@ -38,7 +38,7 @@ public class AuthService {
 
         refreshTokenRepository.save(createRefreshToken(request.getUsername(), refreshToken, refreshTokenExpireDate));
 
-        return new LoginResponseDTO(
+        return new LoginResponse(
                 accessToken,
                 refreshToken,
                 jwtTokenProvider.getAccessTokenExpiration(),
@@ -48,7 +48,7 @@ public class AuthService {
         );
     }
 
-    private void checkPassword(LoginRequestDTO request, Member member) {
+    private void checkPassword(LoginRequest request, Member member) {
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new BadCredentialsException("비밀번호가 맞지 않습니다.");
         }
@@ -68,7 +68,7 @@ public class AuthService {
         refreshTokenRepository.deleteByUsername(username);
     }
 
-    public RefreshTokenResponseDTO createNewTokens(RefreshTokenRequestDTO request) {
+    public RefreshTokenResponse createNewTokens(RefreshTokenRequest request) {
         RefreshToken searchToken = findByRefreshToken(request);
 
         jwtTokenProvider.validateToken(searchToken.getRefreshToken());
@@ -83,11 +83,11 @@ public class AuthService {
 
         refreshTokenRepository.save(createRefreshToken(member.getUsername(), refreshToken, refreshTokenExpireDate));
 
-        return new RefreshTokenResponseDTO(accessToken, refreshToken, jwtTokenProvider.getAccessTokenExpiration());
+        return new RefreshTokenResponse(accessToken, refreshToken, jwtTokenProvider.getAccessTokenExpiration());
 
     }
 
-    private RefreshToken findByRefreshToken(RefreshTokenRequestDTO request) {
+    private RefreshToken findByRefreshToken(RefreshTokenRequest request) {
         return refreshTokenRepository.findByRefreshToken(request.getRefreshToken())
                 .orElseThrow(() -> new NoSuchElementException("해당하는 Refresh 토큰은 존재하지 않습니다"));
     }

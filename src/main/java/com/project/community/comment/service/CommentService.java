@@ -28,17 +28,16 @@ public class CommentService {
         return comments.stream().map(CommentResponseDTO::from).toList();
     }
 
-    public CommentResponseDTO createComment(Long boardId, CommentCreateRequestDTO comment) {
-        Board board = searchBoard(boardId);
-        Comment saved = commentRepository.save(
-                Comment.createComment(comment, board, searchMember(comment)));
+    public CommentResponseDTO createComment(CommentCreateRequestDTO comment, String username) {
+        Board board = searchBoard(comment.getBoardId());
+        Comment saved = commentRepository.save(Comment.createComment(comment, board, searchMember(username)));
         board.increaseCommentCount();
         boardRepository.save(board);
         return CommentResponseDTO.from(saved);
     }
 
-    private Member searchMember(CommentCreateRequestDTO comment) {
-        return memberRepository.findById(comment.getMemberId())
+    private Member searchMember(String username) {
+        return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다"));
     }
 
@@ -61,7 +60,7 @@ public class CommentService {
         Comment comment = searchComment(commentId);
         Board board = comment.getBoard();
         commentRepository.delete(comment);
-        board.decreaseBoardCommentCount();
+        board.decreaseCommentCount();
         boardRepository.save(board);
     }
 }

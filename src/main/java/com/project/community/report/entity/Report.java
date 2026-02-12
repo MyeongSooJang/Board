@@ -3,7 +3,7 @@ package com.project.community.report.entity;
 import com.project.community.common.BaseEntity;
 import com.project.community.board.entity.Board;
 import com.project.community.member.entity.Member;
-import com.project.community.report.dto.ReportRequestDTO;
+import com.project.community.report.dto.ReportRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,14 +40,14 @@ public class Report extends BaseEntity {
 
     private String status = "SUBMITTED";
 
-    private Report(Member member, Board board, ReportRequestDTO request) {
+    private Report(Member member, Board board, ReportRequest request) {
         this.member = member;
         this.board = board;
         this.type = request.getType();
         this.content = request.getContent();
     }
 
-    public static Report createReport(Member member, Board board, ReportRequestDTO request) {
+    public static Report createReport(Member member, Board board, ReportRequest request) {
         return new Report(member, board, request);
     }
 

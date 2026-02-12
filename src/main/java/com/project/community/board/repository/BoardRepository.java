@@ -17,7 +17,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("""
                SELECT b
                FROM Board As b
-               WHERE b.boardTitle LIKE CONCAT ('%',:boardTitle, '%')
+               WHERE b.title LIKE CONCAT ('%',:boardTitle, '%')
                AND   b.deleteTime IS NULL
             """)
     Page<Board> findByBoardTitle(@Param("boardTitle") String boardTitle, Pageable pageable);
@@ -25,7 +25,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("""
                SELECT b
                FROM Board As b
-               WHERE b.boardContent LIKE CONCAT ('%',:boardContent, '%')
+               WHERE b.content LIKE CONCAT ('%',:boardContent, '%')
                AND   b.deleteTime IS NULL
             """)
     Page<Board> findByBoardContent(@Param("boardContent") String boardContent, Pageable pageable);
@@ -33,7 +33,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("""
               SELECT b
               FROM Board AS b
-              WHERE (b.boardContent LIKE CONCAT ('%',:keyword, '%') OR b.boardTitle LIKE CONCAT ('%', :keyword, '%'))
+              WHERE (b.content LIKE CONCAT ('%',:keyword, '%') OR b.title LIKE CONCAT ('%', :keyword, '%'))
               AND b.deleteTime IS NULL
             """)
     Page<Board> findByKeyWord(@Param("keyword") String keyword, Pageable pageable);

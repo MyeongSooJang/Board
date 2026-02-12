@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class MemberResponseDTO {
+public class MemberResponse {
     private Long memberId;
     private String username;
     private String name;
@@ -15,8 +15,8 @@ public class MemberResponseDTO {
     private String phone;
     private String role;
 
-    public static MemberResponseDTO from(Member member) {
-        return new MemberResponseDTO(member.getMemberId(),
+    public static MemberResponse from(Member member) {
+        return new MemberResponse(member.getMemberId(),
                 member.getUsername(),
                 member.getName(),
                 member.getAge(),

@@ -1,10 +1,10 @@
 package com.project.community.auth.controller;
 
-import com.project.community.auth.dto.LoginRequestDTO;
-import com.project.community.auth.dto.LoginResponseDTO;
-import com.project.community.auth.dto.LogoutRequestDTO;
-import com.project.community.auth.dto.RefreshTokenRequestDTO;
-import com.project.community.auth.dto.RefreshTokenResponseDTO;
+import com.project.community.auth.dto.LoginRequest;
+import com.project.community.auth.dto.LoginResponse;
+import com.project.community.auth.dto.LogoutRequest;
+import com.project.community.auth.dto.RefreshTokenRequest;
+import com.project.community.auth.dto.RefreshTokenResponse;
 import com.project.community.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +21,18 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestBody LogoutRequestDTO request) {
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequest request) {
         authService.logout(request.getUsername());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<RefreshTokenResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO request) {
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(authService.createNewTokens(request));
     }
 }

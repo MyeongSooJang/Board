@@ -22,13 +22,13 @@ public class BoardResponse {
     public static BoardResponse from(Board board, Long boardLikeCount, Long boardCommentCount) {
         return new BoardResponse(
                 board.getBoardId(),
-                board.getBoardTitle(),
-                board.getBoardContent(),
+                board.getTitle(),
+                board.getContent(),
                 board.getMember().getName(),
                 board.getMember().getMemberId(),
                 board.getUpdateTime(),
                 board.getCreateTime(),
-                board.getBoardViewCount(),
+                board.getViewCount(),
                 boardLikeCount,
                 boardCommentCount
         );

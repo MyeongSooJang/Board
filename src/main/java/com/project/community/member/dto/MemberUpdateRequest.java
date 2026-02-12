@@ -5,10 +5,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import org.hibernate.validator.constraints.Length;
 
 @Getter
-public class MemberUpdateRequestDTO {
+public class MemberUpdateRequest {
     @Size(min = 2, max = 50, message = "이름은 2~50자여야 합니다")
     private String name;
 
