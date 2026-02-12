@@ -5,6 +5,7 @@ import com.project.community.board.dto.BoardResponse;
 import com.project.community.board.dto.BoardSearchRequest;
 import com.project.community.board.dto.BoardUpdateRequest;
 import com.project.community.board.dto.SearchType;
+import com.project.community.board.dto.SortType;
 import com.project.community.board.entity.Board;
 import com.project.community.board.repository.BoardRepository;
 import com.project.community.boardlike.repository.BoardLikeRepository;
@@ -28,9 +29,25 @@ public class BoardService {
     private final BoardLikeRepository boardLikeRepository;
     private final CommentRepository commentRepository;
 
-    public Page<BoardResponse> searchAll(Pageable pageable) {
-        Page<Board> boards = boardRepository.findByDeleteTimeIsNull(pageable);
+    public Page<BoardResponse> searchAll(String sort, Pageable pageable) {
+        SortType sortType = parseSortType(sort);
+        Page<Board> boards = switch (sortType) {
+            case SortType.LATEST -> boardRepository.findLatestBoards(pageable);
+            case OLDEST -> boardRepository.findOldestBoards(pageable);
+            case HOT -> boardRepository.findHotBoards(pageable);
+            case VIEWCOUNT -> boardRepository.findByViewCount(pageable);
+            case LIKECOUNT -> boardRepository.findByLikeCount(pageable);
+            case COMMENTCOUNT -> boardRepository.findByCommentCount(pageable);
+        };
         return covertToDTOPage(boards);
+    }
+
+    private SortType parseSortType(String sort) {
+        try {
+            return SortType.valueOf(sort.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return SortType.LATEST;
+        }
     }
 
     public Page<BoardResponse> searchBoard(BoardSearchRequest request, Pageable pageable) {
@@ -45,10 +62,7 @@ public class BoardService {
     }
 
     private Page<BoardResponse> covertToDTOPage(Page<Board> boards) {
-        return boards.map(board -> BoardResponse.from(board,
-                boardLikeRepository.countByBoardId(board.getBoardId()),
-                board.getCommentCount()
-        ));
+        return boards.map(BoardResponse::from);
     }
 
     @Transactional
@@ -57,8 +71,7 @@ public class BoardService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
         board.increaseViewCount();
         boardRepository.save(board);
-        Long likeCount = boardLikeRepository.countByBoardId(boardId);
-        return BoardResponse.from(board, likeCount, board.getCommentCount());
+        return BoardResponse.from(board);
     }
 
     @Transactional
@@ -75,9 +88,8 @@ public class BoardService {
 
         validateRequestUser(board, username);
 
-        Long likeCount = boardLikeRepository.countByBoardId(boardId);
         board.updateBoard(boardUpdateRequest);
-        return BoardResponse.from(board, likeCount, board.getCommentCount());
+        return BoardResponse.from(board);
     }
 
     private void validateRequestUser(Board board, String username) {

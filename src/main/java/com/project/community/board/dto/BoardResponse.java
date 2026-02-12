@@ -19,7 +19,7 @@ public class BoardResponse {
     private Long boardLikeCount;
     private Long boardCommentCount;
 
-    public static BoardResponse from(Board board, Long boardLikeCount, Long boardCommentCount) {
+    public static BoardResponse from(Board board) {
         return new BoardResponse(
                 board.getBoardId(),
                 board.getTitle(),
@@ -29,8 +29,8 @@ public class BoardResponse {
                 board.getUpdateTime(),
                 board.getCreateTime(),
                 board.getViewCount(),
-                boardLikeCount,
-                boardCommentCount
+                board.getLikeCount(),
+                board.getCommentCount()
         );
     }
 }

@@ -12,11 +12,58 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    Page<Board> findByDeleteTimeIsNull(Pageable pageable);
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NULL
+      ORDER BY b.createTime DESC
+  """)
+    Page<Board> findLatestBoards(Pageable pageable);
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NULL
+      ORDER BY b.likeCount DESC, b.createTime DESC
+  """)
+    Page<Board> findHotBoards(Pageable pageable);
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NULL
+      ORDER BY b.createTime ASC
+  """)
+    Page<Board> findOldestBoards(Pageable pageable);
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NULL
+      ORDER BY b.viewCount DESC
+  """)
+    Page<Board> findByViewCount(Pageable pageable);
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NULL
+      ORDER BY b.commentCount DESC
+  """)
+    Page<Board> findByCommentCount(Pageable pageable);
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NULL
+      ORDER BY b.likeCount DESC
+  """)
+    Page<Board> findByLikeCount(Pageable pageable);
 
     @Query("""
                SELECT b
                FROM Board As b
+               JOIN FETCH b.member m
                WHERE b.title LIKE CONCAT ('%',:boardTitle, '%')
                AND   b.deleteTime IS NULL
             """)
@@ -25,6 +72,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("""
                SELECT b
                FROM Board As b
+               JOIN FETCH b.member m
                WHERE b.content LIKE CONCAT ('%',:boardContent, '%')
                AND   b.deleteTime IS NULL
             """)
@@ -33,6 +81,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("""
               SELECT b
               FROM Board AS b
+              JOIN FETCH b.member m
               WHERE (b.content LIKE CONCAT ('%',:keyword, '%') OR b.title LIKE CONCAT ('%', :keyword, '%'))
               AND b.deleteTime IS NULL
             """)
@@ -41,12 +90,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("""
               SELECT b
               FROM Board AS b
-              WHERE b.member.name = :memberName
+              JOIN FETCH b.member m
+              WHERE m.name = :memberName
               AND b.deleteTime IS NULL
             """)
     Page<Board> findByWriter(@Param("memberName") String memberName, Pageable pageable);
-
-
 
     Optional<Board> findByBoardIdAndDeleteTimeIsNull(@Param("boardId") Long boardId);
 }
