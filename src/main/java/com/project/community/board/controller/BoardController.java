@@ -41,11 +41,11 @@ public class BoardController {
 
     @GetMapping
     @Operation(summary = "모든 게시물 조회",
-            description = "최신순으로 모든 게시물을 조회합니다")
+            description = "정렬 타입에 따라 모든 게시물을 조회합니다")
     public ResponseEntity<Page<BoardResponse>> findAll(
-            @ParameterObject
-            @PageableDefault(size = 10, direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(boardService.searchAll(pageable));
+            @RequestParam(defaultValue = "latest") String sort,
+            @PageableDefault(size = 15) Pageable pageable) {
+        return ResponseEntity.ok(boardService.searchAll(sort, pageable));
     }
 
     @GetMapping("/search")
