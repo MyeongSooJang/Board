@@ -10,7 +10,7 @@ export const boardApi = {
     client.get(`/boards/${boardId}`),
 
   // 통합 검색 (제목, 내용, 제목+내용, 작성자)
-  search: (searchType, query, page = 0, size = 15) =>
+  search: (searchType, query, page = 0, size = 15, sort = 'latest') =>
     client.get('/boards/search', {
       params: {
         searchType,
@@ -19,7 +19,8 @@ export const boardApi = {
         ...(searchType === 'TITLE_AND_CONTENT' && { keyword: query }),
         ...(searchType === 'WRITER' && { writer: query }),
         page,
-        size
+        size,
+        sort
       }
     }),
 

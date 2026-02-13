@@ -1,7 +1,8 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS board_file; -- board 참조
-DROP TABLE IF EXISTS report; -- member, board 참조
+DROP TABLE IF EXISTS report; -- member, board, comment 참조
+DROP TABLE IF EXISTS comment_like; -- comment 참조
 DROP TABLE IF EXISTS comment; -- board, member, comment 참조
 DROP TABLE IF EXISTS board_like; -- member, board 참조
 DROP TABLE IF EXISTS board; -- member 참조
@@ -65,21 +66,35 @@ CREATE TABLE board_like
 -- Comment 테이블
 CREATE TABLE comment
 (
-    comment_id        BIGINT AUTO_INCREMENT PRIMARY KEY,
-    comment_parent_id BIGINT,
-    comment_content   TEXT      NOT NULL,
-    board_id          BIGINT    NOT NULL,
-    member_id         BIGINT    NOT NULL,
-    create_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    delete_time       TIMESTAMP NULL,
+    comment_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    parent_id    BIGINT,
+    content      TEXT      NOT NULL,
+    board_id     BIGINT    NOT NULL,
+    member_id    BIGINT    NOT NULL,
+    like_count   BIGINT    NOT NULL DEFAULT 0,
+    create_time  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    delete_time  TIMESTAMP NULL,
     FOREIGN KEY (board_id) REFERENCES board (board_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id),
-    FOREIGN KEY (comment_parent_id) REFERENCES comment (comment_id),
+    FOREIGN KEY (parent_id) REFERENCES comment (comment_id),
     INDEX idx_comment_board (board_id),
     INDEX idx_comment_member (member_id),
-    INDEX idx_comment_parent (comment_parent_id),
+    INDEX idx_comment_parent (parent_id),
     INDEX idx_comment_delete (delete_time)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+-- Comment Like 테이블
+CREATE TABLE comment_like
+(
+    like_id    BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id  BIGINT NOT NULL,
+    comment_id BIGINT NOT NULL,
+    UNIQUE KEY uk_member_comment (member_id, comment_id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    FOREIGN KEY (comment_id) REFERENCES comment (comment_id),
+    INDEX idx_like_comment (comment_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -101,7 +116,8 @@ CREATE TABLE report
 (
     report_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id   BIGINT       NOT NULL,
-    board_id    BIGINT       NOT NULL,
+    board_id    BIGINT       NULL,
+    comment_id  BIGINT       NULL,
     type        VARCHAR(255) NOT NULL DEFAULT 'OTHER'
         CHECK (type in ('SPAM', 'ABUSIVE', 'ILLEGAL', 'OTHER')),
     content     TEXT         NULL,
@@ -112,7 +128,7 @@ CREATE TABLE report
     delete_time TIMESTAMP    NULL,
     FOREIGN KEY (member_id) REFERENCES member (member_id),
     FOREIGN KEY (board_id) REFERENCES board (board_id),
-    UNIQUE KEY uk_board_member (member_id, board_id)
+    FOREIGN KEY (comment_id) REFERENCES comment (comment_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 

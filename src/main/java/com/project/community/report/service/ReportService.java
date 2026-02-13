@@ -4,6 +4,8 @@ import static com.project.community.report.entity.Report.createReport;
 
 import com.project.community.board.entity.Board;
 import com.project.community.board.repository.BoardRepository;
+import com.project.community.comment.entity.Comment;
+import com.project.community.comment.repository.CommentRepository;
 import com.project.community.member.entity.Member;
 import com.project.community.member.repository.MemberRepository;
 import com.project.community.report.dto.ReportAdminResponse;
@@ -28,6 +30,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     public ReportResponse submitReport(ReportRequest request, String username) {
         Member member = memberRepository.findByUsername(username)
@@ -36,6 +39,17 @@ public class ReportService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
 
         Report report = createReport(member, board, request);
+        Report savedReport = reportRepository.save(report);
+        return ReportResponse.from(savedReport);
+    }
+
+    public ReportResponse reportComment(Long commentId, ReportRequest request, String username) {
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+
+        Report report = Report.createCommentReport(member, comment, request);
         Report savedReport = reportRepository.save(report);
         return ReportResponse.from(savedReport);
     }
@@ -53,10 +67,16 @@ public class ReportService {
         Report approveReport = report.approve();
         reportRepository.save(approveReport);
 
-        Board board = approveReport.getBoard();
-        board.softDelete();
-        boardRepository.save(board);
-
+        if (approveReport.getBoard() != null) {
+            Board board = approveReport.getBoard();
+            board.softDelete();
+            boardRepository.save(board);
+        } else if (approveReport.getCommentId() != null) {
+            Comment comment = commentRepository.findById(approveReport.getCommentId())
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+            comment.softDelete();
+            commentRepository.save(comment);
+        }
 
         return ReportAdminResponse.from(approveReport);
     }

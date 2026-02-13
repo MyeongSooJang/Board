@@ -2,6 +2,7 @@ package com.project.community.report.entity;
 
 import com.project.community.common.BaseEntity;
 import com.project.community.board.entity.Board;
+import com.project.community.comment.entity.Comment;
 import com.project.community.member.entity.Member;
 import com.project.community.report.dto.ReportRequest;
 import jakarta.persistence.Column;
@@ -33,6 +34,9 @@ public class Report extends BaseEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
+    @Column(name = "comment_id")
+    private Long commentId;
+
     private String type;
 
     @Column(nullable = false)
@@ -47,8 +51,19 @@ public class Report extends BaseEntity {
         this.content = request.getContent();
     }
 
+    private Report(Member member, Comment comment, ReportRequest request) {
+        this.member = member;
+        this.commentId = comment.getCommentId();
+        this.type = request.getType();
+        this.content = request.getContent();
+    }
+
     public static Report createReport(Member member, Board board, ReportRequest request) {
         return new Report(member, board, request);
+    }
+
+    public static Report createCommentReport(Member member, Comment comment, ReportRequest request) {
+        return new Report(member, comment, request);
     }
 
     public Report approve() {

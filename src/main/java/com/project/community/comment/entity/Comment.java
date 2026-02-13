@@ -3,8 +3,10 @@ package com.project.community.comment.entity;
 import com.project.community.board.entity.Board;
 import com.project.community.common.BaseEntity;
 import com.project.community.exception.UnauthorizedException;
+import com.project.community.exception.ValidationException;
 import com.project.community.exception.dto.ErrorCode;
 import com.project.community.member.entity.Member;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,16 +25,16 @@ public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
-
+    @Column(name = "parent_id")
     private Long parentId;
-
+    @Column(nullable = false)
     private String content;
-
+    @Column(nullable = false)
+    private Long likeCount = 0L;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -55,7 +57,23 @@ public class Comment extends BaseEntity {
         return this;
     }
 
-    public void deleteComment(Long commentId) {
-        this.deleteTime =  LocalDateTime.now();
+    public void softDelete() {
+        this.deleteTime = LocalDateTime.now();
+    }
+
+    public void increaseLikeCount() {
+        likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (likeCount > 0) {
+            likeCount--;
+        }
+    }
+
+    public void validateNestingLevel(Comment parentComment) {
+        if (parentComment != null && parentComment.getParentId() != null) {
+            throw new ValidationException(ErrorCode.VALIDATION_ERROR);
+        }
     }
 }
