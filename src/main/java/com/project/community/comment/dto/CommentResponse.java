@@ -7,18 +7,19 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class CommentResponseDTO {
+public class CommentResponse {
     private Long commentId;
-    private String commentContent;
-    private Long commentParentId;
-    private String memberName;
+    private String content;
+    private Long parentId;
+    private String name;
     private Long memberId;
     private LocalDateTime createTime;
 
-    public static CommentResponseDTO from(Comment comment) {
-        return new CommentResponseDTO(comment.getCommentId(),
-                comment.getCommentContent(),
-                comment.getCommentParentId(),
+
+    public static CommentResponse from(Comment comment) {
+        return new CommentResponse(comment.getCommentId(),
+                comment.getContent(),
+                comment.getParentId(),
                 comment.getMember().getName(),
                 comment.getMember().getMemberId(),
                 comment.getCreateTime());

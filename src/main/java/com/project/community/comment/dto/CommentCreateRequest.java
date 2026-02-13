@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class CommentCreateRequestDTO {
+public class CommentCreateRequest {
     private Long boardId;
-    private Long commentParentId;
-    private String commentContent;
+    private Long parentId;
+    private String content;
 }

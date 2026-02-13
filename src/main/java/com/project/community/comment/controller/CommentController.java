@@ -1,15 +1,18 @@
 package com.project.community.comment.controller;
 
-import com.project.community.comment.dto.CommentCreateRequestDTO;
-import com.project.community.comment.dto.CommentResponseDTO;
-import com.project.community.comment.dto.CommentUpdateRequestDTO;
+import com.project.community.comment.dto.CommentCreateRequest;
+import com.project.community.comment.dto.CommentResponse;
+import com.project.community.comment.dto.CommentUpdateRequest;
 import com.project.community.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
-import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/comments")
+@RequestMapping("/boards/{boardId}/comments")
 @Tag(name = "댓글", description = "댓글 관련 API")
 public class CommentController {
     private final CommentService commentService;
@@ -31,37 +34,42 @@ public class CommentController {
     @GetMapping
     @Operation(summary = "모든 댓글 조회",
             description = "게시글 번호에 대한 전체 댓글을 조회")
-    public ResponseEntity<List<CommentResponseDTO>> findAllByBoardId(
+    public ResponseEntity<Page<CommentResponse>> findAllByBoardId(
             @Parameter(description = "게시글 번호")
-            @PathVariable Long boardId) {
-        List<CommentResponseDTO> comments = commentService.findAllCommentsByBoardId(boardId);
+            @PathVariable Long boardId,
+            @PageableDefault(sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<CommentResponse> comments = commentService.findAllByBoardId(boardId, pageable);
         return ResponseEntity.ok(comments);
     }
 
-    @PostMapping()
+    @PostMapping
     @Operation(summary = "댓글 작성",
             description = "게시글에 대한 댓글 작성")
-    public ResponseEntity<CommentResponseDTO> createComment(
+    public ResponseEntity<CommentResponse> createComment(
+            @Parameter(description = "게시글 번호")
+            @PathVariable Long boardId,
             @Parameter(description = "생성할 댓글 내용")
-            @RequestBody CommentCreateRequestDTO comment,
+            @RequestBody CommentCreateRequest comment,
             @AuthenticationPrincipal String username) {
-        CommentResponseDTO response = commentService.createComment(comment,username);
+        CommentResponse response = commentService.createComment(comment, username);
         return ResponseEntity.created(
-                URI.create("/comments/" + response.getCommentId())
+                URI.create("/boards/" + boardId + "/comments/" + response.getCommentId())
         ).body(response);
     }
 
     @PutMapping("/{commentId}")
     @Operation(summary = "댓글 수정",
             description = "해당하는 댓글번호 댓글 수정")
-    public ResponseEntity<CommentResponseDTO> updateComment(
+    public ResponseEntity<CommentResponse> updateComment(
             @Parameter(description = "게시글 번호")
-            @PathVariable("boardId") Long boardId,
+            @PathVariable Long boardId,
             @Parameter(description = "댓글 번호")
-            @PathVariable("commentId") Long commentId,
+            @PathVariable Long commentId,
             @Parameter(description = "수정할 댓글 내용")
-            @RequestBody CommentUpdateRequestDTO comment) {
-        return ResponseEntity.ok(commentService.updateComment(commentId, comment));
+            @RequestBody CommentUpdateRequest request,
+            @Parameter(description = "회원 아이디")
+            @AuthenticationPrincipal String username) {
+        return ResponseEntity.ok(commentService.updateComment(commentId, request, username));
     }
 
     @DeleteMapping("/{commentId}")
@@ -69,10 +77,10 @@ public class CommentController {
             description = "해당하는 댓글번호 댓글 삭제")
     public ResponseEntity<Void> deleteComment(
             @Parameter(description = "게시글 번호")
-            @PathVariable("boardId") Long boardId,
+            @PathVariable Long boardId,
             @Parameter(description = "댓글 번호")
-            @PathVariable("commentId") Long commentId) {
+            @PathVariable Long commentId) {
         commentService.deleteComment(commentId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

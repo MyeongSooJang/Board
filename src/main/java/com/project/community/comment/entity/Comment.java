@@ -1,9 +1,9 @@
 package com.project.community.comment.entity;
 
-import com.project.community.common.BaseEntity;
 import com.project.community.board.entity.Board;
-import com.project.community.comment.dto.CommentCreateRequestDTO;
-import com.project.community.comment.dto.CommentUpdateRequestDTO;
+import com.project.community.common.BaseEntity;
+import com.project.community.exception.UnauthorizedException;
+import com.project.community.exception.dto.ErrorCode;
 import com.project.community.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,9 +24,9 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    private Long commentParentId;
+    private Long parentId;
 
-    private String commentContent;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
@@ -35,19 +36,26 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Comment(Long commentParentId, String commentContent, Board board, Member member) {
-        this.commentParentId = commentParentId;
-        this.commentContent = commentContent;
+    public Comment(Long parentId, String content, Board board, Member member) {
+        this.parentId = parentId;
+        this.content = content;
         this.board = board;
         this.member = member;
     }
 
-    public static Comment createComment(CommentCreateRequestDTO dto, Board board, Member member) {
-        return new Comment(dto.getCommentParentId(), dto.getCommentContent(), board, member);
+    public static Comment createComment(Long parentId, String content, Board board, Member member) {
+        return new Comment(parentId, content, board, member);
     }
 
-    public Comment updateComment(CommentUpdateRequestDTO dto) {
-        this.commentContent = dto.getCommentContent();
+    public Comment updateComment(String content, String username) {
+        if (!member.getUsername().equals(username)) {
+            throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
+        }
+        this.content = content;
         return this;
+    }
+
+    public void deleteComment(Long commentId) {
+        this.deleteTime =  LocalDateTime.now();
     }
 }
