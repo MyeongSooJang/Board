@@ -24,7 +24,7 @@ public class BoardLikeController {
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        BoardLikeResponse response = boardLikeService.getLikeStatus(boardId, username);
+        BoardLikeResponse response = boardLikeService.getStatus(boardId, username);
         return ResponseEntity.ok(response);
     }
 

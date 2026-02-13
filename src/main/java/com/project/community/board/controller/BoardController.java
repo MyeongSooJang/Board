@@ -53,7 +53,7 @@ public class BoardController {
             description = "제목 / 내용 / 작성자 / 제목 + 내용 으로 게시물을 검색합니다")
     public ResponseEntity<Page<BoardResponse>> search(
             @ParameterObject BoardSearchRequest request,
-            @PageableDefault(size = 10, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 15, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(boardService.searchBoard(request, pageable));
     }
 
