@@ -24,18 +24,50 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public Page<CommentResponse> findAllByBoardId(Long boardId, Pageable pageable) {
-        Page<Comment> comments = commentRepository.findByBoardId(boardId,pageable);
+    public Page<CommentResponse> findAllByBoardId(Long boardId, String sort, Pageable pageable) {
+        CommentSortType sortType = parseCommentSortType(sort);
+        Page<Comment> comments = switch (sortType) {
+            case LATEST -> commentRepository.findByBoardIdLatest(boardId, pageable);
+            case TOP -> commentRepository.findByBoardIdTop(boardId, pageable);
+        };
         return comments.map(CommentResponse::from);
     }
 
+    public Page<CommentResponse> searchComments(Long boardId, String keyword, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findByBoardIdAndKeyword(boardId, keyword, pageable);
+        return comments.map(CommentResponse::from);
+    }
+
+    private CommentSortType parseCommentSortType(String sort) {
+        try {
+            return CommentSortType.valueOf(sort.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return CommentSortType.LATEST;
+        }
+    }
+
+    enum CommentSortType {
+        LATEST, TOP
+    }
+
     @Transactional
-    public CommentResponse createComment(CommentCreateRequest request, String username) {
-        Board board = searchBoard(request.getBoardId());
-        Comment saved = commentRepository.save(Comment.createComment(request.getBoardId(), request.getContent(), board, searchMember(username)));
+    public CommentResponse createComment(Long boardId, CommentCreateRequest request, String username) {
+        Board board = searchBoard(boardId);
+        Member member = searchMember(username);
+
+        validateNestingLevel(request.getParentId());
+
+        Comment saved = commentRepository.save(Comment.createComment(request.getParentId(), request.getContent(), board, member));
         board.increaseCommentCount();
         boardRepository.save(board);
         return CommentResponse.from(saved);
+    }
+
+    private void validateNestingLevel(Long parentId) {
+        if (parentId != null) {
+            Comment parentComment = searchComment(parentId);
+            parentComment.validateNestingLevel(parentComment);
+        }
     }
 
     private Member searchMember(String username) {
@@ -61,7 +93,15 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId) {
         Comment comment = searchComment(commentId);
-        comment.deleteComment(commentId);
+        comment.softDelete();
         comment.getBoard().decreaseCommentCount();
+        deleteChildComments(commentId, comment.getBoard());
+    }
+
+    private void deleteChildComments(Long parentId, Board board) {
+        commentRepository.findByParentIdAndNotDeleted(parentId).forEach(child -> {
+            child.softDelete();
+            board.decreaseCommentCount();
+        });
     }
 }
