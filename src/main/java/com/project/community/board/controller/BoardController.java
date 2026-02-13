@@ -15,9 +15,8 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,8 +42,13 @@ public class BoardController {
     @Operation(summary = "모든 게시물 조회",
             description = "정렬 타입에 따라 모든 게시물을 조회합니다")
     public ResponseEntity<Page<BoardResponse>> findAll(
+            @Parameter(description = "정렬 방식 (LATEST, OLDEST, HOT, VIEWCOUNT, LIKECOUNT, COMMENTCOUNT)")
             @RequestParam(defaultValue = "latest") String sort,
-            @PageableDefault(size = 15) Pageable pageable) {
+            @Parameter(description = "페이지 번호 (0부터 시작)")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기")
+            @RequestParam(defaultValue = "15") int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(boardService.searchAll(sort, pageable));
     }
 
@@ -53,7 +57,11 @@ public class BoardController {
             description = "제목 / 내용 / 작성자 / 제목 + 내용 으로 게시물을 검색합니다")
     public ResponseEntity<Page<BoardResponse>> search(
             @ParameterObject BoardSearchRequest request,
-            @PageableDefault(size = 15, sort = "createTime", direction = Sort.Direction.DESC) Pageable pageable) {
+            @Parameter(description = "페이지 번호 (0부터 시작)")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기")
+            @RequestParam(defaultValue = "15") int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(boardService.searchBoard(request, pageable));
     }
 
@@ -82,13 +90,13 @@ public class BoardController {
             @Parameter(description = "수정할 게시글 번호")
             @PathVariable Long boardId,
             @Parameter(description = "수정할 상세 내용")
-            @RequestBody BoardUpdateRequest requestDTO,
+            @RequestBody BoardUpdateRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         if (userDetails == null) {
             throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(boardService.updateBoard(boardId, requestDTO, userDetails.getUsername()));
+        return ResponseEntity.ok(boardService.updateBoard(boardId, request, userDetails.getUsername()));
     }
 
     @DeleteMapping("/{boardId}")
@@ -98,6 +106,6 @@ public class BoardController {
             @Parameter(description = "삭제할 게시글 번호")
             @PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

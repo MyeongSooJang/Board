@@ -25,7 +25,7 @@ public class BoardLikeService {
     public BoardLikeResponse getStatus(Long boardId, String username) {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        Board board = boardRepository.findById(boardId)
+        Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
 
         Optional<BoardLike> existing = boardLikeRepository.findByBoardIdAndMemberId(boardId, member.getMemberId());
@@ -38,7 +38,7 @@ public class BoardLikeService {
     public BoardLikeResponse toggleLike(Long boardId, String username) {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        Board board = boardRepository.findById(boardId)
+        Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
 
         Optional<BoardLike> existing = boardLikeRepository.findByBoardIdAndMemberId(boardId, member.getMemberId());

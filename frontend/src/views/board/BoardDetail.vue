@@ -73,7 +73,7 @@ const loadBoard = async () => {
 
 const buildCommentTree = (allComments, parentId = null) => {
   return allComments
-    .filter(c => c.commentParentId === parentId)
+    .filter(c => c.parentId === parentId)
     .map(comment => ({
       ...comment,
       children: buildCommentTree(allComments, comment.commentId)
@@ -84,7 +84,7 @@ const buildCommentTree = (allComments, parentId = null) => {
 const loadComments = async () => {
   try {
     const response = await commentApi.getList(boardId.value)
-    const allComments = response.data || []
+    const allComments = response.data.content || []
 
     console.log('📌 전체 댓글 데이터:', allComments)
 
@@ -113,7 +113,7 @@ const handleAddComment = async () => {
   isSubmittingComment.value = true
 
   try {
-    await commentApi.create(boardId.value, commentContent.value, currentMemberId.value)
+    await commentApi.create(boardId.value, commentContent.value)
     commentContent.value = ''
     loadComments()
   } catch (err) {
@@ -146,7 +146,7 @@ const handleAddReply = async (parentCommentId) => {
   isSubmittingReply.value = true
 
   try {
-    await commentApi.create(boardId.value, replyContent.value, currentMemberId.value, parentCommentId)
+    await commentApi.create(boardId.value, replyContent.value, parentCommentId)
     replyContent.value = ''
     replyingToCommentId.value = null
     loadComments()
@@ -159,7 +159,7 @@ const handleAddReply = async (parentCommentId) => {
 
 const handleEditCommentClick = (comment) => {
   editingCommentId.value = comment.commentId
-  editCommentContent.value = comment.commentContent
+  editCommentContent.value = comment.content
   isEditingComment.value = true
 }
 

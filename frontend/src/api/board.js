@@ -2,15 +2,15 @@ import client from './client'
 
 export const boardApi = {
   // 게시판 목록 조회 (페이징)
-  getList: (page = 0, size = 10, sort = 'createTime,desc') =>
-    client.get('/boards', { params: { page, size, sort } }),
+  getList: (page = 0, size = 15, sort = 'latest') =>
+    client.get('/boards', { params: { sort, page, size } }),
 
   // 게시물 상세 조회
   getDetail: (boardId) =>
     client.get(`/boards/${boardId}`),
 
   // 통합 검색 (제목, 내용, 제목+내용, 작성자)
-  search: (searchType, query, page = 0, size = 10, sort = 'createTime,desc') =>
+  search: (searchType, query, page = 0, size = 15) =>
     client.get('/boards/search', {
       params: {
         searchType,
@@ -19,8 +19,7 @@ export const boardApi = {
         ...(searchType === 'TITLE_AND_CONTENT' && { keyword: query }),
         ...(searchType === 'WRITER' && { writer: query }),
         page,
-        size,
-        sort
+        size
       }
     }),
 
