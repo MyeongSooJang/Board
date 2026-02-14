@@ -1,5 +1,8 @@
 package com.project.community.board.dto;
 
+import lombok.Getter;
+
+@Getter
 public enum SortType {
     LATEST("latest"),
     OLDEST("oldest"),
@@ -14,7 +17,12 @@ public enum SortType {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
+    public static SortType fromSort(String sort) {
+        for (SortType sortType : values()) {
+            if (sortType.value.equalsIgnoreCase(sort)) {
+                return sortType;
+            }
+        }
+        return LATEST;
     }
 }

@@ -30,7 +30,7 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     public Page<BoardResponse> searchAll(String sort, Pageable pageable) {
-        SortType sortType = parseSortType(sort);
+        SortType sortType = SortType.fromSort(sort);
         Page<Board> boards = switch (sortType) {
             case SortType.LATEST -> boardRepository.findLatestBoards(pageable);
             case OLDEST -> boardRepository.findOldestBoards(pageable);
@@ -42,13 +42,6 @@ public class BoardService {
         return covertToDTOPage(boards);
     }
 
-    private SortType parseSortType(String sort) {
-        try {
-            return SortType.valueOf(sort.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return SortType.LATEST;
-        }
-    }
 
     public Page<BoardResponse> searchBoard(BoardSearchRequest request, Pageable pageable) {
         Page<Board> boards =

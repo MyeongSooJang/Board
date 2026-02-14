@@ -9,7 +9,7 @@ jwt:
 
 springdoc:
   swagger-ui:
-    path: /swagger-ui/index.html
+    path: /index.html
     operations-sorter: method
     tags-sorter: alpha
     disable-swagger-default-url: true

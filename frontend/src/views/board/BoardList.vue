@@ -2,13 +2,11 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { boardApi } from '../../api/board'
-import { commentApi } from '../../api/comment'
 
 const router = useRouter()
 const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
 
 const boards = ref([])
-const boardsWithComments = ref([])
 const totalPages = ref(1)
 const currentPage = ref(0)
 const pageSize = ref(10)
@@ -17,7 +15,7 @@ const error = ref('')
 
 const searchType = ref('all')
 const searchQuery = ref('')
-const sortBy = ref('createTime,desc')
+const sortBy = ref('latest')
 
 const loadBoards = async () => {
   isLoading.value = true
@@ -40,47 +38,10 @@ const loadBoards = async () => {
 
     boards.value = response.data.content || response.data
     totalPages.value = response.data.totalPages || 1
-
-    // 댓글 수 로딩
-    await loadCommentCounts()
   } catch (err) {
     error.value = err.response?.data?.message || '게시물을 불러오지 못했습니다'
   } finally {
     isLoading.value = false
-  }
-}
-
-const loadCommentCounts = async () => {
-  if (boards.value.length === 0) {
-    boardsWithComments.value = []
-    return
-  }
-
-  try {
-    const commentPromises = boards.value.map(board =>
-      commentApi.getList(board.boardId)
-        .then(res => ({
-          boardId: board.boardId,
-          count: res.data.length
-        }))
-        .catch(() => ({
-          boardId: board.boardId,
-          count: 0
-        }))
-    )
-
-    const commentCounts = await Promise.all(commentPromises)
-
-    boardsWithComments.value = boards.value.map(board => ({
-      ...board,
-      commentCount: commentCounts.find(c => c.boardId === board.boardId)?.count || 0
-    }))
-  } catch (err) {
-    console.error('댓글 수 로딩 실패:', err)
-    boardsWithComments.value = boards.value.map(board => ({
-      ...board,
-      commentCount: 0
-    }))
   }
 }
 
@@ -209,10 +170,11 @@ onMounted(() => {
     <div class="sort-bar">
       <span class="sort-label">정렬:</span>
       <select v-model="sortBy" @change="handleSort" class="sort-select">
-        <option value="createTime,desc">최신순</option>
-        <option value="boardViewCount,desc">조회수순</option>
-        <option value="boardLikeCount,desc">좋아요순</option>
-        <option value="boardCommentCount,desc">댓글수순</option>
+        <option value="latest">최신순</option>
+        <option value="hot">인기순</option>
+        <option value="viewcount">조회수순</option>
+        <option value="likecount">좋아요순</option>
+        <option value="commentcount">댓글수순</option>
       </select>
     </div>
 
@@ -223,7 +185,7 @@ onMounted(() => {
     <div v-if="isLoading" class="loading">로딩 중...</div>
 
     <!-- 게시글 없음 -->
-    <div v-else-if="boardsWithComments.length === 0" class="no-data">
+    <div v-else-if="boards.length === 0" class="no-data">
       게시물이 없습니다
     </div>
 
@@ -241,7 +203,7 @@ onMounted(() => {
       </thead>
       <tbody>
         <tr
-          v-for="(board, index) in boardsWithComments"
+          v-for="(board, index) in boards"
           :key="board.boardId"
           @click="goToDetail(board.boardId)"
           class="board-row"
@@ -250,8 +212,8 @@ onMounted(() => {
           <td class="col-title">
             <div class="title-wrapper">
               <span class="title-text">{{ board.boardTitle }}</span>
-              <span v-if="board.commentCount > 0" class="comment-count">
-                [{{ board.commentCount }}]
+              <span v-if="board.boardCommentCount > 0" class="comment-count">
+                [{{ board.boardCommentCount }}]
               </span>
               <span v-if="isNewPost(board.createTime || board.updateTime)" class="new-badge">
                 N
