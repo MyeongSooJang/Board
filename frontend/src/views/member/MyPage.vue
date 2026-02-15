@@ -6,7 +6,7 @@ import { boardApi } from '../../api/board'
 
 const router = useRouter()
 
-const memberId = ref(localStorage.getItem('memberId'))
+const username = ref(localStorage.getItem('username'))
 const memberName = ref(localStorage.getItem('memberName') || '')
 
 const userData = ref({
@@ -40,7 +40,7 @@ onMounted(async () => {
 
 const loadUserInfo = async () => {
   try {
-    const response = await memberApi.getById(memberId.value)
+    const response = await memberApi.getByUsername(username.value)
     const member = response.data
 
     userData.value = {
@@ -70,7 +70,7 @@ const loadMyBoards = async () => {
   try {
     // 모든 게시글을 조회한 후 현재 사용자의 게시글만 필터링
     const response = await boardApi.getList(0, 1000)
-    myBoards.value = response.data.content.filter(board => board.memberId == memberId.value)
+    myBoards.value = response.data.content.filter(board => board.memberName == username.value)
   } catch (err) {
     console.error('내 게시글 조회 실패:', err)
   }
@@ -126,7 +126,7 @@ const handleSaveEdit = async () => {
     if (editFormData.value.age) updateData.age = editFormData.value.age
     if (editFormData.value.phone) updateData.phone = editFormData.value.phone
 
-    const response = await memberApi.update(memberId.value, updateData)
+    const response = await memberApi.updateByUsername(username.value, updateData)
 
     // 로컬스토리지 업데이트
     localStorage.setItem('memberName', response.data.name)
@@ -161,13 +161,13 @@ const handleDeleteAccountClick = () => {
 
 const handleDeleteAccount = async () => {
   try {
-    await memberApi.delete(memberId.value)
+    await memberApi.deleteByUsername(username.value)
     alert('계정이 삭제되었습니다.')
 
     // 로그아웃 처리
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
-    localStorage.removeItem('memberId')
+    localStorage.removeItem('username')
     localStorage.removeItem('memberName')
     localStorage.removeItem('role')
 

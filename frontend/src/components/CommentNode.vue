@@ -10,7 +10,7 @@ defineProps({
   editingCommentId: Number,
   editCommentContent: String,
   isEditingComment: Boolean,
-  currentMemberId: String,
+  currentUsername: String,
   isSubmittingReply: Boolean,
   replyContent: String,
   depth: {
@@ -57,14 +57,14 @@ const formatDate = (date) => {
           답글
         </button>
         <button
-          v-if="currentMemberId && currentMemberId == comment.memberId"
+          v-if="currentUsername && currentUsername == comment.memberName"
           @click="emit('edit-click', comment)"
           class="btn-small btn-edit"
         >
           수정
         </button>
         <button
-          v-if="currentMemberId && currentMemberId == comment.memberId"
+          v-if="currentUsername && currentUsername == comment.memberName"
           @click="emit('delete', comment.commentId)"
           class="btn-small btn-danger"
         >
@@ -126,7 +126,7 @@ const formatDate = (date) => {
         :editingCommentId="editingCommentId"
         :editCommentContent="editCommentContent"
         :isEditingComment="isEditingComment"
-        :currentMemberId="currentMemberId"
+        :currentUsername="currentUsername"
         :isSubmittingReply="isSubmittingReply"
         :replyContent="replyContent"
         :depth="depth + 1"

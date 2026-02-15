@@ -27,7 +27,7 @@ const editCommentContent = ref('')
 const isEditingComment = ref(false)
 
 const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
-const currentMemberId = ref(localStorage.getItem('memberId') || '')
+const currentUsername = ref(localStorage.getItem('username') || '')
 
 const boardId = computed(() => route.params.boardId)
 
@@ -317,7 +317,7 @@ onMounted(() => {
           <div class="board-actions">
             <button @click="router.push('/boards')" class="btn btn-secondary">목록</button>
             <button @click="handleReportClick" class="btn btn-report">신고</button>
-            <div v-if="currentMemberId && currentMemberId == board.memberId" class="action-group">
+            <div v-if="currentUsername && currentUsername == board.memberName" class="action-group">
               <button @click="handleEditBoard" class="btn btn-primary">수정</button>
               <button @click="handleDeleteBoard" class="btn btn-danger">삭제</button>
             </div>
@@ -369,7 +369,7 @@ onMounted(() => {
               :editingCommentId="editingCommentId"
               :editCommentContent="editCommentContent"
               :isEditingComment="isEditingComment"
-              :currentMemberId="currentMemberId"
+              :currentUsername="currentUsername"
               :isSubmittingReply="isSubmittingReply"
               :replyContent="replyContent"
               @reply-click="handleReplyClick"

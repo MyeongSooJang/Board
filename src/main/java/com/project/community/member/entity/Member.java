@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import com.project.community.common.BaseEntity;
@@ -61,7 +62,7 @@ public class Member extends BaseEntity {
                 request.getRole());
     }
 
-    public Member updateMember(String encodingPassword, MemberUpdateRequest request) {
+    public Member update(String encodingPassword, MemberUpdateRequest request) {
         if (request.getName() != null && !request.getName().isEmpty()) {
             this.name = request.getName();
         }
@@ -75,5 +76,9 @@ public class Member extends BaseEntity {
             this.phone = request.getPhone();
         }
         return this;
+    }
+
+    public void softDelete() {
+        this.deleteTime = LocalDateTime.now();
     }
 }

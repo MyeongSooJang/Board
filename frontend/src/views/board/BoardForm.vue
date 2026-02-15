@@ -57,11 +57,11 @@ const handleSubmit = async () => {
       )
       alert('게시물이 수정되었습니다')
     } else {
-      const memberId = localStorage.getItem('memberId')
+      const username = localStorage.getItem('username')
       const response = await boardApi.create(
         formData.value.boardTitle,
         formData.value.boardContent,
-        memberId
+        username
       )
       alert('게시물이 작성되었습니다')
       boardId.value = response.data.boardId

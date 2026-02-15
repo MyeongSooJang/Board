@@ -2,6 +2,7 @@ package com.project.community.member.service;
 
 import static com.project.community.member.entity.Member.createMember;
 
+import com.project.community.exception.NotFoundException;
 import com.project.community.member.dto.MemberCreateRequest;
 import com.project.community.member.dto.MemberResponse;
 import com.project.community.member.dto.MemberUpdateRequest;
@@ -9,7 +10,7 @@ import com.project.community.member.entity.Member;
 import com.project.community.member.repository.MemberRepository;
 import com.project.community.exception.DuplicateException;
 import com.project.community.exception.dto.ErrorCode;
-import java.util.NoSuchElementException;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,13 +51,8 @@ public class MemberService {
         }
     }
 
-    public MemberResponse findByMemberId(Long memberId) {
-        return MemberResponse.from(searchByMemberId(memberId));
-    }
-
     public MemberResponse findByUsername(String username) {
-        Member member = memberRepository.findByUsername(username)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 아이디의 회원이 존재하지 않습니다"));
+        Member member = searchMember(username);
         return MemberResponse.from(member);
     }
 
@@ -65,23 +61,31 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponse updateMember(Long memberId, MemberUpdateRequest request) {
-        String encodingPassword = null;
-        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
-            encodingPassword = encodePassword(request.getPassword());
-        }
-        Member updated = searchByMemberId(memberId).updateMember(encodingPassword, request);
+    public MemberResponse updateInfo(String username, MemberUpdateRequest request) {
+        String encodingPassword = encodePassword(request);
+        Member member = searchMember(username);
+
+        Member updated = member.update(encodingPassword, request);
         return MemberResponse.from(updated);
     }
 
-    @Transactional
-    public void deleteMember(Long memberId) {
-        memberRepository.delete(searchByMemberId(memberId));
+    private String encodePassword(MemberUpdateRequest request) {
+        String encodingPassword = request.getPassword();
+        if (encodingPassword != null && !encodingPassword.isEmpty()) {
+            encodePassword(request.getPassword());
+        }
+        return encodingPassword;
     }
 
-    private Member searchByMemberId(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다"));
+    private Member searchMember(String username) {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    @Transactional
+    public void deleteMemberByUsername(String username) {
+        Member member = searchMember(username);
+        member.softDelete();
     }
 
     private String encodePassword(String password) {

@@ -28,12 +28,12 @@ const handleLogin = async () => {
       formData.value.password
     )
 
-    const { accessToken, refreshToken, memberId, memberName, role } = response.data
+    const { accessToken, refreshToken, username, memberName, role } = response.data
 
     // 토큰 저장
     localStorage.setItem('accessToken', accessToken)
     localStorage.setItem('refreshToken', refreshToken)
-    localStorage.setItem('memberId', memberId)
+    localStorage.setItem('username', username)
     localStorage.setItem('memberName', memberName)
     localStorage.setItem('role', role)
 

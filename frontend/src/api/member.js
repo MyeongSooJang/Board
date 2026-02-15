@@ -21,11 +21,19 @@ export const memberApi = {
   getById: (memberId) =>
     client.get(`/member/${memberId}`),
 
-  // 회원 정보 수정
+  // 회원 정보 수정 (ID로)
   update: (memberId, data) =>
     client.put(`/member/${memberId}`, data),
 
-  // 회원 삭제
+  // 회원 정보 수정 (username으로)
+  updateByUsername: (username, data) =>
+    client.put(`/member/by-username/${username}`, data),
+
+  // 회원 삭제 (ID로)
   delete: (memberId) =>
-    client.delete(`/member/${memberId}`)
+    client.delete(`/member/${memberId}`),
+
+  // 회원 삭제 (username으로)
+  deleteByUsername: (username) =>
+    client.delete(`/member/by-username/${username}`)
 }

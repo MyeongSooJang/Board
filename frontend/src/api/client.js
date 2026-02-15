@@ -69,8 +69,9 @@ client.interceptors.response.use(
               isLoggingOut = true
               localStorage.removeItem('accessToken')
               localStorage.removeItem('refreshToken')
-              localStorage.removeItem('memberId')
+              localStorage.removeItem('username')
               localStorage.removeItem('memberName')
+              localStorage.removeItem('role')
               alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
               window.location.href = '/login'
             }
@@ -82,8 +83,9 @@ client.interceptors.response.use(
           isLoggingOut = true
           localStorage.removeItem('accessToken')
           localStorage.removeItem('refreshToken')
-          localStorage.removeItem('memberId')
+          localStorage.removeItem('username')
           localStorage.removeItem('memberName')
+          localStorage.removeItem('role')
           alert('로그인이 만료되었습니다. 다시 로그인해주세요.')
           window.location.href = '/login'
         }

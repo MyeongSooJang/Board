@@ -29,12 +29,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.enrollMember(request));
     }
 
-    @GetMapping("/{memberId}")
-    public ResponseEntity<MemberResponse> findByMemberId(@PathVariable Long memberId) {
-        return ResponseEntity.ok(memberService.findByMemberId(memberId));
-    }
-
-    @GetMapping("/by-username/{username}")
+    @GetMapping("/{username}")
     public ResponseEntity<MemberResponse> findByUsername(@PathVariable String username) {
         return ResponseEntity.ok(memberService.findByUsername(username));
     }
@@ -44,15 +39,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.findAll(pageable));
     }
 
-    @PutMapping("/{memberId}")
-    public ResponseEntity<MemberResponse> updateMember(@PathVariable Long memberId,
+    @PutMapping("/{username}")
+    public ResponseEntity<MemberResponse> updateMember(@PathVariable String username,
                                                        @Valid @RequestBody MemberUpdateRequest request) {
-        return ResponseEntity.ok(memberService.updateMember(memberId, request));
+        return ResponseEntity.ok(memberService.updateInfo(username, request));
     }
 
-    @DeleteMapping("/{memberId}")
-    public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
-        memberService.deleteMember(memberId);
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> deleteMember(@PathVariable String username) {
+        memberService.deleteMemberByUsername(username);
         return ResponseEntity.noContent().build();
     }
 }

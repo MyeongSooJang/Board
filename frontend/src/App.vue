@@ -7,7 +7,7 @@ const router = useRouter()
 
 const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
 const memberName = ref(localStorage.getItem('memberName') || '')
-const memberId = ref(localStorage.getItem('memberId') || '')
+const username = ref(localStorage.getItem('username') || '')
 const isAdmin = ref(localStorage.getItem('role') === 'ADMIN')
 
 const searchType = ref('title')
@@ -16,7 +16,7 @@ const searchQuery = ref('')
 const updateAuthState = () => {
   isLoggedIn.value = !!localStorage.getItem('accessToken')
   memberName.value = localStorage.getItem('memberName') || ''
-  memberId.value = localStorage.getItem('memberId') || ''
+  username.value = localStorage.getItem('username') || ''
   isAdmin.value = localStorage.getItem('role') === 'ADMIN'
 }
 
@@ -32,12 +32,12 @@ const handleLogout = async () => {
   // 로컬스토리지에서 토큰 및 사용자 정보 제거
   localStorage.removeItem('accessToken')
   localStorage.removeItem('refreshToken')
-  localStorage.removeItem('memberId')
+  localStorage.removeItem('username')
   localStorage.removeItem('memberName')
   localStorage.removeItem('role')
   isLoggedIn.value = false
   memberName.value = ''
-  memberId.value = ''
+  username.value = ''
   isAdmin.value = false
   router.push('/')
 }
@@ -117,7 +117,7 @@ window.addEventListener('storage', () => {
           <template v-if="isLoggedIn">
             <div class="user-info">
               <button class="mypage-btn" @click="goToMyPage" title="마이페이지">
-                👤 {{ memberName || memberId }}
+                👤 {{ memberName || username }}
               </button>
               <template v-if="isAdmin">
                 <router-link to="/admin/reports" class="admin-link">

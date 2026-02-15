@@ -5,7 +5,7 @@ import { memberApi } from '../../api/member'
 
 const router = useRouter()
 
-const memberId = ref(localStorage.getItem('memberId'))
+const username = ref(localStorage.getItem('username'))
 const formData = ref({
   name: '',
   password: '',
@@ -22,7 +22,7 @@ const isDeleteConfirmOpen = ref(false)
 onMounted(async () => {
   // 현재 사용자 정보 조회
   try {
-    const response = await memberApi.getById(memberId.value)
+    const response = await memberApi.getByUsername(username.value)
     const member = response.data
 
     formData.value = {
@@ -82,7 +82,7 @@ const handleSubmit = async () => {
     if (formData.value.age) updateData.age = formData.value.age
     if (formData.value.phone) updateData.phone = formData.value.phone
 
-    const response = await memberApi.update(memberId.value, updateData)
+    const response = await memberApi.updateByUsername(username.value, updateData)
 
     // 로컬스토리지의 회원명 업데이트
     localStorage.setItem('memberName', response.data.name)
@@ -112,13 +112,13 @@ const handleDeleteAccountClick = () => {
 
 const handleDeleteAccount = async () => {
   try {
-    await memberApi.delete(memberId.value)
+    await memberApi.deleteByUsername(username.value)
     alert('계정이 삭제되었습니다.')
 
     // 로그아웃 처리
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
-    localStorage.removeItem('memberId')
+    localStorage.removeItem('username')
     localStorage.removeItem('memberName')
     localStorage.removeItem('role')
 

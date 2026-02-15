@@ -25,8 +25,8 @@ export const boardApi = {
     }),
 
   // 게시물 작성
-  create: (boardTitle, boardContent, memberId) =>
-    client.post('/boards', { boardTitle, boardContent, memberId }),
+  create: (boardTitle, boardContent, username) =>
+    client.post('/boards', { boardTitle, boardContent, username }),
 
   // 게시물 수정
   update: (boardId, boardTitle, boardContent) =>
