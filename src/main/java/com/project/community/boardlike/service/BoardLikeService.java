@@ -23,7 +23,7 @@ public class BoardLikeService {
     private final MemberRepository memberRepository;
 
     public BoardLikeResponse getStatus(Long boardId, String username) {
-        Member member = memberRepository.findByUsername(username)
+        Member member = memberRepository.findByUsernameAndDeleteTimeIsNull(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
@@ -36,7 +36,7 @@ public class BoardLikeService {
 
     @Transactional
     public BoardLikeResponse toggleLike(Long boardId, String username) {
-        Member member = memberRepository.findByUsername(username)
+        Member member = memberRepository.findByUsernameAndDeleteTimeIsNull(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));

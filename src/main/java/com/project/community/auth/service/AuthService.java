@@ -55,8 +55,8 @@ public class AuthService {
     }
 
     private Member searchByIdAndEmail(String usernameOrEmail) {
-        return memberRepository.findByUsername(usernameOrEmail)
-                .or(() -> memberRepository.findByEmail(usernameOrEmail))
+        return memberRepository.findByUsernameAndDeleteTimeIsNull(usernameOrEmail)
+                .or(() -> memberRepository.findByEmailAndDeleteTimeIsNull(usernameOrEmail))
                 .orElseThrow(() -> new UsernameNotFoundException("아이디 또는 이메일이 없습니다."));
     }
 

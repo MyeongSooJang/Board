@@ -56,7 +56,7 @@ public class CommentLikeService {
     }
 
     private Member searchMember(String username) {
-        return memberRepository.findByUsername(username)
+        return memberRepository.findByUsernameAndDeleteTimeIsNull(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 

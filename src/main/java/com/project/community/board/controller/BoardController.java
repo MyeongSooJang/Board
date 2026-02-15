@@ -77,8 +77,10 @@ public class BoardController {
     @PostMapping
     @Operation(summary = "게시글 작성",
             description = "새로운 게시글 작성")
-    public ResponseEntity<BoardResponse> createBoard(@RequestBody BoardCreateRequest board) {
-        Long boardId = boardService.createBoard(board);
+    public ResponseEntity<BoardResponse> createBoard(
+            @RequestBody BoardCreateRequest board,
+            @AuthenticationPrincipal String username) {
+        Long boardId = boardService.createBoard(board,username);
         BoardResponse response = boardService.searchByBoardId(boardId);
         return ResponseEntity.created(URI.create("/boards/" + boardId)).body(response);
     }

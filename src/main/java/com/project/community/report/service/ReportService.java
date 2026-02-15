@@ -33,7 +33,7 @@ public class ReportService {
     private final CommentRepository commentRepository;
 
     public ReportResponse submitReport(ReportRequest request, String username) {
-        Member member = memberRepository.findByUsername(username)
+        Member member = memberRepository.findByUsernameAndDeleteTimeIsNull(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         Board board = boardRepository.findById(request.getBoardId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
@@ -44,7 +44,7 @@ public class ReportService {
     }
 
     public ReportResponse reportComment(Long commentId, ReportRequest request, String username) {
-        Member member = memberRepository.findByUsername(username)
+        Member member = memberRepository.findByUsernameAndDeleteTimeIsNull(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));

@@ -70,7 +70,7 @@ const loadMyBoards = async () => {
   try {
     // 모든 게시글을 조회한 후 현재 사용자의 게시글만 필터링
     const response = await boardApi.getList(0, 1000)
-    myBoards.value = response.data.content.filter(board => board.memberName == username.value)
+    myBoards.value = response.data.content.filter(board => board.memberName == memberName.value)
   } catch (err) {
     console.error('내 게시글 조회 실패:', err)
   }

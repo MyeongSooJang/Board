@@ -68,10 +68,14 @@ public class BoardService {
     }
 
     @Transactional
-    public Long createBoard(BoardCreateRequest board) {
-        Member member = memberRepository.findById(board.getMemberId())
+    public Long createBoard(BoardCreateRequest request, String username) {
+        Member member = searchMember(username);
+        return boardRepository.save(Board.createBoard(request.getBoardTitle(),request.getBoardTitle(),member)).getBoardId();
+    }
+
+    private Member searchMember(String username) {
+        return memberRepository.findByUsernameAndDeleteTimeIsNull(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        return boardRepository.save(Board.createBoard(board, member)).getBoardId();
     }
 
     @Transactional

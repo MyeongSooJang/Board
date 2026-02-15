@@ -62,23 +62,21 @@ public class MemberService {
 
     @Transactional
     public MemberResponse updateInfo(String username, MemberUpdateRequest request) {
-        String encodingPassword = encodePassword(request);
+        String encodingPassword = encodePassword(request.getPassword());
         Member member = searchMember(username);
-
         Member updated = member.update(encodingPassword, request);
         return MemberResponse.from(updated);
     }
 
-    private String encodePassword(MemberUpdateRequest request) {
-        String encodingPassword = request.getPassword();
-        if (encodingPassword != null && !encodingPassword.isEmpty()) {
-            encodePassword(request.getPassword());
+    private String encodePassword(String password) {
+        if (password != null && !password.isEmpty()) {
+            return passwordEncoder.encode(password);
         }
-        return encodingPassword;
+        return null;
     }
 
     private Member searchMember(String username) {
-        return memberRepository.findByUsername(username)
+        return memberRepository.findByUsernameAndDeleteTimeIsNull(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
@@ -88,7 +86,4 @@ public class MemberService {
         member.softDelete();
     }
 
-    private String encodePassword(String password) {
-        return passwordEncoder.encode(password);
-    }
 }

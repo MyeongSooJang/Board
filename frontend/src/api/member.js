@@ -13,27 +13,15 @@ export const memberApi = {
       role
     }),
 
-  // 회원 정보 조회 (ID로)
+  // 회원 정보 조회
   getByUsername: (username) =>
-    client.get(`/member/by-username/${username}`),
+    client.get(`/member/${username}`),
 
-  // 회원 정보 조회 (PK로)
-  getById: (memberId) =>
-    client.get(`/member/${memberId}`),
-
-  // 회원 정보 수정 (ID로)
-  update: (memberId, data) =>
-    client.put(`/member/${memberId}`, data),
-
-  // 회원 정보 수정 (username으로)
+  // 회원 정보 수정
   updateByUsername: (username, data) =>
-    client.put(`/member/by-username/${username}`, data),
+    client.put(`/member/${username}`, data),
 
-  // 회원 삭제 (ID로)
-  delete: (memberId) =>
-    client.delete(`/member/${memberId}`),
-
-  // 회원 삭제 (username으로)
+  // 회원 삭제
   deleteByUsername: (username) =>
-    client.delete(`/member/by-username/${username}`)
+    client.delete(`/member/${username}`)
 }

@@ -8,5 +8,4 @@ import lombok.Getter;
 public class BoardCreateRequest {
     private String boardTitle;
     private String boardContent;
-    private Long memberId;
 }

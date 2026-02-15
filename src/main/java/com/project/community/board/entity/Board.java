@@ -39,8 +39,8 @@ public class Board extends BaseEntity {
         this.member = member;
     }
 
-    public static Board createBoard(BoardCreateRequest board, Member member) {
-        return new Board(board.getBoardTitle(), board.getBoardContent(), member);
+    public static Board createBoard(String title, String content, Member member) {
+        return new Board(title,content,member);
     }
 
     public void updateBoard(BoardUpdateRequest updateBoard) {
