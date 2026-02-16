@@ -35,6 +35,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(404, "회원을 찾을 수 없습니다"),
     COMMENT_NOT_FOUND(404, "댓글을 찾을 수 없습니다"),
     REPORT_NOT_FOUND(404,"신고를 찾을 수 없습니다"),
+    BOOKMARK_NOT_FOUND(404, "북마크를 찾을 수 없습니다"),
 
     // 비지니스 로직 오류 409
     DUPLICATE_MEMBER_ID(409, "이미 존재하는 아이디입니다"),

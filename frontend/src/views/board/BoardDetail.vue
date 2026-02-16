@@ -5,6 +5,7 @@ import { boardApi } from '../../api/board'
 import { commentApi } from '../../api/comment'
 import ReportModal from '../../components/ReportModal.vue'
 import CommentNode from '../../components/CommentNode.vue'
+import BookmarkButton from '../../components/BookmarkButton.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -81,6 +82,25 @@ const buildCommentTree = (allComments, parentId = null) => {
     .sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
 }
 
+// 댓글 트리의 모든 댓글 개수를 계산 (대댓글 포함)
+const calculateTotalCommentCount = (commentTree) => {
+  let count = 0
+  const countRecursive = (comments) => {
+    comments.forEach(comment => {
+      count++
+      if (comment.children && comment.children.length > 0) {
+        countRecursive(comment.children)
+      }
+    })
+  }
+  countRecursive(commentTree)
+  return count
+}
+
+const totalCommentCount = computed(() => {
+  return calculateTotalCommentCount(comments.value)
+})
+
 const loadComments = async () => {
   try {
     const response = await commentApi.getList(boardId.value)
@@ -92,7 +112,8 @@ const loadComments = async () => {
     comments.value = buildCommentTree(allComments, null)
 
     console.log('📌 정렬된 댓글:', comments.value)
-    console.log('📌 총 원댓글 수:', comments.value.length)
+    console.log('📌 원댓글 수:', comments.value.length)
+    console.log('📌 전체 댓글 수(대댓글 포함):', calculateTotalCommentCount(comments.value))
   } catch (err) {
     console.error('댓글 로드 실패:', err)
   }
@@ -312,6 +333,7 @@ onMounted(() => {
             >
               {{ liked ? '❤️' : '🤍' }} {{ likeCount }}
             </button>
+            <BookmarkButton :boardId="Number(boardId)" :isLoggedIn="isLoggedIn" />
             <span>{{ formatDate(board.updateTime) }}</span>
           </div>
           <div class="board-actions">
@@ -332,7 +354,7 @@ onMounted(() => {
 
       <!-- 댓글 섹션 -->
       <div class="comments-section">
-        <h3>댓글 ({{ comments.length }})</h3>
+        <h3>댓글 ({{ totalCommentCount }})</h3>
 
         <!-- 댓글 작성 폼 -->
         <div v-if="isLoggedIn" class="comment-form">
@@ -356,7 +378,7 @@ onMounted(() => {
         </div>
 
         <!-- 댓글 목록 -->
-        <div v-if="comments.length === 0" class="no-comments">
+        <div v-if="totalCommentCount === 0" class="no-comments">
           댓글이 없습니다
         </div>
 

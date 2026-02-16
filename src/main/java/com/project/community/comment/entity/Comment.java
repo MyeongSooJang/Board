@@ -3,7 +3,6 @@ package com.project.community.comment.entity;
 import com.project.community.board.entity.Board;
 import com.project.community.common.BaseEntity;
 import com.project.community.exception.UnauthorizedException;
-import com.project.community.exception.ValidationException;
 import com.project.community.exception.dto.ErrorCode;
 import com.project.community.member.entity.Member;
 import jakarta.persistence.Column;
@@ -71,9 +70,4 @@ public class Comment extends BaseEntity {
         }
     }
 
-    public void validateNestingLevel(Comment parentComment) {
-        if (parentComment != null && parentComment.getParentId() != null) {
-            throw new ValidationException(ErrorCode.VALIDATION_ERROR);
-        }
-    }
 }

@@ -1,5 +1,6 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS bookmark;
 DROP TABLE IF EXISTS board_file; -- board 참조
 DROP TABLE IF EXISTS report; -- member, board, comment 참조
 DROP TABLE IF EXISTS comment_like; -- comment 참조
@@ -66,15 +67,15 @@ CREATE TABLE board_like
 -- Comment 테이블
 CREATE TABLE comment
 (
-    comment_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    parent_id    BIGINT,
-    content      TEXT      NOT NULL,
-    board_id     BIGINT    NOT NULL,
-    member_id    BIGINT    NOT NULL,
-    like_count   BIGINT    NOT NULL DEFAULT 0,
-    create_time  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    delete_time  TIMESTAMP NULL,
+    comment_id  BIGINT AUTO_INCREMENT PRIMARY KEY,
+    parent_id   BIGINT,
+    content     TEXT      NOT NULL,
+    board_id    BIGINT    NOT NULL,
+    member_id   BIGINT    NOT NULL,
+    like_count  BIGINT    NOT NULL DEFAULT 0,
+    create_time TIMESTAMP          DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP          DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    delete_time TIMESTAMP NULL,
     FOREIGN KEY (board_id) REFERENCES board (board_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id),
     FOREIGN KEY (parent_id) REFERENCES comment (comment_id),
@@ -131,6 +132,24 @@ CREATE TABLE report
     FOREIGN KEY (comment_id) REFERENCES comment (comment_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
+
+-- Bookmark 테이블
+CREATE TABLE bookmark
+(
+    mark_id       BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id     BIGINT NOT NULL,
+    board_id      BIGINT NOT NULL,
+    create_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    delete_time   TIMESTAMP NULL,
+    UNIQUE KEY uk_bookmark (member_id, board_id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    FOREIGN KEY (board_id) REFERENCES board (board_id),
+    INDEX idx_bookmark_member (member_id),
+    INDEX idx_bookmark_delete (delete_time)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
 
 -- BoardFile
 

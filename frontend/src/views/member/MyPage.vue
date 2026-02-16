@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { memberApi } from '../../api/member'
 import { boardApi } from '../../api/board'
+import { bookmarkApi } from '../../api/bookmark'
 
 const router = useRouter()
 
@@ -27,6 +28,10 @@ const editFormData = ref({
 })
 
 const myBoards = ref([])
+const myBookmarks = ref([])
+const bookmarkPage = ref(0)
+const bookmarkPageSize = ref(10)
+const bookmarkTotalPages = ref(0)
 const errors = ref({})
 const isLoading = ref(false)
 const isDeleteConfirmOpen = ref(false)
@@ -73,6 +78,45 @@ const loadMyBoards = async () => {
     myBoards.value = response.data.content.filter(board => board.memberName == memberName.value)
   } catch (err) {
     console.error('내 게시글 조회 실패:', err)
+  }
+}
+
+const loadMyBookmarks = async () => {
+  try {
+    const response = await bookmarkApi.getMyBookmarks(bookmarkPage.value, bookmarkPageSize.value)
+    myBookmarks.value = response.data.content || []
+    bookmarkTotalPages.value = response.data.totalPages || 0
+  } catch (err) {
+    console.error('북마크 조회 실패:', err)
+  }
+}
+
+const handleDeleteBookmark = async (boardId) => {
+  if (!confirm('북마크를 삭제하시겠습니까?')) return
+
+  try {
+    await bookmarkApi.deleteBookmark(boardId)
+    await loadMyBookmarks()
+  } catch (err) {
+    alert(err.response?.data?.message || '북마크 삭제에 실패했습니다')
+  }
+}
+
+const goToBookmarkedBoard = (boardId) => {
+  router.push(`/boards/${boardId}`)
+}
+
+const goToNextBookmarkPage = () => {
+  if (bookmarkPage.value < bookmarkTotalPages.value - 1) {
+    bookmarkPage.value++
+    loadMyBookmarks()
+  }
+}
+
+const goToPreviousBookmarkPage = () => {
+  if (bookmarkPage.value > 0) {
+    bookmarkPage.value--
+    loadMyBookmarks()
   }
 }
 
@@ -230,6 +274,13 @@ const formatDate = (date) => {
           </button>
           <button
             class="menu-item"
+            :class="{ active: activeTab === 'bookmarks' }"
+            @click="() => { activeTab = 'bookmarks'; loadMyBookmarks() }"
+          >
+            📌 북마크
+          </button>
+          <button
+            class="menu-item"
             :class="{ active: activeTab === 'delete' }"
             @click="activeTab = 'delete'"
           >
@@ -383,6 +434,79 @@ const formatDate = (date) => {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- 북마크 섹션 -->
+      <div v-if="activeTab === 'bookmarks'" class="bookmarks-section">
+        <div class="section-header">
+          <h2>저장한 북마크</h2>
+        </div>
+
+        <div v-if="myBookmarks.length === 0" class="no-bookmarks">
+          저장한 북마크가 없습니다.
+        </div>
+
+        <table v-else class="bookmark-table">
+          <thead>
+            <tr>
+              <th class="col-title">제목</th>
+              <th class="col-author">작성자</th>
+              <th class="col-date">작성일</th>
+              <th class="col-view">조회</th>
+              <th class="col-like">좋아요</th>
+              <th class="col-saved">저장일</th>
+              <th class="col-action">삭제</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="bookmark in myBookmarks"
+              :key="bookmark.markId"
+              @click="goToBookmarkedBoard(bookmark.boardId)"
+              class="bookmark-row"
+            >
+              <td class="col-title">{{ bookmark.boardTitle }}</td>
+              <td class="col-author">{{ bookmark.memberName }}</td>
+              <td class="col-date">{{ formatDate(bookmark.createTime) }}</td>
+              <td class="col-view">{{ bookmark.viewCount || 0 }}</td>
+              <td class="col-like">
+                <span v-if="bookmark.likeCount > 0">❤️ {{ bookmark.likeCount }}</span>
+                <span v-else>-</span>
+              </td>
+              <td class="col-saved">{{ formatDate(bookmark.bookmarkedAt) }}</td>
+              <td class="col-action">
+                <button
+                  @click.stop="handleDeleteBookmark(bookmark.boardId)"
+                  class="btn-delete-small"
+                  title="북마크 삭제"
+                >
+                  ✕
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 페이지네이션 -->
+        <div v-if="bookmarkTotalPages > 1" class="pagination">
+          <button
+            @click="goToPreviousBookmarkPage"
+            :disabled="bookmarkPage === 0"
+            class="btn-paging"
+          >
+            ← 이전
+          </button>
+          <span class="page-info">
+            {{ bookmarkPage + 1 }} / {{ bookmarkTotalPages }}
+          </span>
+          <button
+            @click="goToNextBookmarkPage"
+            :disabled="bookmarkPage === bookmarkTotalPages - 1"
+            class="btn-paging"
+          >
+            다음 →
+          </button>
+        </div>
       </div>
 
       <!-- 계정 삭제 섹션 -->
@@ -727,6 +851,150 @@ const formatDate = (date) => {
   font-size: 0.9rem;
 }
 
+.bookmarks-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.no-bookmarks {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+  font-size: 1rem;
+}
+
+.bookmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.bookmark-table thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.bookmark-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.bookmark-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+}
+
+.bookmark-table tbody tr {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bookmark-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.bookmark-row:hover {
+  background-color: #f0f8ff;
+}
+
+.col-title {
+  width: 35%;
+}
+
+.col-author {
+  width: 15%;
+  font-size: 0.9rem;
+}
+
+.col-date {
+  width: 13%;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.col-view {
+  width: 8%;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.col-like {
+  width: 8%;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.col-saved {
+  width: 13%;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.col-action {
+  width: 8%;
+  text-align: center;
+}
+
+.btn-delete-small {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-delete-small:hover {
+  background: #c0392b;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-paging {
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-paging:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.btn-paging:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
+  min-width: 60px;
+  text-align: center;
+}
+
 .danger-section {
   background-color: #fff5f5;
   border: 2px solid #ffcccb;
@@ -890,6 +1158,21 @@ const formatDate = (date) => {
 
   .user-info-display {
     grid-template-columns: 1fr;
+  }
+
+  .bookmark-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-delete-bookmark {
+    align-self: flex-end;
+    margin-top: -2rem;
+  }
+
+  .bookmark-meta {
+    font-size: 0.85rem;
+    gap: 0.5rem;
   }
 
   .section-header {

@@ -55,19 +55,10 @@ public class CommentService {
         Board board = searchBoard(boardId);
         Member member = searchMember(username);
 
-        validateNestingLevel(request.getParentId());
-
         Comment saved = commentRepository.save(Comment.createComment(request.getParentId(), request.getContent(), board, member));
         board.increaseCommentCount();
         boardRepository.save(board);
         return CommentResponse.from(saved);
-    }
-
-    private void validateNestingLevel(Long parentId) {
-        if (parentId != null) {
-            Comment parentComment = searchComment(parentId);
-            parentComment.validateNestingLevel(parentComment);
-        }
     }
 
     private Member searchMember(String username) {

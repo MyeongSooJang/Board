@@ -137,6 +137,8 @@ const formatDate = (date) => {
         @edit-cancel="emit('edit-cancel')"
         @edit-save="emit('edit-save', $event)"
         @delete="emit('delete', $event)"
+        @update:replyContent="emit('update:replyContent', $event)"
+        @update:editCommentContent="emit('update:editCommentContent', $event)"
       />
     </template>
 </template>
