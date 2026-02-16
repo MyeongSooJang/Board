@@ -10,9 +10,23 @@ import java.util.Optional;
 
 @Repository
 public interface BoardLikeRepository extends JpaRepository<BoardLike,Long> {
-    @Query("SELECT b FROM BoardLike b WHERE b.board.boardId = :boardId AND b.member.memberId = :memberId AND b.board.deleteTime IS NULL")
-    Optional<BoardLike> findByBoardIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") Long memberId);
+    // username 기반 조회 (fetch join으로 board, member 포함)
+    @Query("""
+            SELECT b
+            FROM BoardLike b
+            JOIN FETCH b.board board
+            JOIN FETCH b.member member
+            WHERE board.boardId = :boardId AND member.username = :username AND board.deleteTime IS NULL
+            """)
+    Optional<BoardLike> findByBoardIdAndUsername(@Param("boardId") Long boardId, @Param("username") String username);
 
-    @Query("SELECT COUNT(b) FROM BoardLike b WHERE b.board.boardId = :boardId AND b.board.deleteTime IS NULL")
-    Long countByBoardId(@Param("boardId") Long boardId);
+    // memberId 기반 조회 (하위호환성 유지)
+    @Query("""
+            SELECT b
+            FROM BoardLike b
+            JOIN FETCH b.board board
+            JOIN FETCH b.member member
+            WHERE board.boardId = :boardId AND member.memberId = :memberId AND board.deleteTime IS NULL
+            """)
+    Optional<BoardLike> findByBoardIdAndMemberId(@Param("boardId") Long boardId, @Param("memberId") Long memberId);
 }

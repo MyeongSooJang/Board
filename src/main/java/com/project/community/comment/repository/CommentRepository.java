@@ -13,7 +13,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("""
             SELECT c
             FROM Comment c
-            WHERE c.board.boardId = :boardId AND c.deleteTime IS NULL
+            JOIN FETCH c.member m
+            JOIN FETCH c.board b
+            WHERE b.boardId = :boardId AND c.deleteTime IS NULL
             ORDER BY c.createTime DESC
             """)
     Page<Comment> findByBoardIdLatest(Long boardId, Pageable pageable);
@@ -21,7 +23,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("""
             SELECT c
             FROM Comment c
-            WHERE c.board.boardId = :boardId AND c.deleteTime IS NULL
+            JOIN FETCH c.member m
+            JOIN FETCH c.board b
+            WHERE b.boardId = :boardId AND c.deleteTime IS NULL
             ORDER BY c.likeCount DESC, c.createTime DESC
             """)
     Page<Comment> findByBoardIdTop(Long boardId, Pageable pageable);
@@ -29,6 +33,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("""
             SELECT c
             FROM Comment c
+            JOIN FETCH c.member m
+            JOIN FETCH c.board b
             WHERE c.commentId = :commentId AND c.deleteTime IS NULL
             """)
     Optional<Comment> findByCommentId(Long commentId);
@@ -36,7 +42,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("""
             SELECT c
             FROM Comment c
-            WHERE c.board.boardId = :boardId AND c.content LIKE %:keyword% AND c.deleteTime IS NULL
+            JOIN FETCH c.member m
+            JOIN FETCH c.board b
+            WHERE b.boardId = :boardId AND c.content LIKE %:keyword% AND c.deleteTime IS NULL
             ORDER BY c.createTime DESC
             """)
     Page<Comment> findByBoardIdAndKeyword(Long boardId, String keyword, Pageable pageable);
@@ -44,6 +52,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("""
             SELECT c
             FROM Comment c
+            JOIN FETCH c.member m
+            JOIN FETCH c.board b
             WHERE c.parentId = :parentId AND c.deleteTime IS NULL
             """)
     List<Comment> findByParentIdAndNotDeleted(Long parentId);

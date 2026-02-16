@@ -53,17 +53,13 @@ public class CommentService {
     @Transactional
     public CommentResponse createComment(Long boardId, CommentCreateRequest request, String username) {
         Board board = searchBoard(boardId);
-        Member member = searchMember(username);
+        Member member = memberRepository.findByUsernameAndDeleteTimeIsNull(username)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
 
         Comment saved = commentRepository.save(Comment.createComment(request.getParentId(), request.getContent(), board, member));
         board.increaseCommentCount();
         boardRepository.save(board);
         return CommentResponse.from(saved);
-    }
-
-    private Member searchMember(String username) {
-        return memberRepository.findByUsernameAndDeleteTimeIsNull(username)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     private Board searchBoard(Long boardId) {

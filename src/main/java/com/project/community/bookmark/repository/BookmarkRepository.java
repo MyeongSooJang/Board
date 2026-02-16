@@ -18,7 +18,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
             FROM Bookmark bm
             JOIN FETCH bm.member m
             JOIN FETCH bm.board b
-            WHERE m.username = :username AND b.boardId = :boardId AND b.deleteTime IS NULL
+            WHERE m.username = :username AND b.boardId = :boardId
             """)
     Optional<Bookmark> findByUsernameAndBoardId(@Param("username") String username, @Param("boardId") Long boardId);
 
@@ -28,13 +28,13 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
             FROM Bookmark bm
             JOIN FETCH bm.member m
             JOIN FETCH bm.board b
-            WHERE m.username = :username AND b.deleteTime IS NULL
+            WHERE m.username = :username
             ORDER BY bm.createTime DESC
             """)
     Page<Bookmark> findByUsername(@Param("username") String username, Pageable pageable);
 
 
-    @Query("SELECT COUNT(b) FROM Bookmark b WHERE b.board.boardId = :boardId AND b.board.deleteTime IS NULL")
+    @Query("SELECT COUNT(b) FROM Bookmark b WHERE b.board.boardId = :boardId")
     Long countByBoardId(@Param("boardId") Long boardId);
 
 
@@ -43,7 +43,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
             FROM Bookmark b
             JOIN b.member m
             JOIN b.board brd
-            WHERE m.username = :username AND brd.boardId = :boardId AND brd.deleteTime IS NULL
+            WHERE m.username = :username AND brd.boardId = :boardId
             """)
     boolean existsByUsernameAndBoardId(@Param("username") String username, @Param("boardId") Long boardId);
 
@@ -53,7 +53,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
             FROM Bookmark b
             JOIN b.member m
             JOIN b.board brd
-            WHERE m.username = :username AND brd.deleteTime IS NULL
+            WHERE m.username = :username
             """)
     Long countByUsername(@Param("username") String username);
 }
