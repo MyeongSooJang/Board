@@ -16,6 +16,9 @@ public enum ErrorCode {
     INVALID_EMAIL(400, "유효한 이메일 형식이어야 합니다"),
     INVALID_PHONE(400, "휴대폰 형식: 010-1234-5678"),
     MISSING_REQUIRED_FIELDS(400, "필수 필드가 누락되었습니다"),
+    EMPTY_FILE(400, "파일이 비어있습니다"),
+    FILE_SIZE_EXCEEDED(400, "파일 크기가 10MB를 초과합니다"),
+    INVALID_FILE_TYPE(400, "지원하지 않는 파일 형식입니다"),
 
     // Unauthorized 401
     UNAUTHORIZED(401, "인증이 필요합니다"),
@@ -36,6 +39,7 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(404, "댓글을 찾을 수 없습니다"),
     REPORT_NOT_FOUND(404,"신고를 찾을 수 없습니다"),
     BOOKMARK_NOT_FOUND(404, "북마크를 찾을 수 없습니다"),
+    FILE_NOT_FOUND(404, "파일을 찾을 수 없습니다"),
 
     // 비지니스 로직 오류 409
     DUPLICATE_MEMBER_ID(409, "이미 존재하는 아이디입니다"),

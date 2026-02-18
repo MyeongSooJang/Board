@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { boardApi } from '../../api/board'
 import { commentApi } from '../../api/comment'
+import { getFiles } from '../../api/file'
 import ReportModal from '../../components/ReportModal.vue'
 import CommentNode from '../../components/CommentNode.vue'
 import BookmarkButton from '../../components/BookmarkButton.vue'
@@ -12,6 +13,7 @@ const route = useRoute()
 
 const board = ref(null)
 const comments = ref([])
+const files = ref([])
 const isLoading = ref(false)
 const error = ref('')
 
@@ -65,10 +67,22 @@ const loadBoard = async () => {
     } else {
       liked.value = false
     }
+
+    // 파일 목록 로드
+    await loadFiles()
   } catch (err) {
     error.value = err.response?.data?.message || '게시물을 불러오지 못했습니다'
   } finally {
     isLoading.value = false
+  }
+}
+
+const loadFiles = async () => {
+  try {
+    files.value = await getFiles(boardId.value)
+  } catch (err) {
+    console.error('파일 목록 로드 실패:', err)
+    files.value = []
   }
 }
 
@@ -350,6 +364,18 @@ onMounted(() => {
       <!-- 게시물 내용 -->
       <div class="board-content">
         {{ board.boardContent }}
+      </div>
+
+      <!-- 첨부 파일 갤러리 -->
+      <div v-if="files.length > 0" class="files-section">
+        <h3>첨부 파일</h3>
+        <div class="files-gallery">
+          <div v-for="file in files" :key="file.fileId" class="file-card">
+            <a :href="file.url" target="_blank" rel="noopener noreferrer">
+              <img :src="file.url" :alt="file.url" class="file-image" />
+            </a>
+          </div>
+        </div>
       </div>
 
       <!-- 댓글 섹션 -->
@@ -944,6 +970,51 @@ body { color: #000; background-color: #f5f5f5; }
 .btn-comment-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* 첨부 파일 갤러리 */
+.files-section {
+  padding: 20px;
+  border-bottom: 1px solid #d5d5d5;
+  background-color: #fafafa;
+}
+
+.files-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.files-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.file-card {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  background: white;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.file-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.file-card a {
+  display: block;
+  text-decoration: none;
+}
+
+.file-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
 }
 
 /* 반응형 */
