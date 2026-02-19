@@ -10,13 +10,15 @@ const route = useRoute()
 const isEdit = ref(!!route.params.boardId)
 const boardId = ref(route.params.boardId || null)
 
+const API_BASE_URL = 'http://localhost:8080'
+
 const formData = ref({
   boardTitle: '',
   boardContent: ''
 })
 
 const files = ref([])
-const selectedFile = ref(null)
+const selectedFiles = ref([])
 const fileInputRef = ref(null)
 const isLoading = ref(false)
 const isUploadingFile = ref(false)
@@ -53,29 +55,43 @@ const loadFiles = async () => {
 }
 
 const handleFileSelect = (event) => {
-  const file = event.target.files?.[0]
-  if (!file) return
+  const newFiles = event.target.files
+  if (!newFiles || newFiles.length === 0) return
 
   error.value = ''
+  const filesToAdd = []
 
-  // 파일 검증
-  if (file.size > MAX_FILE_SIZE) {
-    error.value = `파일 크기가 10MB를 초과합니다 (현재: ${(file.size / 1024 / 1024).toFixed(2)}MB)`
-    fileInputRef.value.value = ''
-    return
+  // 각 파일 검증
+  for (let i = 0; i < newFiles.length; i++) {
+    const file = newFiles[i]
+
+    // 파일 크기 검증
+    if (file.size > MAX_FILE_SIZE) {
+      error.value = `파일 "${file.name}"의 크기가 10MB를 초과합니다 (현재: ${(file.size / 1024 / 1024).toFixed(2)}MB)`
+      fileInputRef.value.value = ''
+      return
+    }
+
+    // 파일 형식 검증
+    if (!file.type.startsWith('image/')) {
+      error.value = `"${file.name}"은(는) 이미지 파일이 아닙니다. 이미지 파일만 업로드 가능합니다`
+      fileInputRef.value.value = ''
+      return
+    }
+
+    filesToAdd.push(file)
   }
 
-  if (!file.type.startsWith('image/')) {
-    error.value = '이미지 파일만 업로드 가능합니다'
-    fileInputRef.value.value = ''
-    return
-  }
+  selectedFiles.value.push(...filesToAdd)
+  fileInputRef.value.value = ''
+}
 
-  selectedFile.value = file
+const removeSelectedFile = (index) => {
+  selectedFiles.value.splice(index, 1)
 }
 
 const handleUploadFile = async () => {
-  if (!selectedFile.value) {
+  if (selectedFiles.value.length === 0) {
     error.value = '업로드할 파일을 선택해주세요'
     return
   }
@@ -89,10 +105,11 @@ const handleUploadFile = async () => {
   error.value = ''
 
   try {
-    const response = await uploadFile(boardId.value, selectedFile.value)
+    // 첫 번째 파일 업로드
+    const fileToUpload = selectedFiles.value[0]
+    const response = await uploadFile(boardId.value, fileToUpload)
     files.value.push(response)
-    selectedFile.value = null
-    fileInputRef.value.value = ''
+    selectedFiles.value.splice(0, 1)
     alert('파일이 업로드되었습니다')
   } catch (err) {
     error.value = err.response?.data?.message || '파일 업로드에 실패했습니다'
@@ -118,6 +135,25 @@ const handleDeleteFile = async (fileId) => {
   }
 }
 
+const uploadSelectedFiles = async (bId) => {
+  if (selectedFiles.value.length === 0) {
+    return
+  }
+
+  // 선택된 파일들을 순차적으로 업로드
+  for (const file of selectedFiles.value) {
+    try {
+      const response = await uploadFile(bId, file)
+      files.value.push(response)
+    } catch (err) {
+      console.error(`파일 "${file.name}" 업로드 실패:`, err)
+      throw new Error(`"${file.name}" 파일 업로드에 실패했습니다`)
+    }
+  }
+
+  selectedFiles.value = []
+}
+
 const handleSubmit = async () => {
   if (!formData.value.boardTitle.trim()) {
     error.value = '제목을 입력해주세요'
@@ -140,6 +176,16 @@ const handleSubmit = async () => {
         formData.value.boardContent
       )
       alert('게시물이 수정되었습니다')
+
+      // 추가된 파일 업로드
+      if (selectedFiles.value.length > 0) {
+        try {
+          await uploadSelectedFiles(boardId.value)
+        } catch (err) {
+          error.value = err.message || '파일 업로드에 실패했습니다'
+          return
+        }
+      }
     } else {
       const username = localStorage.getItem('username')
       const response = await boardApi.create(
@@ -149,6 +195,17 @@ const handleSubmit = async () => {
       )
       alert('게시물이 작성되었습니다')
       boardId.value = response.data.boardId
+      isEdit.value = true
+
+      // 선택된 파일이 있으면 업로드
+      if (selectedFiles.value.length > 0) {
+        try {
+          await uploadSelectedFiles(boardId.value)
+        } catch (err) {
+          error.value = err.message || '파일 업로드에 실패했습니다'
+          return
+        }
+      }
     }
 
     router.push(`/boards/${boardId.value}`)
@@ -204,33 +261,54 @@ onMounted(() => {
           ></textarea>
         </div>
 
-        <!-- 파일 업로드 섹션 (수정 모드에서만) -->
-        <div v-if="isEdit" class="form-group">
+        <!-- 파일 업로드 섹션 -->
+        <div class="form-group">
           <label>파일 첨부</label>
           <div class="file-upload-section">
             <div class="file-input-wrapper">
               <input
+                id="fileInput"
                 ref="fileInputRef"
                 type="file"
                 accept="image/*"
+                multiple
                 class="file-input"
                 @change="handleFileSelect"
                 :disabled="isUploadingFile"
               />
               <label for="fileInput" class="file-label">
-                파일 선택 (이미지만 가능, 최대 10MB)
+                파일 선택 (이미지만 가능, 최대 10MB, 여러 파일 선택 가능)
               </label>
             </div>
 
             <button
-              v-if="selectedFile"
+              v-if="selectedFiles.length > 0"
               type="button"
               @click="handleUploadFile"
               class="btn btn-upload"
               :disabled="isUploadingFile"
             >
-              {{ isUploadingFile ? '업로드 중...' : '업로드' }}
+              {{ isUploadingFile ? '업로드 중...' : '즉시 업로드' }}
             </button>
+          </div>
+
+          <!-- 선택된 파일 목록 -->
+          <div v-if="selectedFiles.length > 0" class="selected-files">
+            <h4>선택된 파일</h4>
+            <div class="files-list">
+              <div v-for="(file, index) in selectedFiles" :key="index" class="file-list-item">
+                <span class="file-name">{{ file.name }}</span>
+                <span class="file-size">({{ (file.size / 1024 / 1024).toFixed(2) }}MB)</span>
+                <button
+                  type="button"
+                  @click="removeSelectedFile(index)"
+                  class="btn btn-remove"
+                  :disabled="isUploadingFile"
+                >
+                  제거
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- 업로드된 파일 목록 -->
@@ -238,7 +316,7 @@ onMounted(() => {
             <h4>첨부된 파일</h4>
             <div class="files-grid">
               <div v-for="file in files" :key="file.fileId" class="file-item">
-                <img :src="file.url" :alt="file.url" class="file-preview" />
+                <img :src="API_BASE_URL + file.url" :alt="file.url" class="file-preview" />
                 <button
                   type="button"
                   @click="handleDeleteFile(file.fileId)"
@@ -426,6 +504,63 @@ body { color: #000; background-color: #f5f5f5; }
 
 .btn-upload:hover:not(:disabled) {
   background-color: #1d4ed8;
+}
+
+/* 선택된 파일 목록 */
+.selected-files {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+.selected-files h4 {
+  margin: 0 0 0.75rem 0;
+  color: #34495e;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.files-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.file-list-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  justify-content: space-between;
+}
+
+.file-name {
+  flex: 1;
+  font-weight: 500;
+  color: #2c3e50;
+  word-break: break-word;
+}
+
+.file-size {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin: 0 0.5rem;
+}
+
+.btn-remove {
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.btn-remove:hover:not(:disabled) {
+  background-color: #c0392b;
 }
 
 /* 업로드된 파일 목록 */

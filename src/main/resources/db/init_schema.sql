@@ -1,5 +1,6 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS board_file;
 DROP TABLE IF EXISTS bookmark;
 DROP TABLE IF EXISTS board_file; -- board 참조
 DROP TABLE IF EXISTS report; -- member, board, comment 참조
@@ -136,12 +137,12 @@ CREATE TABLE report
 -- Bookmark 테이블
 CREATE TABLE bookmark
 (
-    mark_id       BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_id     BIGINT NOT NULL,
-    board_id      BIGINT NOT NULL,
-    create_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    delete_time   TIMESTAMP NULL,
+    mark_id     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id   BIGINT    NOT NULL,
+    board_id    BIGINT    NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    delete_time TIMESTAMP NULL,
     UNIQUE KEY uk_bookmark (member_id, board_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id),
     FOREIGN KEY (board_id) REFERENCES board (board_id),
@@ -153,16 +154,17 @@ CREATE TABLE bookmark
 
 -- BoardFile
 
-# CREATE TABLE board_file
-# (
-#     file_id    BIGINT AUTO_INCREMENT PRIMARY KEY,
-#     board_id   BIGINT       NOT NULL,
-#     original_name VARCHAR(255) NOT NULL,
-#     saved_name  VARCHAR(255) NOT NULL,
-#     size  INT          NOT NULL,
-#     url   VARCHAR(500), -- S3
-#     upload_time TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-#
-#     FOREIGN KEY (board_id) REFERENCES board (board_id) ON DELETE CASCADE
-# ) ENGINE = InnoDB
-#   DEFAULT CHARSET = utf8mb4;
+CREATE TABLE board_file
+(
+    file_id       BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id      BIGINT       NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    saved_name    VARCHAR(255) NOT NULL,
+    size          BIGINT       NOT NULL,
+    url           VARCHAR(500),
+    create_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (board_id) REFERENCES board (board_id) ON DELETE CASCADE,
+    INDEX idx_board_file_board (board_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;

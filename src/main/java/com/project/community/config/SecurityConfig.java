@@ -79,7 +79,7 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                String uploadDir = System.getProperty("user.dir") + "/uploads/";
+                String uploadDir = System.getProperty("user.dir") + java.io.File.separator + "uploads" + java.io.File.separator;
                 registry.addResourceHandler("/uploads/**")
                         .addResourceLocations("file:" + uploadDir)
                         .setCachePeriod(3600); // 1시간 캐싱

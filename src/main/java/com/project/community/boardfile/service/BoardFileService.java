@@ -8,16 +8,16 @@ import com.project.community.boardfile.repository.BoardFileRepository;
 import com.project.community.exception.NotFoundException;
 import com.project.community.exception.ValidationException;
 import com.project.community.exception.dto.ErrorCode;
-import jakarta.transaction.Transactional;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -33,8 +33,7 @@ public class BoardFileService {
      * JAR 실행 시에도 일관되게 동작하도록 절대 경로 사용
      */
     private static String getUploadDir() {
-        String uploadDir = System.getProperty("user.dir") + "/uploads";
-        return uploadDir;
+        return System.getProperty("user.dir") + File.separator + "uploads";
     }
 
     /**
@@ -120,17 +119,15 @@ public class BoardFileService {
         String fileUrl = "/uploads/" + savedName;
 
         BoardFile boardFile = new BoardFile(
-                null, // fileId는 자동 생성
                 board,
                 file.getOriginalFilename(),
                 savedName,
                 file.getSize(),
-                fileUrl,
-                LocalDateTime.now()
+                fileUrl
         );
 
         BoardFile saved = boardFileRepository.save(boardFile);
-        return new BoardFileResponse(saved.getFileId(), saved.getUrl(), saved.getUploadTime());
+        return new BoardFileResponse(saved.getFileId(), saved.getUrl(), saved.getCreateTime());
     }
 
     /**
@@ -139,7 +136,7 @@ public class BoardFileService {
     public List<BoardFileResponse> findFiles(Long boardId) {
         List<BoardFile> files = boardFileRepository.findAllByBoard_BoardId(boardId);
         return files.stream()
-                .map(f -> new BoardFileResponse(f.getFileId(), f.getUrl(), f.getUploadTime()))
+                .map(f -> new BoardFileResponse(f.getFileId(), f.getUrl(), f.getCreateTime()))
                 .toList();
     }
 

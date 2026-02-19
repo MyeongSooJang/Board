@@ -12,6 +12,7 @@ public class BoardResponse {
     private String boardTitle;
     private String boardContent;
     private String memberName;
+    private String memberUsername;
     private Long memberId;
     private LocalDateTime updateTime;
     private LocalDateTime createTime;
@@ -25,6 +26,7 @@ public class BoardResponse {
                 board.getTitle(),
                 board.getContent(),
                 board.getMember().getName(),
+                board.getMember().getUsername(),
                 board.getMember().getMemberId(),
                 board.getUpdateTime(),
                 board.getCreateTime(),

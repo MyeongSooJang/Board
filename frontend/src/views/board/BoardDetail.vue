@@ -8,6 +8,8 @@ import ReportModal from '../../components/ReportModal.vue'
 import CommentNode from '../../components/CommentNode.vue'
 import BookmarkButton from '../../components/BookmarkButton.vue'
 
+const API_BASE_URL = 'http://localhost:8080'
+
 const router = useRouter()
 const route = useRoute()
 
@@ -353,7 +355,7 @@ onMounted(() => {
           <div class="board-actions">
             <button @click="router.push('/boards')" class="btn btn-secondary">목록</button>
             <button @click="handleReportClick" class="btn btn-report">신고</button>
-            <div v-if="currentUsername && currentUsername == board.memberName" class="action-group">
+            <div v-if="currentUsername && currentUsername == board.memberUsername" class="action-group">
               <button @click="handleEditBoard" class="btn btn-primary">수정</button>
               <button @click="handleDeleteBoard" class="btn btn-danger">삭제</button>
             </div>
@@ -371,8 +373,8 @@ onMounted(() => {
         <h3>첨부 파일</h3>
         <div class="files-gallery">
           <div v-for="file in files" :key="file.fileId" class="file-card">
-            <a :href="file.url" target="_blank" rel="noopener noreferrer">
-              <img :src="file.url" :alt="file.url" class="file-image" />
+            <a :href="API_BASE_URL + file.url" target="_blank" rel="noopener noreferrer">
+              <img :src="API_BASE_URL + file.url" :alt="file.url" class="file-image" />
             </a>
           </div>
         </div>

@@ -93,12 +93,12 @@ public class BoardController {
             @PathVariable Long boardId,
             @Parameter(description = "수정할 상세 내용")
             @RequestBody BoardUpdateRequest request,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal String username
     ) {
-        if (userDetails == null) {
+        if (username == null) {
             throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(boardService.updateBoard(boardId, request, userDetails.getUsername()));
+        return ResponseEntity.ok(boardService.updateBoard(boardId, request, username));
     }
 
     @DeleteMapping("/{boardId}")

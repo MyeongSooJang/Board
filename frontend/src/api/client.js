@@ -3,10 +3,7 @@ import axios from 'axios'
 const API_BASE_URL = 'http://localhost:8080'
 
 const client = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: API_BASE_URL
 })
 
 // refresh 요청용 별도 인스턴스 (인터셉터 없음)
@@ -26,6 +23,10 @@ client.interceptors.request.use(
     const token = localStorage.getItem('accessToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+    }
+    // FormData가 아닌 경우에만 Content-Type을 application/json으로 설정
+    if (!(config.data instanceof FormData)) {
+      config.headers['Content-Type'] = 'application/json'
     }
     return config
   },
