@@ -317,6 +317,8 @@ const handleReportClick = () => {
 const handleReportSuccess = () => {
   // 신고가 성공적으로 접수됨
   isReportModalOpen.value = false
+  // 목록으로 이동
+  router.push('/boards')
 }
 
 onMounted(() => {
@@ -332,6 +334,11 @@ onMounted(() => {
     <div v-else-if="error" class="error-message">{{ error }}</div>
 
     <div v-else-if="board" class="board-detail">
+      <!-- 삭제된 게시글 경고 배너 -->
+      <div v-if="board.isDeleted" class="deleted-banner">
+        ⚠️ 이 게시글은 신고로 인해 삭제된 게시글입니다
+      </div>
+
       <!-- 게시물 헤더 -->
       <div class="board-header">
         <div class="header-top">
@@ -345,7 +352,7 @@ onMounted(() => {
               @click="handleLikeClick"
               class="btn-like"
               :class="{ liked }"
-              :disabled="isTogglingLike"
+              :disabled="isTogglingLike || board.isDeleted"
             >
               {{ liked ? '❤️' : '🤍' }} {{ likeCount }}
             </button>
@@ -354,8 +361,14 @@ onMounted(() => {
           </div>
           <div class="board-actions">
             <button @click="router.push('/boards')" class="btn btn-secondary">목록</button>
-            <button @click="handleReportClick" class="btn btn-report">신고</button>
-            <div v-if="currentUsername && currentUsername == board.memberUsername" class="action-group">
+            <button
+              v-if="!board.isDeleted"
+              @click="handleReportClick"
+              class="btn btn-report"
+            >
+              신고
+            </button>
+            <div v-if="currentUsername && currentUsername == board.memberUsername && !board.isDeleted" class="action-group">
               <button @click="handleEditBoard" class="btn btn-primary">수정</button>
               <button @click="handleDeleteBoard" class="btn btn-danger">삭제</button>
             </div>
@@ -385,7 +398,10 @@ onMounted(() => {
         <h3>댓글 ({{ totalCommentCount }})</h3>
 
         <!-- 댓글 작성 폼 -->
-        <div v-if="isLoggedIn" class="comment-form">
+        <div v-if="board.isDeleted" class="deleted-comment-notice">
+          삭제된 게시글에는 댓글을 작성할 수 없습니다
+        </div>
+        <div v-else-if="isLoggedIn" class="comment-form">
           <textarea
             v-model="commentContent"
             placeholder="댓글을 입력하세요"
@@ -455,6 +471,28 @@ body { color: #000; background-color: #f5f5f5; }
   margin: 0 auto;
   background: white;
   border: 1px solid #d5d5d5;
+}
+
+.deleted-banner {
+  background-color: #fff3cd;
+  color: #856404;
+  border-bottom: 2px solid #ffc107;
+  padding: 16px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+}
+
+.deleted-comment-notice {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 16px;
 }
 
 .loading,

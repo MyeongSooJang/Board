@@ -96,7 +96,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             """)
     Page<Board> findByWriter(@Param("memberName") String memberName, Pageable pageable);
 
-    // 단건 조회 (fetch join으로 member 포함)
     @Query("""
             SELECT b
             FROM Board b
@@ -104,4 +103,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             WHERE b.boardId = :boardId AND b.deleteTime IS NULL
             """)
     Optional<Board> findByBoardIdAndDeleteTimeIsNull(@Param("boardId") Long boardId);
+
+    /**
+     * 관리자용: 삭제된 게시글도 조회 가능 (softDelete 상관없이)
+     */
+    @Query("""
+            SELECT b
+            FROM Board b
+            JOIN FETCH b.member m
+            WHERE b.boardId = :boardId
+            """)
+    Optional<Board> findByBoardId(@Param("boardId") Long boardId);
 }

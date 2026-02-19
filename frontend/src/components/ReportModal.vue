@@ -38,7 +38,8 @@ const handleSubmit = async () => {
   error.value = ''
 
   try {
-    await reportApi.submitReport(props.boardId, reportType.value, reportContent.value)
+    await reportApi.submitReport(props.boardId, reportType.value, reportContent.value, 'BOARD')
+    alert('신고가 완료되었습니다')
     emit('success')
     resetForm()
   } catch (err) {

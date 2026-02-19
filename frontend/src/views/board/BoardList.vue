@@ -8,6 +8,7 @@ const isLoggedIn = ref(!!localStorage.getItem('accessToken'))
 
 const boards = ref([])
 const totalPages = ref(1)
+const totalElements = ref(0)
 const currentPage = ref(0)
 const pageSize = ref(10)
 const isLoading = ref(false)
@@ -38,6 +39,13 @@ const loadBoards = async () => {
 
     boards.value = response.data.content || response.data
     totalPages.value = response.data.totalPages || 1
+    totalElements.value = response.data.totalElements || boards.value.length
+
+    // 현재 페이지에 게시글이 없으면 이전 페이지로 이동
+    if (boards.value.length === 0 && currentPage.value > 0) {
+      currentPage.value = currentPage.value - 1
+      await loadBoards()
+    }
   } catch (err) {
     error.value = err.response?.data?.message || '게시물을 불러오지 못했습니다'
   } finally {
@@ -76,7 +84,8 @@ const formatDate = (date) => {
 }
 
 const getDisplayNumber = (index) => {
-  return totalPages.value * pageSize.value - (currentPage.value * pageSize.value + index)
+  // 전체 게시글 수에서 현재 위치를 빼서 계산
+  return totalElements.value - (currentPage.value * pageSize.value + index)
 }
 
 const visiblePages = computed(() => {
@@ -119,7 +128,8 @@ const goToWrite = () => {
 }
 
 const goToPage = (page) => {
-  if (page >= 0 && page < totalPages.value) {
+  // 유효한 페이지 범위 체크
+  if (page >= 0 && page < totalPages.value && totalElements.value > 0) {
     currentPage.value = page
     loadBoards()
   }

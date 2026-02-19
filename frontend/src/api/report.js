@@ -1,9 +1,13 @@
 import client from './client'
 
 export const reportApi = {
-  // 신고 제출
-  submitReport: (boardId, type, content) =>
-    client.post('/report', { boardId, type, content }),
+  // 게시글 신고 제출
+  submitReport: (boardId, type, content, targetType = 'BOARD') =>
+    client.post('/report', { boardId, commentId: null, type, content, targetType }),
+
+  // 댓글 신고 제출
+  reportComment: (commentId, type, content) =>
+    client.post('/report', { boardId: null, commentId, type, content, targetType: 'COMMENT' }),
 
   // 관리자 - 신고 목록 조회
   getReportList: (page = 0, size = 10, sort = 'createTime,desc') =>

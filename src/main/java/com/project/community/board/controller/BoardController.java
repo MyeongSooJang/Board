@@ -19,7 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,12 +66,22 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    @Operation(summary = "게시글 클릭시 게시물 내용 출력",
-            description = "해당하는 번호의 게시글 내용 출력")
+    @Operation(summary = "게시글 조회 (일반)",
+            description = "활성화된 게시글만 조회 가능")
     public ResponseEntity<BoardResponse> findByBoardId(
             @Parameter(description = "보여줄 게시글 번호")
             @PathVariable Long boardId) {
-        return ResponseEntity.ok(boardService.searchByBoardId(boardId));
+        return ResponseEntity.ok(boardService.searchByBoardId(boardId, false));
+    }
+
+    @GetMapping("/{boardId}/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "게시글 조회 (관리자)",
+            description = "삭제된 게시글도 조회 가능 (관리자 전용)")
+    public ResponseEntity<BoardResponse> findByBoardIdAsAdmin(
+            @Parameter(description = "보여줄 게시글 번호")
+            @PathVariable Long boardId) {
+        return ResponseEntity.ok(boardService.searchByBoardId(boardId, true));
     }
 
     @PostMapping

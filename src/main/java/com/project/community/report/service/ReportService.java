@@ -1,6 +1,7 @@
 package com.project.community.report.service;
 
 import static com.project.community.report.entity.Report.createReport;
+import static com.project.community.report.entity.ReportTarget.changeReportType;
 
 import com.project.community.board.entity.Board;
 import com.project.community.board.repository.BoardRepository;
@@ -12,6 +13,7 @@ import com.project.community.report.dto.ReportAdminResponse;
 import com.project.community.report.dto.ReportRequest;
 import com.project.community.report.dto.ReportResponse;
 import com.project.community.report.entity.Report;
+import com.project.community.report.entity.ReportTarget;
 import com.project.community.report.repository.ReportRepository;
 import com.project.community.exception.NotFoundException;
 import com.project.community.exception.ValidationException;
@@ -33,25 +35,60 @@ public class ReportService {
     private final CommentRepository commentRepository;
 
     public ReportResponse submitReport(ReportRequest request, String username) {
-        Member member = memberRepository.findByUsernameAndDeleteTimeIsNull(username)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        Board board = boardRepository.findById(request.getBoardId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+        ReportTarget reportTarget = changeReportType(request.getTargetType());
+        return switch (reportTarget) {
+            case BOARD -> reportBoard(request, username);
+            case COMMENT -> reportComment(request, username);
+        };
+    }
 
+    private ReportResponse reportBoard(ReportRequest request, String username) {
+        Member member = searchMember(username);
+        Board board = searchBoard(request);
+        validateDuplicateBoardReport(member.getMemberId(), board.getBoardId());
         Report report = createReport(member, board, request);
         Report savedReport = reportRepository.save(report);
         return ReportResponse.from(savedReport);
     }
 
-    public ReportResponse reportComment(Long commentId, ReportRequest request, String username) {
-        Member member = memberRepository.findByUsernameAndDeleteTimeIsNull(username)
+    private void validateDuplicateBoardReport(Long memberId, Long boardId) {
+        reportRepository.findByMemberIdAndBoardId(memberId, boardId)
+                .ifPresent(report -> {
+                    throw new ValidationException(ErrorCode.DUPLICATE_REPORT);
+                });
+    }
+
+    private void validateDuplicateCommentReport(Long memberId, Long commentId) {
+        reportRepository.findByMemberIdAndCommentId(memberId, commentId)
+                .ifPresent(report -> {
+                    throw new ValidationException(ErrorCode.DUPLICATE_REPORT);
+                });
+    }
+
+    private Board searchBoard(ReportRequest request) {
+        return boardRepository.findById(request.getBoardId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
+    private Member searchMember(String username) {
+        return memberRepository.findByUsernameAndDeleteTimeIsNull(username)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    public ReportResponse reportComment(ReportRequest request, String username) {
+        Member member = searchMember(username);
+        Comment comment = searchComment(request.getCommentId());
+
+        validateDuplicateCommentReport(member.getMemberId(), request.getCommentId());
 
         Report report = Report.createCommentReport(member, comment, request);
         Report savedReport = reportRepository.save(report);
         return ReportResponse.from(savedReport);
+    }
+
+    private Comment searchComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
     public Page<ReportAdminResponse> findAllReports(Pageable pageable) {
@@ -72,8 +109,7 @@ public class ReportService {
             board.softDelete();
             boardRepository.save(board);
         } else if (approveReport.getCommentId() != null) {
-            Comment comment = commentRepository.findById(approveReport.getCommentId())
-                    .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+            Comment comment = searchComment(approveReport.getCommentId());
             comment.softDelete();
             commentRepository.save(comment);
         }

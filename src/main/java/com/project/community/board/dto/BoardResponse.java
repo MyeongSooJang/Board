@@ -19,6 +19,7 @@ public class BoardResponse {
     private Long boardViewCount;
     private Long boardLikeCount;
     private Long boardCommentCount;
+    private Boolean isDeleted;
 
     public static BoardResponse from(Board board) {
         return new BoardResponse(
@@ -32,7 +33,8 @@ public class BoardResponse {
                 board.getCreateTime(),
                 board.getViewCount(),
                 board.getLikeCount(),
-                board.getCommentCount()
+                board.getCommentCount(),
+                board.getDeleteTime() != null
         );
     }
 }

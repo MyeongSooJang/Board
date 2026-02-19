@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
@@ -58,10 +59,20 @@ public class BoardService {
         return boards.map(BoardResponse::from);
     }
 
-    @Transactional
+
     public BoardResponse searchByBoardId(Long boardId) {
-        Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+        return searchByBoardId(boardId, false);
+    }
+
+    public BoardResponse searchByBoardId(Long boardId, boolean isAdmin) {
+        Board board;
+        if (isAdmin) {
+            board = boardRepository.findByBoardId(boardId)
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+        } else {
+            board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+        }
         board.increaseViewCount();
         boardRepository.save(board);
         return BoardResponse.from(board);

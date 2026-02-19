@@ -45,6 +45,7 @@ public enum ErrorCode {
     DUPLICATE_MEMBER_ID(409, "이미 존재하는 아이디입니다"),
     DUPLICATE_EMAIL(409, "이미 존재하는 이메일입니다"),
     DUPLICATE_PHONE(409, "이미 존재하는 전화번호입니다"),
+    DUPLICATE_REPORT(409, "이미 신고한 게시글입니다"),
     INVALID_REPORT_STATUS(409, "이미 처리된 신고입니다");
 
     private final int httpStatus;
