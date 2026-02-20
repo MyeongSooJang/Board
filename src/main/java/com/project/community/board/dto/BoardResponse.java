@@ -13,13 +13,14 @@ public class BoardResponse {
     private String boardContent;
     private String memberName;
     private String memberUsername;
-    private Long memberId;
     private LocalDateTime updateTime;
     private LocalDateTime createTime;
-    private Long boardViewCount;
-    private Long boardLikeCount;
-    private Long boardCommentCount;
+    private Long viewCount;
+    private Long likeCount;
+    private Long commentCount;
     private Boolean isDeleted;
+    private LocalDateTime deleteTime;
+    private Boolean deletedByReport;
 
     public static BoardResponse from(Board board) {
         return new BoardResponse(
@@ -28,13 +29,18 @@ public class BoardResponse {
                 board.getContent(),
                 board.getMember().getName(),
                 board.getMember().getUsername(),
-                board.getMember().getMemberId(),
                 board.getUpdateTime(),
                 board.getCreateTime(),
                 board.getViewCount(),
                 board.getLikeCount(),
                 board.getCommentCount(),
-                board.getDeleteTime() != null
+                board.getDeleteTime() != null,
+                board.getDeleteTime(),
+                false
         );
+    }
+
+    public void setDeletedByReport(boolean deletedByReport) {
+        this.deletedByReport = deletedByReport;
     }
 }

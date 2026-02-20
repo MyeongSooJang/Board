@@ -4,6 +4,7 @@ import Signup from '../views/auth/Signup.vue'
 import BoardList from '../views/board/BoardList.vue'
 import BoardDetail from '../views/board/BoardDetail.vue'
 import BoardForm from '../views/board/BoardForm.vue'
+import AdminDashboard from '../views/admin/AdminDashboard.vue'
 import ReportList from '../views/admin/ReportList.vue'
 import Profile from '../views/member/Profile.vue'
 import MyPage from '../views/member/MyPage.vue'
@@ -50,10 +51,20 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/admin/reports',
-    name: 'ReportList',
-    component: ReportList,
+    path: '/boards/:boardId/admin',
+    name: 'BoardDetailAdmin',
+    component: BoardDetail,
+    meta: { requiresAuth: true, isAdmin: true }
+  },
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: AdminDashboard,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/reports',
+    redirect: '/admin'
   },
   {
     path: '/profile',

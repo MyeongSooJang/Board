@@ -426,9 +426,9 @@ const formatDate = (date) => {
             >
               <td class="col-title">{{ board.boardTitle }}</td>
               <td class="col-date">{{ formatDate(board.createTime) }}</td>
-              <td class="col-view">{{ board.boardViewCount || 0 }}</td>
+              <td class="col-view">{{ board.viewCount || 0 }}</td>
               <td class="col-like">
-                <span v-if="board.boardLikeCount > 0">❤️ {{ board.boardLikeCount }}</span>
+                <span v-if="board.likeCount > 0">❤️ {{ board.likeCount }}</span>
                 <span v-else>-</span>
               </td>
             </tr>

@@ -222,8 +222,8 @@ onMounted(() => {
           <td class="col-title">
             <div class="title-wrapper">
               <span class="title-text">{{ board.boardTitle }}</span>
-              <span v-if="board.boardCommentCount > 0" class="comment-count">
-                [{{ board.boardCommentCount }}]
+              <span v-if="board.commentCount > 0" class="comment-count">
+                [{{ board.commentCount }}]
               </span>
               <span v-if="isNewPost(board.createTime || board.updateTime)" class="new-badge">
                 N
@@ -232,9 +232,9 @@ onMounted(() => {
           </td>
           <td class="col-writer">{{ board.memberName }}</td>
           <td class="col-date">{{ formatDate(board.updateTime) }}</td>
-          <td class="col-view">{{ board.boardViewCount || 0 }}</td>
+          <td class="col-view">{{ board.viewCount || 0 }}</td>
           <td class="col-like">
-            <span v-if="board.boardLikeCount > 0" class="like-count">❤️ {{ board.boardLikeCount }}</span>
+            <span v-if="board.likeCount > 0" class="like-count">❤️ {{ board.likeCount }}</span>
             <span v-else class="like-empty">-</span>
           </td>
         </tr>

@@ -120,8 +120,8 @@ window.addEventListener('storage', () => {
                 👤 {{ memberName || username }}
               </button>
               <template v-if="isAdmin">
-                <router-link to="/admin/reports" class="admin-link">
-                  🔔 신고처리
+                <router-link to="/admin" class="admin-link">
+                  ⚙️ 관리자 페이지
                 </router-link>
               </template>
               <button class="logout-btn" @click="handleLogout">

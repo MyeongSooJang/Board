@@ -50,11 +50,15 @@ const loadBoard = async () => {
   error.value = ''
 
   try {
-    const response = await boardApi.getDetail(boardId.value)
+    // 관리자 페이지에서 온 경우 /admin 엔드포인트 사용
+    const isAdmin = route.meta.isAdmin || false
+    const response = isAdmin
+      ? await boardApi.getDetailAsAdmin(boardId.value)
+      : await boardApi.getDetail(boardId.value)
     board.value = response.data
 
-    // 게시글에서 받은 boardLikeCount 사용
-    likeCount.value = board.value.boardLikeCount || 0
+    // 게시글에서 받은 likeCount 사용
+    likeCount.value = board.value.likeCount || 0
 
     // 로그인한 사용자인 경우 좋아요 상태만 조회
     if (isLoggedIn.value) {
@@ -336,7 +340,12 @@ onMounted(() => {
     <div v-else-if="board" class="board-detail">
       <!-- 삭제된 게시글 경고 배너 -->
       <div v-if="board.isDeleted" class="deleted-banner">
-        ⚠️ 이 게시글은 신고로 인해 삭제된 게시글입니다
+        <span v-if="board.deletedByReport">
+          ⚠️ 이 게시글은 신고로 인해 삭제된 게시글입니다
+        </span>
+        <span v-else>
+          ⚠️ 이 게시글은 삭제된 게시글입니다
+        </span>
       </div>
 
       <!-- 게시물 헤더 -->
@@ -347,7 +356,7 @@ onMounted(() => {
         <div class="header-bottom">
           <div class="board-meta">
             <span>작성자: {{ board.memberName }}</span>
-            <span>조회: {{ board.boardViewCount || 0 }}</span>
+            <span>조회: {{ board.viewCount || 0 }}</span>
             <button
               @click="handleLikeClick"
               class="btn-like"

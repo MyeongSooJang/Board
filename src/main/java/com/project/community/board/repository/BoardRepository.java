@@ -114,4 +114,37 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             WHERE b.boardId = :boardId
             """)
     Optional<Board> findByBoardId(@Param("boardId") Long boardId);
+
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NOT NULL
+      ORDER BY b.deleteTime DESC
+  """)
+    Page<Board> findDeletedOrderByDeleteTime(Pageable pageable);
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NOT NULL
+      ORDER BY b.viewCount DESC
+  """)
+    Page<Board> findDeletedOrderByViewCount(Pageable pageable);
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NOT NULL
+      ORDER BY b.likeCount DESC
+  """)
+    Page<Board> findDeletedOrderByLikeCount(Pageable pageable);
+
+    @Query("""
+      SELECT b FROM Board b
+      JOIN FETCH b.member m
+      WHERE b.deleteTime IS NOT NULL
+      ORDER BY b.commentCount DESC
+  """)
+    Page<Board> findDeletedOrderByCommentCount(Pageable pageable);
 }

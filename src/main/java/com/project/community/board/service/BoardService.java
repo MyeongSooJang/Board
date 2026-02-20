@@ -4,6 +4,7 @@ import com.project.community.board.dto.BoardCreateRequest;
 import com.project.community.board.dto.BoardResponse;
 import com.project.community.board.dto.BoardSearchRequest;
 import com.project.community.board.dto.BoardUpdateRequest;
+import com.project.community.board.dto.DeletedBoardSortType;
 import com.project.community.board.dto.SearchType;
 import com.project.community.board.dto.SortType;
 import com.project.community.board.entity.Board;
@@ -12,6 +13,7 @@ import com.project.community.boardlike.repository.BoardLikeRepository;
 import com.project.community.comment.repository.CommentRepository;
 import com.project.community.member.entity.Member;
 import com.project.community.member.repository.MemberRepository;
+import com.project.community.report.repository.ReportRepository;
 import com.project.community.exception.NotFoundException;
 import com.project.community.exception.UnauthorizedException;
 import com.project.community.exception.dto.ErrorCode;
@@ -29,6 +31,7 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final BoardLikeRepository boardLikeRepository;
     private final CommentRepository commentRepository;
+    private final ReportRepository reportRepository;
 
     public Page<BoardResponse> searchAll(String sort, Pageable pageable) {
         SortType sortType = SortType.fromSort(sort);
@@ -60,22 +63,40 @@ public class BoardService {
     }
 
 
+    /**
+     * 활성 게시글 조회 (일반 사용자용)
+     * deleteTime IS NULL인 게시글만 조회 가능
+     */
+    @Transactional(readOnly = true)
     public BoardResponse searchByBoardId(Long boardId) {
-        return searchByBoardId(boardId, false);
+        Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+        return BoardResponse.from(board);
     }
 
-    public BoardResponse searchByBoardId(Long boardId, boolean isAdmin) {
-        Board board;
-        if (isAdmin) {
-            board = boardRepository.findByBoardId(boardId)
-                    .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
-        } else {
-            board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
-                    .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+    /**
+     * 모든 게시글 조회 (관리자용)
+     * deleteTime 무관하게 모든 게시글 조회 가능 (삭제된 게시글 포함)
+     */
+    @Transactional(readOnly = true)
+    public BoardResponse searchByBoardIdAsAdmin(Long boardId) {
+        Board board = boardRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
+        BoardResponse response = BoardResponse.from(board);
+        if (response.getIsDeleted()) {
+            boolean deletedByReport = reportRepository.existsApprovedReportForBoard(boardId);
+            response.setDeletedByReport(deletedByReport);
         }
+
+        return response;
+    }
+
+    @Transactional
+    public void increaseViewCount(Long boardId) {
+        Board board = boardRepository.findByBoardIdAndDeleteTimeIsNull(boardId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
         board.increaseViewCount();
         boardRepository.save(board);
-        return BoardResponse.from(board);
     }
 
     @Transactional
@@ -112,6 +133,17 @@ public class BoardService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
         board.softDelete();
         boardRepository.save(board);
+    }
+
+    public Page<BoardResponse> searchDeletedAll(String sort, Pageable pageable) {
+        DeletedBoardSortType sortType = DeletedBoardSortType.fromSort(sort);
+        Page<Board> boards = switch (sortType) {
+            case LATEST -> boardRepository.findDeletedOrderByDeleteTime(pageable);
+            case VIEWCOUNT -> boardRepository.findDeletedOrderByViewCount(pageable);
+            case LIKECOUNT -> boardRepository.findDeletedOrderByLikeCount(pageable);
+            case COMMENTCOUNT -> boardRepository.findDeletedOrderByCommentCount(pageable);
+        };
+        return covertToDTOPage(boards);
     }
 
 }

@@ -9,6 +9,10 @@ export const boardApi = {
   getDetail: (boardId) =>
     client.get(`/boards/${boardId}`),
 
+  // 게시물 상세 조회 (관리자)
+  getDetailAsAdmin: (boardId) =>
+    client.get(`/boards/${boardId}/admin`),
+
   // 통합 검색 (제목, 내용, 제목+내용, 작성자)
   search: (searchType, query, page = 0, size = 15, sort = 'latest') =>
     client.get('/boards/search', {
@@ -42,5 +46,9 @@ export const boardApi = {
 
   // 좋아요 상태 조회
   getLikeStatus: (boardId) =>
-    client.get(`/boards/${boardId}/like`)
+    client.get(`/boards/${boardId}/like`),
+
+  // 삭제된 게시글 조회 (관리자용)
+  getDeletedBoards: (page = 0, size = 15, sort = 'latest') =>
+    client.get('/boards/deleted', { params: { sort, page, size } })
 }

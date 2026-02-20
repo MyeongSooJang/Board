@@ -71,7 +71,8 @@ public class BoardController {
     public ResponseEntity<BoardResponse> findByBoardId(
             @Parameter(description = "보여줄 게시글 번호")
             @PathVariable Long boardId) {
-        return ResponseEntity.ok(boardService.searchByBoardId(boardId, false));
+        boardService.increaseViewCount(boardId);
+        return ResponseEntity.ok(boardService.searchByBoardId(boardId));
     }
 
     @GetMapping("/{boardId}/admin")
@@ -81,7 +82,7 @@ public class BoardController {
     public ResponseEntity<BoardResponse> findByBoardIdAsAdmin(
             @Parameter(description = "보여줄 게시글 번호")
             @PathVariable Long boardId) {
-        return ResponseEntity.ok(boardService.searchByBoardId(boardId, true));
+        return ResponseEntity.ok(boardService.searchByBoardIdAsAdmin(boardId));
     }
 
     @PostMapping
@@ -90,7 +91,7 @@ public class BoardController {
     public ResponseEntity<BoardResponse> createBoard(
             @RequestBody BoardCreateRequest board,
             @AuthenticationPrincipal String username) {
-        Long boardId = boardService.createBoard(board,username);
+        Long boardId = boardService.createBoard(board, username);
         BoardResponse response = boardService.searchByBoardId(boardId);
         return ResponseEntity.created(URI.create("/boards/" + boardId)).body(response);
     }
@@ -119,5 +120,20 @@ public class BoardController {
             @PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "게시글 조회",
+            description = "관리자가 삭제된 게시글 조회")
+    public ResponseEntity<Page<BoardResponse>> deleteBoards(
+            @Parameter(description = "정렬 방식 (LATEST, VIEWCOUNT, LIKECOUNT, COMMENTCOUNT)")
+            @RequestParam(defaultValue = "latest") String sort,
+            @Parameter(description = "페이지 번호 (0부터 시작)")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기")
+            @RequestParam(defaultValue = "15") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(boardService.searchDeletedAll(sort, pageable));
     }
 }
