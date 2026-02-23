@@ -18,32 +18,22 @@ public class CommentResponse {
     private Boolean liked;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-
-    public static CommentResponse from(Comment comment) {
-        return new CommentResponse(
-                comment.getCommentId(),
-                comment.getContent(),
-                comment.getParentId(),
-                comment.getMember().getName(),
-                comment.getMember().getUsername(),
-                comment.getMember().getMemberId(),
-                comment.getLikeCount(),
-                false,
-                comment.getCreateTime(),
-                comment.getUpdateTime());
-    }
+    private Boolean isDeleted;
 
     public static CommentResponse from(Comment comment, Boolean liked) {
         return new CommentResponse(
                 comment.getCommentId(),
-                comment.getContent(),
+                comment.getDeleteTime() != null ? "삭제된 댓글입니다" : comment.getContent(),
                 comment.getParentId(),
                 comment.getMember().getName(),
                 comment.getMember().getUsername(),
                 comment.getMember().getMemberId(),
                 comment.getLikeCount(),
-                liked,
+                liked != null ? liked : false,
                 comment.getCreateTime(),
-                comment.getUpdateTime());
+                comment.getUpdateTime(),
+                comment.getDeleteTime() != null);
     }
+
+
 }

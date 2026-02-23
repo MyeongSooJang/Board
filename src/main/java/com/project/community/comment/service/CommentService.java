@@ -7,6 +7,7 @@ import com.project.community.comment.dto.CommentResponse;
 import com.project.community.comment.dto.CommentUpdateRequest;
 import com.project.community.comment.entity.Comment;
 import com.project.community.comment.repository.CommentRepository;
+import com.project.community.comment.type.CommentSortType;
 import com.project.community.exception.NotFoundException;
 import com.project.community.exception.dto.ErrorCode;
 import com.project.community.member.entity.Member;
@@ -25,30 +26,19 @@ public class CommentService {
     private final MemberRepository memberRepository;
 
     public Page<CommentResponse> findAllByBoardId(Long boardId, String sort, Pageable pageable) {
-        CommentSortType sortType = parseCommentSortType(sort);
+        CommentSortType sortType = CommentSortType.from(sort);
         Page<Comment> comments = switch (sortType) {
             case LATEST -> commentRepository.findByBoardIdLatest(boardId, pageable);
             case TOP -> commentRepository.findByBoardIdTop(boardId, pageable);
         };
-        return comments.map(CommentResponse::from);
+        return comments.map(comment -> CommentResponse.from(comment, false));
     }
 
     public Page<CommentResponse> searchComments(Long boardId, String keyword, Pageable pageable) {
         Page<Comment> comments = commentRepository.findByBoardIdAndKeyword(boardId, keyword, pageable);
-        return comments.map(CommentResponse::from);
+        return comments.map(comment -> CommentResponse.from(comment, false));
     }
 
-    private CommentSortType parseCommentSortType(String sort) {
-        try {
-            return CommentSortType.valueOf(sort.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return CommentSortType.LATEST;
-        }
-    }
-
-    enum CommentSortType {
-        LATEST, TOP
-    }
 
     @Transactional
     public CommentResponse createComment(Long boardId, CommentCreateRequest request, String username) {
@@ -59,7 +49,7 @@ public class CommentService {
         Comment saved = commentRepository.save(Comment.createComment(request.getParentId(), request.getContent(), board, member));
         board.increaseCommentCount();
         boardRepository.save(board);
-        return CommentResponse.from(saved);
+        return CommentResponse.from(saved, false);
     }
 
     private Board searchBoard(Long boardId) {
@@ -67,9 +57,10 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.BOARD_NOT_FOUND));
     }
 
-    public CommentResponse updateComment(Long commentId, CommentUpdateRequest request, String username) {
-        Comment updated = searchComment(commentId).updateComment(request.getContent(),username);
-        return CommentResponse.from(updated);
+    public CommentResponse updateComment(Long boardId, Long commentId, CommentUpdateRequest request, String username) {
+        searchBoard(boardId);
+        Comment updated = searchComment(commentId).updateComment(boardId, request.getContent(), username);
+        return CommentResponse.from(updated, false);
     }
 
     private Comment searchComment(Long commentId) {
@@ -78,17 +69,9 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long boardId, Long commentId,  String username) {
         Comment comment = searchComment(commentId);
-        comment.softDelete();
+        comment.softDelete(boardId,username);
         comment.getBoard().decreaseCommentCount();
-        deleteChildComments(commentId, comment.getBoard());
-    }
-
-    private void deleteChildComments(Long parentId, Board board) {
-        commentRepository.findByParentIdAndNotDeleted(parentId).forEach(child -> {
-            child.softDelete();
-            board.decreaseCommentCount();
-        });
     }
 }

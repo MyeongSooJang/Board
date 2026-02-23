@@ -92,7 +92,7 @@ public class CommentController {
             @RequestBody CommentUpdateRequest request,
             @Parameter(description = "회원 아이디")
             @AuthenticationPrincipal String username) {
-        return ResponseEntity.ok(commentService.updateComment(commentId, request, username));
+        return ResponseEntity.ok(commentService.updateComment(boardId, commentId, request, username));
     }
 
     @DeleteMapping("/{commentId}")
@@ -102,8 +102,9 @@ public class CommentController {
             @Parameter(description = "게시글 번호")
             @PathVariable Long boardId,
             @Parameter(description = "댓글 번호")
-            @PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal String username) {
+        commentService.deleteComment(boardId,commentId,username);
         return ResponseEntity.noContent().build();
     }
 }

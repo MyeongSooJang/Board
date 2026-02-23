@@ -2,6 +2,7 @@ package com.project.community.comment.entity;
 
 import com.project.community.board.entity.Board;
 import com.project.community.common.BaseEntity;
+import com.project.community.exception.NotFoundException;
 import com.project.community.exception.UnauthorizedException;
 import com.project.community.exception.dto.ErrorCode;
 import com.project.community.member.entity.Member;
@@ -14,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -48,15 +50,32 @@ public class Comment extends BaseEntity {
         return new Comment(parentId, content, board, member);
     }
 
-    public Comment updateComment(String content, String username) {
-        if (!member.getUsername().equals(username)) {
-            throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
-        }
+    public Comment updateComment(Long boardId, String content, String username) {
+        validateBoard(boardId);
+        validateWriter(username);
         this.content = content;
         return this;
     }
 
-    public void softDelete() {
+    private void validateWriter(String username) {
+        if (!member.getUsername().equals(username)) {
+            throw new UnauthorizedException(ErrorCode.UNAUTHORIZED);
+        }
+    }
+
+    private void validateBoard(Long boardId) {
+        if (!board.getBoardId().equals(boardId)) {
+            throw new NotFoundException(ErrorCode.COMMENT_NOT_FOUND);
+        }
+    }
+
+    public void softDelete(Long boardId, String username) {
+        validateBoard(boardId);
+        validateWriter(username);
+        this.deleteTime = LocalDateTime.now();
+    }
+
+    public void softDeleteByAdmin(){
         this.deleteTime = LocalDateTime.now();
     }
 

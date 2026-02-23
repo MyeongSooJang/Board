@@ -110,7 +110,7 @@ public class ReportService {
             boardRepository.save(board);
         } else if (approveReport.getCommentId() != null) {
             Comment comment = searchComment(approveReport.getCommentId());
-            comment.softDelete();
+            comment.softDeleteByAdmin();
             commentRepository.save(comment);
         }
 
