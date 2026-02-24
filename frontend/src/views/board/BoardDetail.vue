@@ -7,6 +7,7 @@ import { getFiles } from '../../api/file'
 import ReportModal from '../../components/ReportModal.vue'
 import CommentNode from '../../components/CommentNode.vue'
 import BookmarkButton from '../../components/BookmarkButton.vue'
+import DOMPurify from 'dompurify'
 
 const API_BASE_URL = 'http://localhost:8080'
 
@@ -119,6 +120,18 @@ const calculateTotalCommentCount = (commentTree) => {
 
 const totalCommentCount = computed(() => {
   return calculateTotalCommentCount(comments.value)
+})
+
+// XSS 방어를 위한 HTML 렌더링
+const sanitizedContent = computed(() => {
+  if (!board.value || !board.value.boardContent) return ''
+
+  // DOMPurify로 안전한 HTML만 추출
+  return DOMPurify.sanitize(board.value.boardContent, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3',
+                   'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'a', 'img'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class']
+  })
 })
 
 const loadComments = async () => {
@@ -386,9 +399,7 @@ onMounted(() => {
       </div>
 
       <!-- 게시물 내용 -->
-      <div class="board-content">
-        {{ board.boardContent }}
-      </div>
+      <div class="board-content" v-html="sanitizedContent"></div>
 
       <!-- 첨부 파일 갤러리 -->
       <div v-if="files.length > 0" class="files-section">
@@ -617,12 +628,85 @@ body { color: #000; background-color: #f5f5f5; }
 .board-content {
   padding: 20px;
   line-height: 1.8;
-  white-space: pre-wrap;
   color: #333;
   font-size: 14px;
   border-bottom: 1px solid #d5d5d5;
   min-height: 200px;
   text-align: left;
+  word-wrap: break-word;
+}
+
+/* 렌더링된 HTML 요소 스타일 */
+.board-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+.board-content h1, .board-content h2, .board-content h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.board-content h1 {
+  font-size: 1.8rem;
+}
+
+.board-content h2 {
+  font-size: 1.5rem;
+}
+
+.board-content h3 {
+  font-size: 1.2rem;
+}
+
+.board-content ul, .board-content ol {
+  padding-left: 2rem;
+  margin: 0.75rem 0;
+}
+
+.board-content li {
+  margin-bottom: 0.5rem;
+}
+
+.board-content blockquote {
+  border-left: 4px solid #ddd;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #666;
+}
+
+.board-content code {
+  background-color: #f5f5f5;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.board-content pre {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.board-content pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.board-content a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.board-content a:hover {
+  text-decoration: underline;
 }
 
 .btn {

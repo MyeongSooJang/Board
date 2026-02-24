@@ -12,6 +12,16 @@ jwt:
   expiration: 3600000 # AccessToken 60분(단위 밀리초)
   refresh-expiration: 604800000  #Refresh Token 7일
 
+# AWS S3 Configuration
+aws:
+  s3:
+    bucket-name: ${AWS_S3_BUCKET_NAME}
+    region: ${AWS_REGION}
+    presigned-url-expiration: ${AWS_S3_PRESIGNED_URL_EXPIRATION:900}
+  credentials:
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+
 springdoc:
   swagger-ui:
     path: /index.html

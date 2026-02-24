@@ -58,7 +58,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/api-docs/**",
-                                "/uploads/**"  // 정적 파일 접근 허용
+                                "/uploads/**",  // 정적 파일 접근 허용
+                                "/api/images/**"  // S3 presigned URL API
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/boards", "/boards/**").permitAll()

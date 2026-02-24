@@ -2,7 +2,9 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { boardApi } from '../../api/board'
-import { uploadFile, deleteFile, getFiles } from '../../api/file'
+import { Editor } from '@toast-ui/vue-editor'
+import '@toast-ui/editor/dist/toastui-editor.css'
+import { getPresignedUrl, uploadToS3 } from '../../api/image'
 
 const router = useRouter()
 const route = useRoute()
@@ -17,11 +19,8 @@ const formData = ref({
   boardContent: ''
 })
 
-const files = ref([])
-const selectedFiles = ref([])
-const fileInputRef = ref(null)
+const editorRef = ref(null)
 const isLoading = ref(false)
-const isUploadingFile = ref(false)
 const error = ref('')
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -35,10 +34,11 @@ const loadBoard = async () => {
   try {
     const response = await boardApi.getDetail(boardId.value)
     formData.value.boardTitle = response.data.boardTitle
-    formData.value.boardContent = response.data.boardContent
 
-    // 기존 파일 목록 로드
-    await loadFiles()
+    // 에디터 인스턴스에 HTML 직접 설정
+    if (editorRef.value) {
+      editorRef.value.invoke('setHTML', response.data.boardContent)
+    }
   } catch (err) {
     error.value = err.response?.data?.message || '게시물을 불러오지 못했습니다'
   } finally {
@@ -46,112 +46,46 @@ const loadBoard = async () => {
   }
 }
 
-const loadFiles = async () => {
+/**
+ * Toast UI Editor의 이미지 업로드 훅
+ * 사용자가 이미지를 삽입할 때마다 자동 호출됨
+ *
+ * @param {Blob} blob - 이미지 Blob 객체
+ * @param {Function} callback - 업로드 완료 후 이미지 URL 전달
+ */
+const handleImageUpload = async (blob, callback) => {
   try {
-    files.value = await getFiles(boardId.value)
-  } catch (err) {
-    console.error('파일 목록 로드 실패:', err)
-  }
-}
-
-const handleFileSelect = (event) => {
-  const newFiles = event.target.files
-  if (!newFiles || newFiles.length === 0) return
-
-  error.value = ''
-  const filesToAdd = []
-
-  // 각 파일 검증
-  for (let i = 0; i < newFiles.length; i++) {
-    const file = newFiles[i]
-
-    // 파일 크기 검증
-    if (file.size > MAX_FILE_SIZE) {
-      error.value = `파일 "${file.name}"의 크기가 10MB를 초과합니다 (현재: ${(file.size / 1024 / 1024).toFixed(2)}MB)`
-      fileInputRef.value.value = ''
+    // 1. 파일 타입 검증
+    if (!blob.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다')
+      callback('', '') // 빈 URL = 업로드 실패
       return
     }
 
-    // 파일 형식 검증
-    if (!file.type.startsWith('image/')) {
-      error.value = `"${file.name}"은(는) 이미지 파일이 아닙니다. 이미지 파일만 업로드 가능합니다`
-      fileInputRef.value.value = ''
+    // 2. 파일 크기 검증 (10MB)
+    const MAX_SIZE = 10 * 1024 * 1024
+    if (blob.size > MAX_SIZE) {
+      alert('이미지 크기는 10MB를 초과할 수 없습니다')
+      callback('', '')
       return
     }
 
-    filesToAdd.push(file)
+    // 3. Presigned URL 발급
+    const fileName = `image_${Date.now()}.${blob.type.split('/')[1]}`
+    const { uploadUrl, imageUrl } = await getPresignedUrl(fileName, blob.type)
+
+    // 4. S3에 직접 업로드
+    await uploadToS3(uploadUrl, blob, blob.type)
+
+    // 5. 에디터에 이미지 삽입 (imageUrl 사용)
+    callback(imageUrl, fileName)
+
+    console.log('이미지 업로드 성공:', imageUrl)
+  } catch (error) {
+    console.error('이미지 업로드 실패:', error)
+    alert('이미지 업로드에 실패했습니다')
+    callback('', '')
   }
-
-  selectedFiles.value.push(...filesToAdd)
-  fileInputRef.value.value = ''
-}
-
-const removeSelectedFile = (index) => {
-  selectedFiles.value.splice(index, 1)
-}
-
-const handleUploadFile = async () => {
-  if (selectedFiles.value.length === 0) {
-    error.value = '업로드할 파일을 선택해주세요'
-    return
-  }
-
-  if (!isEdit.value || !boardId.value) {
-    error.value = '먼저 게시물을 작성해주세요'
-    return
-  }
-
-  isUploadingFile.value = true
-  error.value = ''
-
-  try {
-    // 첫 번째 파일 업로드
-    const fileToUpload = selectedFiles.value[0]
-    const response = await uploadFile(boardId.value, fileToUpload)
-    files.value.push(response)
-    selectedFiles.value.splice(0, 1)
-    alert('파일이 업로드되었습니다')
-  } catch (err) {
-    error.value = err.response?.data?.message || '파일 업로드에 실패했습니다'
-  } finally {
-    isUploadingFile.value = false
-  }
-}
-
-const handleDeleteFile = async (fileId) => {
-  if (!confirm('파일을 삭제하시겠습니까?')) return
-
-  isUploadingFile.value = true
-  error.value = ''
-
-  try {
-    await deleteFile(boardId.value, fileId)
-    files.value = files.value.filter(f => f.fileId !== fileId)
-    alert('파일이 삭제되었습니다')
-  } catch (err) {
-    error.value = err.response?.data?.message || '파일 삭제에 실패했습니다'
-  } finally {
-    isUploadingFile.value = false
-  }
-}
-
-const uploadSelectedFiles = async (bId) => {
-  if (selectedFiles.value.length === 0) {
-    return
-  }
-
-  // 선택된 파일들을 순차적으로 업로드
-  for (const file of selectedFiles.value) {
-    try {
-      const response = await uploadFile(bId, file)
-      files.value.push(response)
-    } catch (err) {
-      console.error(`파일 "${file.name}" 업로드 실패:`, err)
-      throw new Error(`"${file.name}" 파일 업로드에 실패했습니다`)
-    }
-  }
-
-  selectedFiles.value = []
 }
 
 const handleSubmit = async () => {
@@ -160,7 +94,10 @@ const handleSubmit = async () => {
     return
   }
 
-  if (!formData.value.boardContent.trim()) {
+  // 에디터에서 HTML 가져오기
+  const editorContent = editorRef.value ? editorRef.value.invoke('getHTML') : ''
+
+  if (!editorContent.trim() || editorContent === '<p><br></p>') {
     error.value = '내용을 입력해주세요'
     return
   }
@@ -173,39 +110,18 @@ const handleSubmit = async () => {
       await boardApi.update(
         boardId.value,
         formData.value.boardTitle,
-        formData.value.boardContent
+        editorContent
       )
       alert('게시물이 수정되었습니다')
-
-      // 추가된 파일 업로드
-      if (selectedFiles.value.length > 0) {
-        try {
-          await uploadSelectedFiles(boardId.value)
-        } catch (err) {
-          error.value = err.message || '파일 업로드에 실패했습니다'
-          return
-        }
-      }
     } else {
       const username = localStorage.getItem('username')
       const response = await boardApi.create(
         formData.value.boardTitle,
-        formData.value.boardContent,
+        editorContent,
         username
       )
       alert('게시물이 작성되었습니다')
       boardId.value = response.data.boardId
-      isEdit.value = true
-
-      // 선택된 파일이 있으면 업로드
-      if (selectedFiles.value.length > 0) {
-        try {
-          await uploadSelectedFiles(boardId.value)
-        } catch (err) {
-          error.value = err.message || '파일 업로드에 실패했습니다'
-          return
-        }
-      }
     }
 
     router.push(`/boards/${boardId.value}`)
@@ -251,84 +167,22 @@ onMounted(() => {
 
         <div class="form-group">
           <label for="boardContent">내용</label>
-          <textarea
-            id="boardContent"
-            v-model="formData.boardContent"
-            placeholder="내용을 입력하세요"
-            class="textarea-field"
-            rows="15"
+          <Editor
+            ref="editorRef"
+            :initialValue="formData.boardContent"
+            initialEditType="wysiwyg"
+            :options="{
+              hideModeSwitch: true,
+              height: '500px',
+              placeholder: '내용을 입력하세요',
+              hooks: {
+                addImageBlobHook: handleImageUpload
+              }
+            }"
             :disabled="isLoading"
-          ></textarea>
+          />
         </div>
 
-        <!-- 파일 업로드 섹션 -->
-        <div class="form-group">
-          <label>파일 첨부</label>
-          <div class="file-upload-section">
-            <div class="file-input-wrapper">
-              <input
-                id="fileInput"
-                ref="fileInputRef"
-                type="file"
-                accept="image/*"
-                multiple
-                class="file-input"
-                @change="handleFileSelect"
-                :disabled="isUploadingFile"
-              />
-              <label for="fileInput" class="file-label">
-                파일 선택 (이미지만 가능, 최대 10MB, 여러 파일 선택 가능)
-              </label>
-            </div>
-
-            <button
-              v-if="selectedFiles.length > 0"
-              type="button"
-              @click="handleUploadFile"
-              class="btn btn-upload"
-              :disabled="isUploadingFile"
-            >
-              {{ isUploadingFile ? '업로드 중...' : '즉시 업로드' }}
-            </button>
-          </div>
-
-          <!-- 선택된 파일 목록 -->
-          <div v-if="selectedFiles.length > 0" class="selected-files">
-            <h4>선택된 파일</h4>
-            <div class="files-list">
-              <div v-for="(file, index) in selectedFiles" :key="index" class="file-list-item">
-                <span class="file-name">{{ file.name }}</span>
-                <span class="file-size">({{ (file.size / 1024 / 1024).toFixed(2) }}MB)</span>
-                <button
-                  type="button"
-                  @click="removeSelectedFile(index)"
-                  class="btn btn-remove"
-                  :disabled="isUploadingFile"
-                >
-                  제거
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- 업로드된 파일 목록 -->
-          <div v-if="files.length > 0" class="uploaded-files">
-            <h4>첨부된 파일</h4>
-            <div class="files-grid">
-              <div v-for="file in files" :key="file.fileId" class="file-item">
-                <img :src="API_BASE_URL + file.url" :alt="file.url" class="file-preview" />
-                <button
-                  type="button"
-                  @click="handleDeleteFile(file.fileId)"
-                  class="btn btn-delete"
-                  :disabled="isUploadingFile"
-                >
-                  삭제
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div class="form-actions">
           <button
