@@ -887,3 +887,138 @@ export const deleteFile = async (boardId, fileId) => {
 | 이미지 경로 | 상대 경로 | 절대 경로 (API_BASE_URL) |
 | 파일 서빙 | 구현 안 됨 | WebMvcConfigurer + SecurityConfig |
 
+---
+
+## 2월 25일 - AWS S3 Presigned URL 설정
+
+### 요구사항
+프론트엔드에서 이미지를 S3에 직접 업로드할 수 있도록 Presigned URL 방식 구현
+
+### 문제점 및 해결 과정
+
+#### 1. **환경변수 로드 실패 (Could not resolve placeholder)**
+
+**증상:**
+```
+org.springframework.beans.factory.BeanCreationException:
+Could not resolve placeholder 'AWS_ACCESS_KEY_ID' in value "${AWS_ACCESS_KEY_ID}"
+```
+
+**시도 1 (실패): io.github.cdimascio:java-dotenv 라이브러리**
+```gradle
+❌ implementation 'io.github.cdimascio:java-dotenv:5.4.1'
+```
+→ Could not find io.github.cdimascio:java-dotenv:5.4.1 (의존성 버전 미존재)
+
+**시도 2 (실패): CommunityApplication.java에서 수동 로드**
+```java
+❌ Dotenv dotenv = Dotenv.load();
+   dotenv.entries().forEach(entry ->
+     System.setProperty(entry.getKey(), entry.getValue())
+   );
+```
+→ io.github.cdimascio 패키지를 찾을 수 없음 (컴파일 실패)
+
+**최종 해결책 (성공): application.yml에 spring.config.import 설정**
+```gradle
+✅ implementation 'me.paulschwarz:spring-dotenv:4.0.0'  # 원래대로 유지
+```
+```yaml
+✅ spring:
+  config:
+    import: optional:file:${user.dir}/.env[.properties]
+  profiles:
+    active: local
+```
+
+**동작 원리:**
+- `me.paulschwarz:spring-dotenv`는 classpath에서 설정되면, Spring이 자동으로 PropertySource 등록
+- `spring.config.import: optional:file:${user.dir}/.env[.properties]` 설정으로 .env 파일 명시적 로드
+- `${user.dir}`: 현재 실행 디렉토리 (프로젝트 루트)
+- `[.properties]`: .env 파일을 Properties 형식으로 파싱
+- application.yml에서 `${AWS_ACCESS_KEY_ID}` 등의 변수 해석 가능
+
+**학습점:**
+- spring-dotenv는 "완전 자동"이 아니라, application.yml에 import 설정이 필요
+- `spring.config.import` 문법: `optional:file:{절대경로}[.properties]`
+- IDE 캐시/재시작 후 반드시 `gradle clean bootRun` 실행
+
+---
+
+#### 2. **.env 파일 보안 (이미 해결됨)**
+
+**상태:** .gitignore에 `.env` 이미 등록됨
+```
+## 환경변수
+.env  ← 올바르게 설정됨
+```
+
+**주의사항:**
+- AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY 등 민감한 정보 포함
+- **절대 GitHub에 푸시되지 않도록 확인** (`git status`에서 `.env` 안 보임)
+- 프로덕션 배포 시 환경변수를 시스템 환경변수로 관리
+
+---
+
+### 구현 완료 항목
+
+#### Backend (완료)
+- ✅ S3Config Bean 등록
+  - S3Client: S3 작업 직접 수행용
+  - S3Presigner: Presigned URL 생성용
+- ✅ ImageController: POST /api/images/presigned-url 엔드포인트
+- ✅ S3PresignedUrlService: Presigned URL 발급 로직
+  - UUID로 원본 파일명 숨김 (보안)
+  - 15분 유효한 임시 업로드 URL 생성
+  - 영구 접근 가능한 S3 이미지 URL 생성
+- ✅ application.yml: AWS S3 설정 추가
+
+#### 아직 미구현 (다음 단계)
+- [ ] 프론트엔드: Toast UI Editor 통합
+- [ ] 프론트엔드: Presigned URL로 S3 직접 업로드
+- [ ] 백엔드: imageUrl 검증 로직 (URL이 우리 S3인지 확인)
+- [ ] 백엔드: BoardFile 엔티티 연동
+
+---
+
+### API 명세
+
+**엔드포인트:** `POST /api/images/presigned-url`
+
+**요청:**
+```json
+{
+  "fileName": "photo.jpg",
+  "contentType": "image/jpeg"
+}
+```
+
+**응답:**
+```json
+{
+  "uploadUrl": "https://myeongsoo-community-images.s3.ap-northeast-2.amazonaws.com/images/550e8400-e29b-41d4-a716-446655440000.jpg?X-Amz-Algorithm=...",
+  "imageUrl": "https://myeongsoo-community-images.s3.ap-northeast-2.amazonaws.com/images/550e8400-e29b-41d4-a716-446655440000.jpg",
+  "s3Key": "images/550e8400-e29b-41d4-a716-446655440000.jpg"
+}
+```
+
+**클라이언트 플로우:**
+1. `uploadUrl`에 PUT 요청으로 파일 직접 S3 업로드 (서버 거치지 않음)
+2. `imageUrl`을 에디터에 `<img src>` 삽입
+3. 게시글 저장 시 HTML 전체를 백엔드로 전송
+4. 백엔드는 `imageUrl`이 우리 S3 도메인인지만 검증 후 저장
+
+---
+
+### 수정된 파일 목록
+
+| 파일 | 수정 내용 |
+|------|---------|
+| **build.gradle** | `me.paulschwarz:spring-dotenv:4.0.0` 유지 |
+| **src/main/resources/application.yml** | `spring.config.import: optional:file:${user.dir}/.env[.properties]` 라인 추가 |
+| **src/main/java/.../config/S3Config.java** | S3Client, S3Presigner Bean 등록 |
+| **src/main/java/.../image/controller/ImageController.java** | POST /api/images/presigned-url 엔드포인트 |
+| **src/main/java/.../image/service/S3PresignedUrlService.java** | Presigned URL 발급 로직 |
+| **src/main/java/.../image/dto/PresignedUrlRequest.java** | fileName, contentType 필드 |
+| **src/main/java/.../image/dto/PresignedUrlResponse.java** | uploadUrl, imageUrl, s3Key 필드 |
+
